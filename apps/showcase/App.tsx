@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, StatusBar, Dimensions } from 'react-native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { View, ScrollView, Pressable, StatusBar, Dimensions, Platform } from 'react-native';
+import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Uniwind, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +16,7 @@ import {
 import './global.css';
 import {
   FontProvider,
+  PortalHost,
   Text,
   Button,
   ButtonText,
@@ -79,6 +80,8 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
+  SelectItemIcon,
+  type SelectOption,
   Toggle,
   ToggleText,
   ToggleGroup,
@@ -256,6 +259,7 @@ export default function App() {
     <FontProvider value={fontMap}>
       <ToastProvider>
         <AppContent />
+        <PortalHost />
       </ToastProvider>
     </FontProvider>
   );
@@ -590,9 +594,16 @@ function ComponentsTab() {
   const [switchVal, setSwitchVal] = useState(true);
   const [checkVal, setCheckVal] = useState(true);
   const [radioVal, setRadioVal] = useState('option-1');
-  const [selectVal, setSelectVal] = useState('');
+  const [selectVal, setSelectVal] = useState<SelectOption | undefined>(undefined);
   const { toast } = useToast();
   const colors = useIconColors();
+  const insets = useSafeAreaInsets();
+  const contentInsets = {
+    top: insets.top,
+    bottom: Platform.select({ ios: insets.bottom, android: insets.bottom + 24 }),
+    left: 12,
+    right: 12,
+  };
 
   React.useEffect(() => {
     const timer = setInterval(() => setProgress((p) => (p + 10) % 110), 1000);
@@ -676,7 +687,7 @@ function ComponentsTab() {
           </Button>
           <Button variant="secondary">
             <ButtonText>Next</ButtonText>
-            <ButtonIcon position="right">
+            <ButtonIcon>
               <Feather name="arrow-right" size={16} color={colors.foreground} />
             </ButtonIcon>
           </Button>
@@ -718,14 +729,26 @@ function ComponentsTab() {
           </View>
         </RadioGroup>
 
-        <Select value={selectVal} onValueChange={setSelectVal}>
-          <SelectTrigger>
+        <Select value={selectVal} onValueChange={(opt) => setSelectVal(opt)}>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a framework" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem label="React Native" value="rn" />
-            <SelectItem label="Flutter" value="flutter" />
-            <SelectItem label="SwiftUI" value="swift" />
+          <SelectContent insets={contentInsets} className="w-full">
+            <SelectItem label="React Native" value="rn">
+              <SelectItemIcon>
+                <Feather name="smartphone" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
+            <SelectItem label="Flutter" value="flutter">
+              <SelectItemIcon>
+                <Feather name="zap" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
+            <SelectItem label="SwiftUI" value="swift">
+              <SelectItemIcon>
+                <Feather name="box" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
           </SelectContent>
         </Select>
 

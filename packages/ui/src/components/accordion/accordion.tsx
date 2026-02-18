@@ -6,7 +6,6 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { Text } from '../text';
 import { cn } from '../../lib/cn';
 
 // ─── Context ─────────────────────────────────────────────────
@@ -123,9 +122,7 @@ function AccordionTrigger({ className, children, ...props }: AccordionTriggerPro
       {...props}
     >
       {children}
-      <Text className={cn('text-foreground text-lg transition-transform', isOpen && 'rotate-180')}>
-        ▼
-      </Text>
+      <View className={cn('border-foreground h-2 w-2 rotate-45 border-b-2 border-r-2 transition-transform', isOpen && 'rotate-[225deg]')} />
     </Pressable>
   );
 }

@@ -18,6 +18,12 @@ pnpm add @whileloop-app/whileui
 npm install uniwind react-native-reanimated react-native-safe-area-context
 ```
 
+### Portal Dependencies (Required for Select, Popover, Tooltip, HoverCard)
+
+```bash
+npm install @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
+```
+
 ### Setup Uniwind
 
 1. **metro.config.js** (wrap with withUniwindConfig):
@@ -100,8 +106,20 @@ module.exports = withUniwindConfig({
 
 ```tsx
 import './global.css';
+import { PortalHost } from '@whileloop-app/whileui';
 import { Button, ButtonText } from '@whileloop-app/whileui';
+
+export default function App() {
+  return (
+    <>
+      {/* Your app content */}
+      <PortalHost />
+    </>
+  );
+}
 ```
+
+> **Note:** `<PortalHost />` must be added at the root of your app (as the last child) to enable portal-based components like Select, Popover, Tooltip, and HoverCard to render correctly.
 
 ## Usage
 
@@ -162,7 +180,7 @@ function MyScreen() {
 | **Checkbox**    | —                                                     | Controlled/uncontrolled, accessibility roles          |
 | **Switch**      | —                                                     | Controlled/uncontrolled, accessibility roles          |
 | **RadioGroup**  | —                                                     | RadioGroup + RadioGroupItem                           |
-| **Select**      | —                                                     | SelectTrigger, SelectValue, SelectContent, SelectItem |
+| **Select**      | —                                                     | Uses `SelectOption` type `{value, label}`. Includes SelectGroup, SelectLabel, SelectSeparator |
 | **Label**       | —                                                     | Form field label                                      |
 | **Toggle**      | default, outline                                      | ToggleText sub-component                              |
 | **ToggleGroup** | single, multiple                                      | Group of toggle items                                 |
@@ -191,16 +209,16 @@ function MyScreen() {
 
 ### Overlays & Menus
 
-| Component        | Notes                                                |
-| ---------------- | ---------------------------------------------------- |
-| **Dialog**       | Modal dialog with Header, Footer, Title, Description |
-| **AlertDialog**  | Confirmation dialog with Action/Cancel buttons       |
-| **Popover**      | PopoverTrigger + PopoverContent                      |
-| **Tooltip**      | TooltipTrigger + TooltipContent                      |
-| **DropdownMenu** | DropdownMenuTrigger, Content, Item, Label, Separator |
-| **ContextMenu**  | Long-press context menu                              |
-| **HoverCard**    | Hover-triggered card (press on mobile)               |
-| **Menubar**      | Horizontal menu bar                                  |
+| Component        | Notes                                                                  |
+| ---------------- | ---------------------------------------------------------------------- |
+| **Dialog**       | Modal dialog with Header, Footer, Title, Description                   |
+| **AlertDialog**  | Confirmation dialog with Action/Cancel buttons                         |
+| **Popover**      | Position-aware popover (requires PortalHost)                           |
+| **Tooltip**      | Position-aware tooltip (requires PortalHost)                           |
+| **DropdownMenu** | DropdownMenuTrigger, Content, Item, Label, Separator                   |
+| **ContextMenu**  | Long-press context menu                                                |
+| **HoverCard**    | Position-aware hover card (requires PortalHost)                        |
+| **Menubar**      | Horizontal menu bar                                                    |
 
 ### Feedback
 
@@ -574,7 +592,13 @@ import { RadioGroup, RadioGroupItem } from '@whileloop-app/whileui';
 ## Select
 
 ```tsx
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@whileloop-app/whileui';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@whileloop-app/whileui';
 
 <Select value={value} onValueChange={setValue}>
   <SelectTrigger>
@@ -609,7 +633,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@whileloop-app/whileui
 ## Accordion
 
 ```tsx
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@whileloop-app/whileui';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@whileloop-app/whileui';
 
 <Accordion type="single" collapsible>
   <AccordionItem value="item1">

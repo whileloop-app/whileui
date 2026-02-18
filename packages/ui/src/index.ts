@@ -2,6 +2,7 @@
 export { cn } from './lib/cn';
 export { tv, type VariantProps } from './lib/tv';
 export { FontProvider, type FontFamilyMap } from './lib/font-context';
+export { PortalHost } from './lib/portal';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';
@@ -160,11 +161,21 @@ export {
   SelectValue,
   SelectContent,
   SelectItem,
+  SelectItemIcon,
+  SelectGroup,
+  SelectLabel,
+  SelectSeparator,
+  type SelectOption,
+  type SelectTriggerRef,
   type SelectProps,
   type SelectTriggerProps,
   type SelectValueProps,
   type SelectContentProps,
   type SelectItemProps,
+  type SelectItemIconProps,
+  type SelectGroupProps,
+  type SelectLabelProps,
+  type SelectSeparatorProps,
 } from './components/select';
 
 export {
@@ -191,9 +202,11 @@ export {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  PopoverClose,
   type PopoverProps,
   type PopoverTriggerProps,
   type PopoverContentProps,
+  type PopoverCloseProps,
 } from './components/popover';
 
 export {

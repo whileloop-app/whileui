@@ -1,97 +1,82 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Modal, Pressable, type ViewProps, type PressableProps } from 'react-native';
+import * as React from 'react';
+import { Platform, StyleSheet, type ViewStyle } from 'react-native';
+import * as PopoverPrimitive from '@rn-primitives/popover';
 import { cn } from '../../lib/cn';
-
-// ─── Context ─────────────────────────────────────────────────
-
-interface PopoverContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-const PopoverContext = createContext<PopoverContextValue>({
-  open: false,
-  setOpen: () => {},
-});
 
 // ─── Types ───────────────────────────────────────────────────
 
 export interface PopoverProps {
-  defaultOpen?: boolean;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }
 
-export interface PopoverTriggerProps extends PressableProps {
+export interface PopoverTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger> {
   className?: string;
-  asChild?: boolean;
 }
 
-export interface PopoverContentProps extends ViewProps {
+export interface PopoverContentProps
+  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> {
+  className?: string;
+  portalHost?: string;
+}
+
+export interface PopoverCloseProps
+  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Close> {
   className?: string;
 }
 
 // ─── Components ──────────────────────────────────────────────
 
-function Popover({
-  defaultOpen = false,
-  open: controlledOpen,
-  onOpenChange,
-  children,
-}: PopoverProps) {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const open = controlledOpen ?? internalOpen;
-
-  const setOpen = (value: boolean) => {
-    setInternalOpen(value);
-    onOpenChange?.(value);
-  };
-
-  return <PopoverContext.Provider value={{ open, setOpen }}>{children}</PopoverContext.Provider>;
-}
-
-function PopoverTrigger({ className, children, asChild, ...props }: PopoverTriggerProps) {
-  const { setOpen } = useContext(PopoverContext);
-
-  if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<any>;
-    return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        setOpen(true);
-      },
-      ...props,
-    });
-  }
-
+function Popover({ onOpenChange, children }: PopoverProps) {
   return (
-    <Pressable className={cn(className)} onPress={() => setOpen(true)} {...props}>
-      {children}
-    </Pressable>
+    <PopoverPrimitive.Root onOpenChange={onOpenChange}>{children}</PopoverPrimitive.Root>
   );
 }
 
-function PopoverContent({ className, children, ...props }: PopoverContentProps) {
-  const { open, setOpen } = useContext(PopoverContext);
-
-  return (
-    <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-      <Pressable className="flex-1 justify-center items-center px-4" onPress={() => setOpen(false)}>
-        <Pressable
-          className={cn('w-72 rounded-lg border border-border bg-popover p-4 shadow-lg', className)}
-          onPress={(e) => e.stopPropagation()}
-          {...props}
-        >
-          {children}
-        </Pressable>
-      </Pressable>
-    </Modal>
-  );
-}
-
-Popover.displayName = 'Popover';
+const PopoverTrigger = React.forwardRef<
+  React.ComponentRef<typeof PopoverPrimitive.Trigger>,
+  PopoverTriggerProps
+>(({ className, ...props }, ref) => (
+  <PopoverPrimitive.Trigger ref={ref} className={cn(className)} {...props} />
+));
 PopoverTrigger.displayName = 'PopoverTrigger';
+
+const PopoverContent = React.forwardRef<
+  React.ComponentRef<typeof PopoverPrimitive.Content>,
+  PopoverContentProps
+>(({ className, align = 'center', sideOffset = 4, portalHost, ...props }, ref) => {
+  return (
+    <PopoverPrimitive.Portal hostName={portalHost}>
+      <PopoverPrimitive.Overlay style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}>
+        <PopoverPrimitive.Content
+          ref={ref}
+          align={align}
+          sideOffset={sideOffset}
+          className={cn(
+            'z-50 w-72 rounded-lg border border-border bg-popover p-4 shadow-lg',
+            'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+            className
+          )}
+          style={Platform.OS === 'web' ? {} : contentStyles}
+          {...props}
+        />
+      </PopoverPrimitive.Overlay>
+    </PopoverPrimitive.Portal>
+  );
+});
 PopoverContent.displayName = 'PopoverContent';
 
-export { Popover, PopoverTrigger, PopoverContent };
+const PopoverClose = React.forwardRef<
+  React.ComponentRef<typeof PopoverPrimitive.Close>,
+  PopoverCloseProps
+>(({ className, ...props }, ref) => (
+  <PopoverPrimitive.Close ref={ref} className={cn(className)} {...props} />
+));
+PopoverClose.displayName = 'PopoverClose';
+
+const contentStyles: ViewStyle = {
+  position: 'absolute',
+};
+
+export { Popover, PopoverTrigger, PopoverContent, PopoverClose };

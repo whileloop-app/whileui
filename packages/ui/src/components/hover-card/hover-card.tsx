@@ -1,108 +1,80 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Modal, Pressable, type ViewProps, type PressableProps } from 'react-native';
+import * as React from 'react';
+import { Platform, StyleSheet, type ViewStyle } from 'react-native';
+import * as HoverCardPrimitive from '@rn-primitives/hover-card';
 import { cn } from '../../lib/cn';
-
-// ─── Context ─────────────────────────────────────────────────
-
-interface HoverCardContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-const HoverCardContext = createContext<HoverCardContextValue>({
-  open: false,
-  setOpen: () => {},
-});
 
 // ─── Types ───────────────────────────────────────────────────
 
 export interface HoverCardProps {
-  defaultOpen?: boolean;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  openDelay?: number;
+  closeDelay?: number;
   children: React.ReactNode;
 }
 
-export interface HoverCardTriggerProps extends PressableProps {
+export interface HoverCardTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Trigger> {
   className?: string;
-  asChild?: boolean;
 }
 
-export interface HoverCardContentProps extends ViewProps {
+export interface HoverCardContentProps
+  extends React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content> {
   className?: string;
+  portalHost?: string;
 }
 
 // ─── Components ──────────────────────────────────────────────
 
 function HoverCard({
-  defaultOpen = false,
-  open: controlledOpen,
   onOpenChange,
+  openDelay,
+  closeDelay,
   children,
 }: HoverCardProps) {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const open = controlledOpen ?? internalOpen;
-
-  const setOpen = (value: boolean) => {
-    setInternalOpen(value);
-    onOpenChange?.(value);
-  };
-
   return (
-    <HoverCardContext.Provider value={{ open, setOpen }}>{children}</HoverCardContext.Provider>
-  );
-}
-
-function HoverCardTrigger({ className, children, asChild, ...props }: HoverCardTriggerProps) {
-  const { setOpen } = useContext(HoverCardContext);
-
-  if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<any>;
-    return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        setOpen(true);
-      },
-      onLongPress: (e: any) => {
-        child.props.onLongPress?.(e);
-        setOpen(true);
-      },
-      ...props,
-    });
-  }
-
-  return (
-    <Pressable
-      className={cn(className)}
-      onLongPress={() => setOpen(true)}
-      onPress={() => setOpen(true)}
-      {...props}
+    <HoverCardPrimitive.Root
+      onOpenChange={onOpenChange}
+      openDelay={openDelay}
+      closeDelay={closeDelay}
     >
       {children}
-    </Pressable>
+    </HoverCardPrimitive.Root>
   );
 }
 
-function HoverCardContent({ className, children, ...props }: HoverCardContentProps) {
-  const { open, setOpen } = useContext(HoverCardContext);
-
-  return (
-    <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-      <Pressable className="flex-1 justify-center items-center px-6" onPress={() => setOpen(false)}>
-        <Pressable
-          className={cn('w-80 rounded-lg border border-border bg-popover p-4 shadow-lg', className)}
-          onPress={(e) => e.stopPropagation()}
-          {...props}
-        >
-          {children}
-        </Pressable>
-      </Pressable>
-    </Modal>
-  );
-}
-
-HoverCard.displayName = 'HoverCard';
+const HoverCardTrigger = React.forwardRef<
+  React.ComponentRef<typeof HoverCardPrimitive.Trigger>,
+  HoverCardTriggerProps
+>(({ className, ...props }, ref) => (
+  <HoverCardPrimitive.Trigger ref={ref} className={cn(className)} {...props} />
+));
 HoverCardTrigger.displayName = 'HoverCardTrigger';
+
+const HoverCardContent = React.forwardRef<
+  React.ComponentRef<typeof HoverCardPrimitive.Content>,
+  HoverCardContentProps
+>(({ className, align = 'center', sideOffset = 4, portalHost, ...props }, ref) => (
+  <HoverCardPrimitive.Portal hostName={portalHost}>
+    <HoverCardPrimitive.Overlay style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}>
+      <HoverCardPrimitive.Content
+        ref={ref}
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          'z-50 w-64 rounded-lg border border-border bg-popover p-4 shadow-lg',
+          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+          className
+        )}
+        style={Platform.OS === 'web' ? {} : contentStyles}
+        {...props}
+      />
+    </HoverCardPrimitive.Overlay>
+  </HoverCardPrimitive.Portal>
+));
 HoverCardContent.displayName = 'HoverCardContent';
+
+const contentStyles: ViewStyle = {
+  position: 'absolute',
+};
 
 export { HoverCard, HoverCardTrigger, HoverCardContent };

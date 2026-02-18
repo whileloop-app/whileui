@@ -26,7 +26,7 @@ const ButtonContext = createContext<ButtonContextValue>({
 // ─── Variants ────────────────────────────────────────────────
 
 const buttonVariants = tv({
-  base: 'inline-flex items-center justify-center rounded-md',
+  base: 'flex-row items-center justify-center gap-2 rounded-md',
   variants: {
     variant: {
       default: 'bg-primary active:bg-primary/90',
@@ -89,7 +89,6 @@ export interface ButtonTextProps extends TextProps {
 }
 
 export interface ButtonIconProps extends ViewProps {
-  position?: 'left' | 'right';
   className?: string;
 }
 
@@ -136,8 +135,8 @@ function ButtonText({
 
 ButtonText.displayName = 'ButtonText';
 
-function ButtonIcon({ className, position = 'left', ...props }: ButtonIconProps) {
-  return <View className={cn(position === 'left' ? 'mr-2' : 'ml-2', className)} {...props} />;
+function ButtonIcon({ className, position, ...props }: ButtonIconProps) {
+  return <View className={cn('items-center justify-center', className)} {...props} />;
 }
 
 ButtonIcon.displayName = 'ButtonIcon';

@@ -1,106 +1,88 @@
-import React, { createContext, useContext, useState } from 'react';
-import { View, Modal, Pressable, Text, type ViewProps, type PressableProps } from 'react-native';
+import * as React from 'react';
+import { Platform, StyleSheet, Text, type ViewStyle } from 'react-native';
+import * as TooltipPrimitive from '@rn-primitives/tooltip';
 import { cn } from '../../lib/cn';
-
-// ─── Context ─────────────────────────────────────────────────
-
-interface TooltipContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-const TooltipContext = createContext<TooltipContextValue>({
-  open: false,
-  setOpen: () => {},
-});
 
 // ─── Types ───────────────────────────────────────────────────
 
 export interface TooltipProps {
-  defaultOpen?: boolean;
-  open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  delayDuration?: number;
+  skipDelayDuration?: number;
+  disableHoverableContent?: boolean;
   children: React.ReactNode;
 }
 
-export interface TooltipTriggerProps extends PressableProps {
+export interface TooltipTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> {
   className?: string;
-  asChild?: boolean;
 }
 
-export interface TooltipContentProps extends ViewProps {
+export interface TooltipContentProps
+  extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> {
   className?: string;
+  portalHost?: string;
 }
 
 // ─── Components ──────────────────────────────────────────────
 
 function Tooltip({
-  defaultOpen = false,
-  open: controlledOpen,
   onOpenChange,
+  delayDuration,
+  skipDelayDuration,
+  disableHoverableContent,
   children,
 }: TooltipProps) {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const open = controlledOpen ?? internalOpen;
-
-  const setOpen = (value: boolean) => {
-    setInternalOpen(value);
-    onOpenChange?.(value);
-  };
-
-  return <TooltipContext.Provider value={{ open, setOpen }}>{children}</TooltipContext.Provider>;
-}
-
-function TooltipTrigger({ className, children, asChild, ...props }: TooltipTriggerProps) {
-  const { setOpen } = useContext(TooltipContext);
-
-  if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<any>;
-    return React.cloneElement(child, {
-      onLongPress: (e: any) => {
-        child.props.onLongPress?.(e);
-        setOpen(true);
-      },
-      onPressOut: (e: any) => {
-        child.props.onPressOut?.(e);
-        setOpen(false);
-      },
-      ...props,
-    });
-  }
-
   return (
-    <Pressable
-      className={cn(className)}
-      onLongPress={() => setOpen(true)}
-      onPressOut={() => setOpen(false)}
-      {...props}
+    <TooltipPrimitive.Root
+      onOpenChange={onOpenChange}
+      delayDuration={delayDuration}
+      skipDelayDuration={skipDelayDuration}
+      disableHoverableContent={disableHoverableContent}
     >
       {children}
-    </Pressable>
+    </TooltipPrimitive.Root>
   );
 }
 
-function TooltipContent({ className, children, ...props }: TooltipContentProps) {
-  const { open, setOpen } = useContext(TooltipContext);
-
-  return (
-    <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-      <Pressable className="flex-1 justify-center items-center" onPress={() => setOpen(false)}>
-        <View className={cn('rounded-md bg-primary px-3 py-1.5 shadow-md', className)} {...props}>
-          {typeof children === 'string' ? (
-            <Text className="text-xs text-primary-foreground">{children}</Text>
-          ) : (
-            children
-          )}
-        </View>
-      </Pressable>
-    </Modal>
-  );
-}
-
-Tooltip.displayName = 'Tooltip';
+const TooltipTrigger = React.forwardRef<
+  React.ComponentRef<typeof TooltipPrimitive.Trigger>,
+  TooltipTriggerProps
+>(({ className, ...props }, ref) => (
+  <TooltipPrimitive.Trigger ref={ref} className={cn(className)} {...props} />
+));
 TooltipTrigger.displayName = 'TooltipTrigger';
+
+const TooltipContent = React.forwardRef<
+  React.ComponentRef<typeof TooltipPrimitive.Content>,
+  TooltipContentProps
+>(({ className, sideOffset = 4, portalHost, children, ...props }, ref) => (
+  <TooltipPrimitive.Portal hostName={portalHost}>
+    <TooltipPrimitive.Overlay style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}>
+      <TooltipPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        className={cn(
+          'z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 shadow-md',
+          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+          className
+        )}
+        style={Platform.OS === 'web' ? {} : contentStyles}
+        {...props}
+      >
+        {typeof children === 'string' ? (
+          <Text className="text-xs text-primary-foreground">{children}</Text>
+        ) : (
+          children
+        )}
+      </TooltipPrimitive.Content>
+    </TooltipPrimitive.Overlay>
+  </TooltipPrimitive.Portal>
+));
 TooltipContent.displayName = 'TooltipContent';
+
+const contentStyles: ViewStyle = {
+  position: 'absolute',
+};
 
 export { Tooltip, TooltipTrigger, TooltipContent };
