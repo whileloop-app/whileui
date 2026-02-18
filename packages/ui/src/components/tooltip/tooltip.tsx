@@ -1,12 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import {
-  View,
-  Modal,
-  Pressable,
-  Text,
-  type ViewProps,
-  type PressableProps,
-} from 'react-native';
+import { View, Modal, Pressable, Text, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
 
 // ─── Context ─────────────────────────────────────────────────

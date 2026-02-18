@@ -4,11 +4,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Uniwind, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import Animated, {
-  useSharedValue,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import {
   useFonts,
   PlusJakartaSans_400Regular,
@@ -137,6 +133,7 @@ import {
   EmptyState,
   ErrorState,
   LoadingScreen,
+  SplashScreen,
   // Profile Blocks
   ProfileHeader,
   SettingsSection,
@@ -263,9 +260,40 @@ export default function App() {
 
 function AppContent() {
   const { theme } = useUniwind();
+  const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<CategoryKey>('components');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const colors = useIconColors();
+
+  // Show splash screen on first load
+  if (showSplash) {
+    return (
+      <SafeAreaProvider>
+        <View style={{ flex: 1 }} className="bg-background">
+          <StatusBar
+            barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
+            translucent
+            backgroundColor="transparent"
+          />
+          <SplashScreen
+            logo={
+              <View className="h-24 w-24 rounded-3xl bg-primary items-center justify-center">
+                <Feather name="zap" size={48} color={colors.primaryForeground} />
+              </View>
+            }
+            appName="WhileUI"
+            tagline="Beautiful native components"
+            variant="scale"
+            duration={1500}
+            showLoading
+            onAnimationComplete={() => {
+              setTimeout(() => setShowSplash(false), 800);
+            }}
+          />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   const cycleTheme = () => {
     const themes = ['light', 'dark'];
@@ -352,7 +380,7 @@ function AppContent() {
                 </View>
                 <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
                   <Text className="text-2xl font-bold text-foreground">
-                    <AnimatedCounter value={28} duration={1000} />
+                    <AnimatedCounter value={29} duration={1000} />
                   </Text>
                   <Text className="text-xs text-muted-foreground">Blocks</Text>
                 </View>
@@ -1259,10 +1287,33 @@ function NavigationBlocksTab() {
 // ─── Layout Blocks Tab ──────────────────────────────────────
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
   const colors = useIconColors();
 
   return (
     <View className="gap-6">
+      <Section title="Splash Screen" subtitle="App launch animation">
+        <Button onPress={() => setShowSplash(!showSplash)}>
+          <ButtonText>{showSplash ? 'Hide Splash' : 'Show Splash'}</ButtonText>
+        </Button>
+        {showSplash && (
+          <View className="h-72 rounded-xl border border-border overflow-hidden">
+            <SplashScreen
+              logo={
+                <View className="h-20 w-20 rounded-2xl bg-primary items-center justify-center">
+                  <Feather name="zap" size={40} color={colors.primaryForeground} />
+                </View>
+              }
+              appName="WhileUI"
+              tagline="Beautiful native components"
+              variant="scale"
+              showLoading
+              loadingText="Starting up..."
+            />
+          </View>
+        )}
+      </Section>
+
       <Section title="Empty State" subtitle="When there's no content to show">
         <View className="h-64 rounded-xl border border-border overflow-hidden">
           <EmptyState

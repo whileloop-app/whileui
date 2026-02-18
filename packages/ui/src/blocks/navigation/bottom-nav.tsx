@@ -30,10 +30,7 @@ function BottomNavItemComponent({ item, isActive, className, ...props }: BottomN
 
   return (
     <Pressable
-      className={cn(
-        'flex-1 items-center justify-center py-2 active:opacity-70',
-        className
-      )}
+      className={cn('flex-1 items-center justify-center py-2 active:opacity-70', className)}
       {...props}
     >
       <View className={cn('relative', !isActive && 'opacity-50')}>

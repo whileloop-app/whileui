@@ -43,7 +43,10 @@ function TabBarItemComponent({ item, isActive, variant, className, ...props }: T
   };
 
   return (
-    <Pressable className={cn(baseStyles, variantStyles[variant], 'active:opacity-70', className)} {...props}>
+    <Pressable
+      className={cn(baseStyles, variantStyles[variant], 'active:opacity-70', className)}
+      {...props}
+    >
       {icon && (
         <View className={isActive && variant === 'pills' ? 'text-primary-foreground' : ''}>
           {icon}

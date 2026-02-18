@@ -111,6 +111,14 @@ Beautiful, accessible, themeable React Native components built with [Uniwind](ht
 | **LoadingScreen**    | Full-screen loading indicator |
 | **OnboardingScreen** | Onboarding flow screen        |
 
+### Splash
+
+| Block            | Description                                      |
+| ---------------- | ------------------------------------------------ |
+| **SplashScreen** | Animated app launch splash with fade/scale/slide |
+| **MinimalSplash** | Preset: Simple fade animation                   |
+| **BrandedSplash** | Preset: Scale animation with loading indicator  |
+
 ### Profile
 
 | Block               | Description                |
