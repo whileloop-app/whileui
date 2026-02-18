@@ -42,7 +42,7 @@ Card.displayName = 'Card';
 export interface CardHeaderProps extends ViewProps {}
 
 const CardHeader = React.forwardRef<View, CardHeaderProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('pb-2', className)} {...props} />;
+  return <View ref={ref} className={cn('pb-3', className)} {...props} />;
 });
 
 CardHeader.displayName = 'CardHeader';
@@ -80,7 +80,7 @@ CardDescription.displayName = 'CardDescription';
 export interface CardContentProps extends ViewProps {}
 
 const CardContent = React.forwardRef<View, CardContentProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('pt-0', className)} {...props} />;
+  return <View ref={ref} className={cn('pb-3', className)} {...props} />;
 });
 
 CardContent.displayName = 'CardContent';
@@ -90,7 +90,7 @@ CardContent.displayName = 'CardContent';
 export interface CardFooterProps extends ViewProps {}
 
 const CardFooter = React.forwardRef<View, CardFooterProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('flex-row items-center pt-0', className)} {...props} />;
+  return <View ref={ref} className={cn('flex-row items-center pt-1', className)} {...props} />;
 });
 
 CardFooter.displayName = 'CardFooter';

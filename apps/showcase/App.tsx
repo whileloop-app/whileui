@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, StatusBar, Dimensions, Platform } from 'react-native';
+import { View, ScrollView, Pressable, StatusBar, Platform } from 'react-native';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Uniwind, useUniwind } from 'uniwind';
+import { useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated from 'react-native-reanimated';
@@ -17,17 +17,29 @@ import './global.css';
 import {
   FontProvider,
   PortalHost,
+  ThemeBridge,
+  useThemeBridge,
+  type ThemeBridgeAdapter,
+  type ThemeMode,
   Text,
   Button,
   ButtonText,
   ButtonIcon,
   Input,
+  NumericInput,
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
   CardFooter,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormHint,
+  FormMessage,
+  LabeledField,
+  LabeledFieldControl,
   Badge,
   BadgeText,
   Alert,
@@ -41,6 +53,13 @@ import {
   Spinner,
   Textarea,
   Skeleton,
+  DataRow,
+  DataRowLeft,
+  DataRowCenter,
+  DataRowRight,
+  DataRowLabel,
+  DataRowDescription,
+  DataRowValue,
   AspectRatio,
   Avatar,
   AvatarFallback,
@@ -84,6 +103,9 @@ import {
   type SelectOption,
   Toggle,
   ToggleText,
+  SegmentedControl,
+  SegmentedControlItem,
+  SegmentedControlItemText,
   ToggleGroup,
   ToggleGroupItem,
   ToggleGroupItemText,
@@ -133,6 +155,8 @@ import {
   TabBar,
   DrawerMenu,
   // Layout Blocks
+  ActionBar,
+  ConfirmActionSheet,
   EmptyState,
   ErrorState,
   LoadingScreen,
@@ -234,6 +258,15 @@ const useIconColors = () => {
   };
 };
 
+const showcaseThemeStore: { mode: ThemeMode | null } = { mode: null };
+
+const showcaseThemeAdapter: ThemeBridgeAdapter = {
+  loadThemeMode: async () => showcaseThemeStore.mode,
+  saveThemeMode: async (mode) => {
+    showcaseThemeStore.mode = mode;
+  },
+};
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     PlusJakartaSans_400Regular,
@@ -267,6 +300,14 @@ export default function App() {
 
 function AppContent() {
   const { theme } = useUniwind();
+  const {
+    mode: themeMode,
+    setMode: setThemeMode,
+    cycleMode,
+  } = useThemeBridge({
+    adapter: showcaseThemeAdapter,
+    initialMode: 'system',
+  });
   const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<CategoryKey>('components');
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -302,17 +343,10 @@ function AppContent() {
     );
   }
 
-  const cycleTheme = () => {
-    const themes = ['light', 'dark'];
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    (Uniwind.setTheme as (t: string) => void)(themes[nextIndex]);
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'components':
-        return <ComponentsTab />;
+        return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
       case 'auth':
         return <AuthBlocksTab />;
       case 'navigation':
@@ -326,12 +360,13 @@ function AppContent() {
       case 'commerce':
         return <CommerceBlocksTab />;
       default:
-        return <ComponentsTab />;
+        return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
     }
   };
 
   return (
     <SafeAreaProvider>
+      <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
       <View style={{ flex: 1 }} className="bg-background">
         <StatusBar
           barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
@@ -365,12 +400,12 @@ function AppContent() {
                 <Pressable
                   onPress={() => {
                     triggerHaptic('medium');
-                    cycleTheme();
+                    cycleMode();
                   }}
                   className="w-10 h-10 rounded-xl bg-secondary items-center justify-center active:opacity-70"
                 >
                   <Feather
-                    name={theme === 'light' ? 'moon' : 'sun'}
+                    name={themeMode === 'system' ? 'monitor' : theme === 'light' ? 'moon' : 'sun'}
                     size={18}
                     color={colors.foreground}
                   />
@@ -589,11 +624,22 @@ function Section({
 }
 
 // ─── Components Tab ─────────────────────────────────────────
-function ComponentsTab() {
+function ComponentsTab({
+  themeMode,
+  onThemeModeChange,
+}: {
+  themeMode: ThemeMode;
+  onThemeModeChange: (mode: ThemeMode) => void;
+}) {
   const [progress, setProgress] = useState(45);
   const [switchVal, setSwitchVal] = useState(true);
   const [checkVal, setCheckVal] = useState(true);
   const [radioVal, setRadioVal] = useState('option-1');
+  const [massUnit, setMassUnit] = useState('kg');
+  const [heightUnit, setHeightUnit] = useState('cm');
+  const [budget, setBudget] = useState<number | null>(2500);
+  const [weight, setWeight] = useState<number | null>(72.4);
+  const [email, setEmail] = useState('');
   const [selectVal, setSelectVal] = useState<SelectOption | undefined>(undefined);
   const { toast } = useToast();
   const colors = useIconColors();
@@ -604,6 +650,7 @@ function ComponentsTab() {
     left: 12,
     right: 12,
   };
+  const emailInvalid = email.length > 0 && !email.includes('@');
 
   React.useEffect(() => {
     const timer = setInterval(() => setProgress((p) => (p + 10) % 110), 1000);
@@ -700,9 +747,85 @@ function ComponentsTab() {
         </Button>
       </Section>
 
+      {/* Theme Bridge */}
+      <Section title="Theme Bridge" subtitle="Official light/dark/system sync helper">
+        <Text className="text-sm text-muted-foreground">
+          Active mode: <Text className="text-foreground font-medium">{themeMode}</Text>
+        </Text>
+        <SegmentedControl
+          value={themeMode}
+          onValueChange={(next) => onThemeModeChange(next as ThemeMode)}
+          wrap={false}
+        >
+          <SegmentedControlItem value="light">
+            <SegmentedControlItemText>Light</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="dark">
+            <SegmentedControlItemText>Dark</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="system">
+            <SegmentedControlItemText>System</SegmentedControlItemText>
+          </SegmentedControlItem>
+        </SegmentedControl>
+      </Section>
+
       {/* Form Controls */}
-      <Section title="Form Controls" subtitle="Inputs, toggles, and selection">
-        <Input placeholder="you@email.com" />
+      <Section
+        title="Form Controls"
+        subtitle="FormField, NumericInput, and compact field composition"
+      >
+        <FormField required invalid={emailInvalid}>
+          <FormLabel>Work Email</FormLabel>
+          <FormControl>
+            <Input
+              placeholder="you@company.com"
+              value={email}
+              onChangeText={setEmail}
+              variant={emailInvalid ? 'error' : 'default'}
+            />
+          </FormControl>
+          {emailInvalid ? (
+            <FormMessage>Please enter a valid email address.</FormMessage>
+          ) : (
+            <FormHint>We'll send invoices and account alerts to this email.</FormHint>
+          )}
+        </FormField>
+
+        <FormField density="compact">
+          <FormLabel>Weight</FormLabel>
+          <FormControl>
+            <NumericInput
+              size="compact"
+              value={weight}
+              min={0}
+              max={300}
+              step={0.1}
+              showSteppers
+              onValueChange={setWeight}
+              suffix={<Text className="text-xs text-muted-foreground">{massUnit}</Text>}
+            />
+          </FormControl>
+          <FormHint>Supports prefix/suffix slots and optional steppers.</FormHint>
+        </FormField>
+
+        <LabeledField
+          label="Monthly Budget"
+          hint="Used for alerts and spending caps"
+          leftSlot={<Feather name="dollar-sign" size={16} color={colors.muted} />}
+          rightSlot={<Text className="text-xs text-muted-foreground">USD</Text>}
+        >
+          <LabeledFieldControl>
+            <NumericInput
+              value={budget}
+              onValueChange={setBudget}
+              min={0}
+              step={50}
+              className="border-0 bg-transparent"
+              inputClassName="px-0"
+            />
+          </LabeledFieldControl>
+        </LabeledField>
+
         <Textarea placeholder="Write something great..." />
         <View className="flex-row items-center gap-6">
           <View className="flex-row items-center gap-2">
@@ -717,7 +840,27 @@ function ComponentsTab() {
       </Section>
 
       {/* Selection */}
-      <Section title="Selection" subtitle="Radio groups, selects, and toggles">
+      <Section title="Selection" subtitle="SegmentedControl, radios, selects, and toggles">
+        <SegmentedControl value={massUnit} onValueChange={setMassUnit} wrap={false}>
+          <SegmentedControlItem value="kg">
+            <SegmentedControlItemText>kg</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="lbs">
+            <SegmentedControlItemText>lbs</SegmentedControlItemText>
+          </SegmentedControlItem>
+        </SegmentedControl>
+        <SegmentedControl value={heightUnit} onValueChange={setHeightUnit} wrap={false}>
+          <SegmentedControlItem value="cm">
+            <SegmentedControlItemText>Centimeters</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="in">
+            <SegmentedControlItemText>Inches</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="ft">
+            <SegmentedControlItemText>Feet</SegmentedControlItemText>
+          </SegmentedControlItem>
+        </SegmentedControl>
+
         <RadioGroup value={radioVal} onValueChange={setRadioVal}>
           <View className="flex-row items-center gap-2">
             <RadioGroupItem value="option-1" />
@@ -771,7 +914,10 @@ function ComponentsTab() {
       </Section>
 
       {/* Cards */}
-      <Section title="Cards & Badges" subtitle="Content containers with status indicators">
+      <Section
+        title="Cards & Badges"
+        subtitle="Card padding ergonomics, unstyled shell, and badges"
+      >
         <Card>
           <CardHeader>
             <View className="flex-row items-center justify-between">
@@ -791,6 +937,29 @@ function ComponentsTab() {
             </Button>
           </CardFooter>
         </Card>
+
+        <View className="flex-row gap-3">
+          <Card padding="sm" className="flex-1">
+            <Text className="text-sm font-medium text-foreground">`padding=\"sm\"`</Text>
+            <Text className="text-xs text-muted-foreground mt-1">
+              Dense cards for compact settings.
+            </Text>
+          </Card>
+          <Card padding="lg" className="flex-1">
+            <Text className="text-sm font-medium text-foreground">`padding=\"lg\"`</Text>
+            <Text className="text-xs text-muted-foreground mt-1">
+              Roomy layouts for onboarding and forms.
+            </Text>
+          </Card>
+        </View>
+
+        <Card unstyled padding="none" className="rounded-xl border border-border bg-card p-4">
+          <Text className="text-sm font-medium text-foreground">Unstyled card shell</Text>
+          <Text className="text-xs text-muted-foreground mt-1">
+            Use your own spacing/layout for advanced compositions.
+          </Text>
+        </Card>
+
         <Separator />
         <View className="flex-row flex-wrap gap-2">
           <Badge>
@@ -814,6 +983,42 @@ function ComponentsTab() {
           <Badge variant="info">
             <BadgeText>Info</BadgeText>
           </Badge>
+        </View>
+      </Section>
+
+      {/* Data Row */}
+      <Section title="Data Row" subtitle="Reusable left/center/right rows with narrow-width safety">
+        <View className="rounded-xl border border-border p-3 gap-2">
+          <DataRow className="border-b border-border px-1 pb-3">
+            <DataRowLeft>
+              <Avatar size="sm">
+                <AvatarFallback>AL</AvatarFallback>
+              </Avatar>
+            </DataRowLeft>
+            <DataRowCenter>
+              <DataRowLabel>Alex Lee</DataRowLabel>
+              <DataRowDescription>Lead Product Designer</DataRowDescription>
+            </DataRowCenter>
+            <DataRowRight>
+              <DataRowValue>Owner</DataRowValue>
+            </DataRowRight>
+          </DataRow>
+          <View className="w-64">
+            <DataRow size="compact" className="px-1">
+              <DataRowLeft>
+                <Feather name="activity" size={16} color={colors.muted} />
+              </DataRowLeft>
+              <DataRowCenter>
+                <DataRowLabel>Average Session Duration</DataRowLabel>
+                <DataRowDescription>
+                  This label truncates safely on narrow screens.
+                </DataRowDescription>
+              </DataRowCenter>
+              <DataRowRight>
+                <DataRowValue>12m 48s</DataRowValue>
+              </DataRowRight>
+            </DataRow>
+          </View>
         </View>
       </Section>
 
@@ -1313,31 +1518,71 @@ function NavigationBlocksTab() {
 // ─── Layout Blocks Tab ──────────────────────────────────────
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
-  const [showSplash, setShowSplash] = useState(false);
+  const [actionSheetOpen, setActionSheetOpen] = useState(false);
+  const { toast } = useToast();
   const colors = useIconColors();
 
   return (
     <View className="gap-6">
-      <Section title="Splash Screen" subtitle="App launch animation">
-        <Button onPress={() => setShowSplash(!showSplash)}>
-          <ButtonText>{showSplash ? 'Hide Splash' : 'Show Splash'}</ButtonText>
+      <Section title="Action Bar" subtitle="Sticky bottom action row with safe-area support">
+        <View className="rounded-xl border border-border bg-muted/20 p-3">
+          <ActionBar
+            sticky={false}
+            safeArea={false}
+            className="relative inset-auto rounded-lg border border-border"
+          >
+            <Button
+              variant="outline"
+              className="flex-1"
+              onPress={() => {
+                triggerHaptic('light');
+                toast({
+                  title: 'Changes discarded',
+                  description: 'ActionBar cancel handler fired.',
+                });
+              }}
+            >
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <Button
+              className="flex-1"
+              onPress={() => {
+                triggerHaptic('medium');
+                toast({
+                  title: 'Changes saved',
+                  description: 'ActionBar primary action completed.',
+                  variant: 'success',
+                });
+              }}
+            >
+              <ButtonText>Save Changes</ButtonText>
+            </Button>
+          </ActionBar>
+        </View>
+      </Section>
+
+      <Section
+        title="Confirm Action Sheet"
+        subtitle="Reusable destructive confirmation sheet with action model"
+      >
+        <Button variant="destructive" onPress={() => setActionSheetOpen(true)}>
+          <ButtonText>Open Confirm Sheet</ButtonText>
         </Button>
-        {showSplash && (
-          <View className="h-72 rounded-xl border border-border overflow-hidden">
-            <SplashScreen
-              logo={
-                <View className="h-20 w-20 rounded-2xl bg-primary items-center justify-center">
-                  <Feather name="zap" size={40} color={colors.primaryForeground} />
-                </View>
-              }
-              appName="WhileUI"
-              tagline="Beautiful native components"
-              variant="scale"
-              showLoading
-              loadingText="Starting up..."
-            />
-          </View>
-        )}
+        <ConfirmActionSheet
+          open={actionSheetOpen}
+          onOpenChange={setActionSheetOpen}
+          title="Delete workspace?"
+          description="This permanently removes projects, members, and billing history."
+          actions={[
+            { key: 'cancel', label: 'Cancel', variant: 'cancel' },
+            {
+              key: 'delete',
+              label: 'Delete Workspace',
+              variant: 'destructive',
+              onPress: () => setActionSheetOpen(false),
+            },
+          ]}
+        />
       </Section>
 
       <Section title="Empty State" subtitle="When there's no content to show">

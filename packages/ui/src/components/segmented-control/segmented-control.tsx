@@ -14,7 +14,7 @@ const segmentedControlVariants = tv({
   base: 'w-full flex-row items-center rounded-lg bg-muted p-1',
   variants: {
     wrap: {
-      true: 'flex-wrap gap-1',
+      true: 'flex-wrap justify-center gap-1',
       false: 'flex-nowrap gap-1',
     },
     size: {
@@ -44,7 +44,7 @@ const segmentedControlItemVariants = tv({
       false: '',
     },
     wrap: {
-      true: 'grow basis-[48%]',
+      true: 'basis-[48%] grow-0',
       false: 'flex-1',
     },
   },
@@ -104,7 +104,7 @@ export interface SegmentedControlProps extends ViewProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-  wrap?: boolean;
+  wrap?: boolean | 'auto';
   size?: 'default' | 'compact';
   disabled?: boolean;
   className?: string;
@@ -124,7 +124,7 @@ function SegmentedControl({
   value: controlledValue,
   defaultValue = '',
   onValueChange,
-  wrap = true,
+  wrap = 'auto',
   size = 'default',
   disabled = false,
   className,
@@ -133,6 +133,11 @@ function SegmentedControl({
 }: SegmentedControlProps) {
   const [internalValue, setInternalValue] = useState(defaultValue);
   const value = controlledValue ?? internalValue;
+  const itemCount = useMemo(
+    () => React.Children.toArray(children).filter((child) => React.isValidElement(child)).length,
+    [children]
+  );
+  const shouldWrap = wrap === 'auto' ? itemCount > 3 : wrap;
 
   const handleValueChange = (nextValue: string) => {
     if (disabled || value === nextValue) {
@@ -143,14 +148,14 @@ function SegmentedControl({
   };
 
   const contextValue = useMemo(
-    () => ({ value, onValueChange: handleValueChange, size, wrap, disabled }),
-    [value, size, wrap, disabled]
+    () => ({ value, onValueChange: handleValueChange, size, wrap: shouldWrap, disabled }),
+    [value, size, shouldWrap, disabled]
   );
 
   return (
     <SegmentedControlContext.Provider value={contextValue}>
       <View
-        className={cn(segmentedControlVariants({ wrap, size }), className)}
+        className={cn(segmentedControlVariants({ wrap: shouldWrap, size }), className)}
         accessibilityRole="radiogroup"
         {...props}
       >

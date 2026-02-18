@@ -4,7 +4,7 @@
 
 Beautiful, accessible, themeable React Native components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4. Inspired by [shadcn/ui](https://ui.shadcn.com/).
 
-Current version: **0.2.0**
+Current version: **0.2.1**
 
 ## Installation
 
