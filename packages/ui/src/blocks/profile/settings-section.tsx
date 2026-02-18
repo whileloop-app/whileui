@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';

@@ -37,13 +37,13 @@ function TabBarItemComponent({ item, isActive, variant, className, ...props }: T
     underline: isActive ? 'border-b-2 border-primary' : '',
   };
   const textStyles = {
-    default: isActive ? 'text-primary font-semibold' : 'text-muted-foreground',
-    pills: isActive ? 'text-primary-foreground font-semibold' : 'text-muted-foreground',
-    underline: isActive ? 'text-foreground font-semibold' : 'text-muted-foreground',
+    default: isActive ? 'text-primary font-medium' : 'text-muted-foreground font-medium',
+    pills: isActive ? 'text-primary-foreground font-medium' : 'text-muted-foreground font-medium',
+    underline: isActive ? 'text-foreground font-medium' : 'text-muted-foreground font-medium',
   };
 
   return (
-    <Pressable className={cn(baseStyles, variantStyles[variant], className)} {...props}>
+    <Pressable className={cn(baseStyles, variantStyles[variant], 'active:opacity-70', className)} {...props}>
       {icon && (
         <View className={isActive && variant === 'pills' ? 'text-primary-foreground' : ''}>
           {icon}

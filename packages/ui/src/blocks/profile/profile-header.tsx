@@ -1,5 +1,4 @@
-import React from 'react';
-import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
+import { View, Pressable, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/avatar';
 import { Button, ButtonText } from '../../components/button';

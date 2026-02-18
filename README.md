@@ -13,19 +13,128 @@ Beautiful, accessible, themeable React Native components built with [Uniwind](ht
 
 ## Components
 
-| Component     | Variants                                              | Notes                                                                           |
-| ------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Button**    | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components                                 |
-| **Card**      | —                                                     | Compound: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter |
-| **Input**     | default, error                                        | TextInput wrapper with themed styling                                           |
-| **Badge**     | default, secondary, destructive, outline, success     | BadgeText sub-component                                                         |
-| **Alert**     | default, destructive, success, warning                | AlertTitle & AlertDescription                                                   |
-| **Switch**    | —                                                     | Controlled/uncontrolled, accessibility roles                                    |
-| **Checkbox**  | —                                                     | Controlled/uncontrolled, accessibility roles                                    |
-| **Label**     | —                                                     | Form field label                                                                |
-| **Separator** | horizontal, vertical                                  | Themed divider                                                                  |
-| **Progress**  | sm, default, lg                                       | Value-based progress bar with accessibility                                     |
-| **Spinner**   | sm, default, lg                                       | ActivityIndicator wrapper                                                       |
+### Primitives
+
+| Component     | Notes                            |
+| ------------- | -------------------------------- |
+| **Text**      | Themed text with variant support |
+| **View**      | Themed view wrapper              |
+| **Pressable** | Themed pressable wrapper         |
+
+### Form Controls
+
+| Component       | Variants                                              | Notes                                                 |
+| --------------- | ----------------------------------------------------- | ----------------------------------------------------- |
+| **Button**      | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components       |
+| **Input**       | default, error                                        | TextInput wrapper with themed styling                 |
+| **Textarea**    | —                                                     | Multi-line text input                                 |
+| **Checkbox**    | —                                                     | Controlled/uncontrolled, accessibility roles          |
+| **Switch**      | —                                                     | Controlled/uncontrolled, accessibility roles          |
+| **RadioGroup**  | —                                                     | RadioGroup + RadioGroupItem                           |
+| **Select**      | —                                                     | SelectTrigger, SelectValue, SelectContent, SelectItem |
+| **Label**       | —                                                     | Form field label                                      |
+| **Toggle**      | default, outline                                      | ToggleText sub-component                              |
+| **ToggleGroup** | single, multiple                                      | Group of toggle items                                 |
+
+### Display
+
+| Component       | Variants                                          | Notes                                                                           |
+| --------------- | ------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Card**        | —                                                 | Compound: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter |
+| **Badge**       | default, secondary, destructive, outline, success | BadgeText sub-component                                                         |
+| **Alert**       | default, destructive, success, warning            | AlertTitle & AlertDescription                                                   |
+| **Avatar**      | sm, default, lg                                   | AvatarImage + AvatarFallback                                                    |
+| **Separator**   | horizontal, vertical                              | Themed divider                                                                  |
+| **Progress**    | sm, default, lg                                   | Value-based progress bar with accessibility                                     |
+| **Spinner**     | sm, default, lg                                   | ActivityIndicator wrapper                                                       |
+| **Skeleton**    | —                                                 | Loading placeholder                                                             |
+| **AspectRatio** | —                                                 | Maintain aspect ratio container                                                 |
+
+### Layout
+
+| Component       | Notes                                    |
+| --------------- | ---------------------------------------- |
+| **Tabs**        | TabsList, TabsTrigger, TabsContent       |
+| **Accordion**   | AccordionItem, AccordionTrigger, Content |
+| **Collapsible** | CollapsibleTrigger, CollapsibleContent   |
+
+### Overlays & Menus
+
+| Component        | Notes                                                |
+| ---------------- | ---------------------------------------------------- |
+| **Dialog**       | Modal dialog with Header, Footer, Title, Description |
+| **AlertDialog**  | Confirmation dialog with Action/Cancel buttons       |
+| **Popover**      | PopoverTrigger + PopoverContent                      |
+| **Tooltip**      | TooltipTrigger + TooltipContent                      |
+| **DropdownMenu** | DropdownMenuTrigger, Content, Item, Label, Separator |
+| **ContextMenu**  | Long-press context menu                              |
+| **HoverCard**    | Hover-triggered card (press on mobile)               |
+| **Menubar**      | Horizontal menu bar                                  |
+
+### Feedback
+
+| Component | Notes                                          |
+| --------- | ---------------------------------------------- |
+| **Toast** | ToastProvider, ToastContainer, useToast() hook |
+
+## Blocks (Pre-built Screens)
+
+### Auth
+
+| Block                  | Description                    |
+| ---------------------- | ------------------------------ |
+| **SignInForm**         | Email/password sign in         |
+| **SignUpForm**         | Registration form              |
+| **ForgotPasswordForm** | Password reset request         |
+| **ResetPasswordForm**  | Set new password               |
+| **VerifyEmailForm**    | Email verification code input  |
+| **SocialConnections**  | OAuth provider buttons         |
+| **UserMenu**           | Avatar dropdown with user info |
+
+### Navigation
+
+| Block                 | Description                     |
+| --------------------- | ------------------------------- |
+| **Header**            | App header with title & actions |
+| **BottomNav**         | Bottom tab navigation           |
+| **FloatingBottomNav** | Floating bottom navigation      |
+| **TabBar**            | Horizontal tab bar              |
+| **DrawerMenu**        | Side drawer navigation          |
+
+### Layout
+
+| Block                | Description                   |
+| -------------------- | ----------------------------- |
+| **AppShell**         | Main app layout wrapper       |
+| **EmptyState**       | Empty content placeholder     |
+| **ErrorState**       | Error display with retry      |
+| **LoadingScreen**    | Full-screen loading indicator |
+| **OnboardingScreen** | Onboarding flow screen        |
+
+### Profile
+
+| Block               | Description                |
+| ------------------- | -------------------------- |
+| **ProfileHeader**   | User profile header        |
+| **AccountCard**     | Account info card          |
+| **SettingsItem**    | Settings list item         |
+| **SettingsSection** | Settings group with header |
+
+### Lists
+
+| Block                | Description                      |
+| -------------------- | -------------------------------- |
+| **ListItem**         | Standard list item               |
+| **NotificationItem** | Notification list item           |
+| **SwipeableItem**    | Swipeable list item with actions |
+
+### Commerce
+
+| Block               | Description                |
+| ------------------- | -------------------------- |
+| **ProductCard**     | Product display card       |
+| **PricingCard**     | Pricing tier card          |
+| **CheckoutSummary** | Order summary for checkout |
 
 ## Quick Start
 
@@ -48,17 +157,25 @@ whileui/
 │           ├── components/    # All components (copy these!)
 │           │   ├── button/
 │           │   ├── card/
-│           │   ├── input/
+│           │   ├── dialog/
 │           │   └── ...
+│           ├── blocks/        # Pre-built screens
+│           │   ├── auth/
+│           │   ├── navigation/
+│           │   ├── layout/
+│           │   ├── profile/
+│           │   ├── lists/
+│           │   └── commerce/
 │           ├── lib/           # Utilities
 │           │   ├── cn.ts      # clsx + tailwind-merge
-│           │   └── tv.ts      # tailwind-variants re-export
+│           │   ├── tv.ts      # tailwind-variants re-export
+│           │   └── font-context.ts
 │           └── index.ts       # Barrel export
 ├── apps/
 │   └── showcase/              # Expo demo app
 │       ├── App.tsx            # Component showcase
-│       ├── metro.config.js    # Uniwind + monorepo config
-│       └── src/global.css     # Theme variables (OKLCH)
+│       ├── global.css         # Theme variables (OKLCH) — at app root!
+│       └── metro.config.js    # Uniwind + monorepo config
 └── package.json               # pnpm monorepo root
 ```
 

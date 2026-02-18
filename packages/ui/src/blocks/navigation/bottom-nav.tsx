@@ -31,14 +31,12 @@ function BottomNavItemComponent({ item, isActive, className, ...props }: BottomN
   return (
     <Pressable
       className={cn(
-        'flex-1 items-center justify-center py-2',
-        isActive && 'opacity-100',
-        !isActive && 'opacity-60',
+        'flex-1 items-center justify-center py-2 active:opacity-70',
         className
       )}
       {...props}
     >
-      <View className="relative">
+      <View className={cn('relative', !isActive && 'opacity-50')}>
         {icon}
         {badge !== undefined && badge > 0 && (
           <View className="absolute -right-2 -top-1 h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1">
@@ -50,8 +48,8 @@ function BottomNavItemComponent({ item, isActive, className, ...props }: BottomN
       </View>
       <Text
         className={cn(
-          'mt-1 text-xs',
-          isActive ? 'font-semibold text-primary' : 'text-muted-foreground'
+          'mt-1 text-xs font-medium',
+          isActive ? 'text-primary' : 'text-muted-foreground'
         )}
       >
         {label}

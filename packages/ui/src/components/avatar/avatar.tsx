@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, Text, type ViewProps, type ImageProps, type TextProps } from 'react-native';
+import { View, Image, Text, type ViewProps, type ImageProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 

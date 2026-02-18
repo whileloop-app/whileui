@@ -166,17 +166,17 @@ const categories: { key: CategoryKey; label: string; icon: string }[] = [
 ];
 
 // Theme-aware icon colors (for @expo/vector-icons which need hex values)
-// Colors matched to Aurora/Glass global.css theme
+// Colors matched to Noir global.css theme
 const useIconColors = () => {
   const { theme } = useUniwind();
   const isDark = theme === 'dark';
   return {
-    foreground: isDark ? '#f5f5fa' : '#1e1e3a',
-    muted: isDark ? '#8888a0' : '#6a6a7a',
-    primary: isDark ? '#b4a0f0' : '#6840c6',
-    secondary: isDark ? '#a0d0e0' : '#2888a8',
-    accent: isDark ? '#88d8d0' : '#389090',
-    destructive: isDark ? '#ff4757' : '#dc2626',
+    foreground: isDark ? '#ffffff' : '#000000',
+    muted: isDark ? '#999999' : '#737373',
+    primary: isDark ? '#ffffff' : '#000000',
+    primaryForeground: isDark ? '#000000' : '#ffffff',
+    accent: isDark ? '#4ade80' : '#22c55e',
+    destructive: isDark ? '#ef4444' : '#dc2626',
   };
 };
 
@@ -287,9 +287,9 @@ function AppContent() {
 
               {/* ─── Stats Strip ──────────────────────── */}
               <View className="flex-row mt-4 gap-3">
-                <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-foreground">34</Text>
-                  <Text className="text-xs text-muted-foreground">Components</Text>
+                <View className="flex-1 bg-primary rounded-xl px-3 py-2.5">
+                  <Text className="text-2xl font-bold text-primary-foreground">34</Text>
+                  <Text className="text-xs text-primary-foreground/70">Components</Text>
                 </View>
                 <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
                   <Text className="text-2xl font-bold text-foreground">28</Text>
@@ -321,7 +321,7 @@ function AppContent() {
                     <Feather
                       name={cat.icon as any}
                       size={14}
-                      color={activeTab === cat.key ? '#fff' : colors.muted}
+                      color={activeTab === cat.key ? colors.primaryForeground : colors.muted}
                     />
                     <Text
                       className={cn(
@@ -495,6 +495,7 @@ function ComponentsTab() {
   const [radioVal, setRadioVal] = useState('option-1');
   const [selectVal, setSelectVal] = useState('');
   const { toast } = useToast();
+  const colors = useIconColors();
 
   React.useEffect(() => {
     const timer = setInterval(() => setProgress((p) => (p + 10) % 110), 1000);
@@ -560,6 +561,30 @@ function ComponentsTab() {
           </Button>
           <Button size="icon">
             <ButtonText>+</ButtonText>
+          </Button>
+        </View>
+        <Text className="text-sm font-medium text-muted-foreground mt-2">With Icons</Text>
+        <View className="flex-row flex-wrap gap-2">
+          <Button>
+            <ButtonIcon>
+              <Feather name="download" size={16} color={colors.primaryForeground} />
+            </ButtonIcon>
+            <ButtonText>Download</ButtonText>
+          </Button>
+          <Button variant="outline">
+            <ButtonIcon>
+              <Feather name="settings" size={16} color={colors.foreground} />
+            </ButtonIcon>
+            <ButtonText>Settings</ButtonText>
+          </Button>
+          <Button variant="secondary">
+            <ButtonText>Next</ButtonText>
+            <ButtonIcon position="right">
+              <Feather name="arrow-right" size={16} color={colors.foreground} />
+            </ButtonIcon>
+          </Button>
+          <Button size="icon" variant="outline">
+            <Feather name="heart" size={18} color={colors.foreground} />
           </Button>
         </View>
         <Button disabled>

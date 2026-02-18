@@ -30,7 +30,7 @@ function FloatingNavItem({ item, isActive, className, ...props }: FloatingBottom
   return (
     <Pressable
       className={cn(
-        'flex-row items-center gap-2 rounded-full px-4 py-2',
+        'flex-row items-center gap-2 rounded-full px-4 py-2 active:scale-95',
         isActive && 'bg-primary',
         className
       )}

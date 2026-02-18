@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Pressable, Image, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Badge, BadgeText } from '../../components/badge';

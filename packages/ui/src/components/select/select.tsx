@@ -1,10 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import {
-  View,
   Modal,
   Pressable,
   Text,
-  FlatList,
   type ViewProps,
   type TextProps,
   type PressableProps,

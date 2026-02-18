@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 

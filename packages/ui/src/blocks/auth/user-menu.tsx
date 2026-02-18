@@ -1,7 +1,6 @@
-import React from 'react';
 import { View } from 'react-native';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/avatar';
-import { Button, ButtonText } from '../../components/button';
+import { Avatar, AvatarFallback } from '../../components/avatar';
+import { Button } from '../../components/button';
 import {
   DropdownMenu,
   DropdownMenuContent,

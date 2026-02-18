@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
-import { tv, type VariantProps } from '../../lib/tv';
+import { tv } from '../../lib/tv';
 
 // ─── Context ─────────────────────────────────────────────────
 

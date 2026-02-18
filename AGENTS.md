@@ -4,7 +4,7 @@
 
 - Use **latest stable versions** of packages. Ask if unsure.
 - Run `pnpm format && pnpm tsc --noEmit` after changes. Fix errors before completing.
-- Update `README.md` when adding/removing features.
+- **Keep `README.md` current** — Update component tables and blocks list when adding/removing features. README is the source of truth for users.
 - Don't bloat the codebase.
 
 ## Uniwind Configuration
@@ -107,6 +107,25 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - Overlays (Dialog, Popover, Menus): `rounded-lg`
 - Controls (Button, Input, Select): `h-10`
 - Cards: `rounded-xl`
+
+### Touch Targets (Fitts's Law)
+
+- **Minimum 44px** for mobile touch targets — even if visually smaller
+- Icon-only buttons: `h-11 w-11` (44px)
+- Small buttons: `h-9` minimum (36px visual, use `hitSlop` if needed)
+
+### Preventing Layout Shift
+
+- **Never toggle font-weight** for active/inactive states — causes width jump
+- Use **color-only differentiation** (e.g., `text-primary` vs `text-muted-foreground`)
+- Keep `font-medium` constant across states
+
+### Press Feedback
+
+- Always provide tactile feedback on interactive elements
+- Buttons: `active:bg-*/90` (slight darken)
+- Nav items: `active:opacity-70`
+- Floating elements: `active:scale-95`
 
 ## Self-Improvement
 

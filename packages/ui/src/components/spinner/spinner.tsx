@@ -1,4 +1,3 @@
-import React from 'react';
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';

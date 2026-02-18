@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, Pressable, Animated, PanResponder, Dimensions, type ViewProps } from 'react-native';
+import { useRef } from 'react';
+import { View, Pressable, Animated, PanResponder, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 
@@ -86,7 +86,7 @@ export function SwipeableItem({
     <View className={cn('overflow-hidden', className)} {...props}>
       {/* Left Actions */}
       <View className="absolute bottom-0 left-0 top-0 flex-row">
-        {leftActions.map((action, index) => (
+        {leftActions.map((action, _index) => (
           <Pressable
             key={action.key}
             onPress={() => {
@@ -104,7 +104,7 @@ export function SwipeableItem({
 
       {/* Right Actions */}
       <View className="absolute bottom-0 right-0 top-0 flex-row">
-        {rightActions.map((action, index) => (
+        {rightActions.map((action, _index) => (
           <Pressable
             key={action.key}
             onPress={() => {

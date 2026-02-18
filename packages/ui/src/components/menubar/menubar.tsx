@@ -6,7 +6,6 @@ import {
   Text,
   type ViewProps,
   type PressableProps,
-  type TextProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
 

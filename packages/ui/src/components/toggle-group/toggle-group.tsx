@@ -8,7 +8,7 @@ import {
   type TextProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
-import { tv, type VariantProps } from '../../lib/tv';
+import { tv } from '../../lib/tv';
 
 // ─── Context ─────────────────────────────────────────────────
 

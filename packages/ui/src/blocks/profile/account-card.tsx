@@ -1,8 +1,6 @@
-import React from 'react';
-import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
+import { View, Pressable, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/avatar';
-import { Card } from '../../components/card';
 import { cn } from '../../lib/cn';
 
 // ─── Types ───────────────────────────────────────────────────

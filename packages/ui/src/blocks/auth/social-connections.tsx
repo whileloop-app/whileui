@@ -1,6 +1,4 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Button, ButtonText, ButtonIcon } from '../../components/button';
+import { Button, ButtonText } from '../../components/button';
 import {
   Card,
   CardContent,
