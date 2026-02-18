@@ -4,6 +4,8 @@
 
 Beautiful, accessible, themeable React Native components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4. Inspired by [shadcn/ui](https://ui.shadcn.com/).
 
+Current version: **0.1.1**
+
 ## Installation
 
 ```bash
@@ -12,19 +14,20 @@ npm install @whileloop-app/whileui
 pnpm add @whileloop-app/whileui
 ```
 
-### Peer Dependencies
+### Required Peer Dependencies
 
 ```bash
-npm install uniwind react-native-reanimated react-native-safe-area-context
+pnpm add react@^19.0.0 react-native@^0.81.0 uniwind@^1.0.0 tailwindcss@^4.0.0
+pnpm add react-native-reanimated react-native-safe-area-context react-native-screens
 ```
 
-### Portal Dependencies (Required for Select, Popover, Tooltip, HoverCard)
+### Portal Dependencies (Select, Popover, Tooltip, HoverCard)
 
 ```bash
-npm install @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
+pnpm add @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
 ```
 
-### Setup Uniwind
+### Setup Uniwind (required)
 
 1. **metro.config.js** (wrap with withUniwindConfig):
 
@@ -37,6 +40,8 @@ module.exports = withUniwindConfig({
   // your metro config
 });
 ```
+
+> `withUniwindConfig` must be the outermost wrapper. `cssEntryFile` must be a relative path string.
 
 2. **global.css** at app root:
 
@@ -172,18 +177,18 @@ function MyScreen() {
 
 ### Form Controls
 
-| Component       | Variants                                              | Notes                                                 |
-| --------------- | ----------------------------------------------------- | ----------------------------------------------------- |
-| **Button**      | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components       |
-| **Input**       | default, error                                        | TextInput wrapper with themed styling                 |
-| **Textarea**    | —                                                     | Multi-line text input                                 |
-| **Checkbox**    | —                                                     | Controlled/uncontrolled, accessibility roles          |
-| **Switch**      | —                                                     | Controlled/uncontrolled, accessibility roles          |
-| **RadioGroup**  | —                                                     | RadioGroup + RadioGroupItem                           |
+| Component       | Variants                                              | Notes                                                                                         |
+| --------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Button**      | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components                                               |
+| **Input**       | default, error                                        | TextInput wrapper with themed styling                                                         |
+| **Textarea**    | —                                                     | Multi-line text input                                                                         |
+| **Checkbox**    | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
+| **Switch**      | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
+| **RadioGroup**  | —                                                     | RadioGroup + RadioGroupItem                                                                   |
 | **Select**      | —                                                     | Uses `SelectOption` type `{value, label}`. Includes SelectGroup, SelectLabel, SelectSeparator |
-| **Label**       | —                                                     | Form field label                                      |
-| **Toggle**      | default, outline                                      | ToggleText sub-component                              |
-| **ToggleGroup** | single, multiple                                      | Group of toggle items                                 |
+| **Label**       | —                                                     | Form field label                                                                              |
+| **Toggle**      | default, outline                                      | ToggleText sub-component                                                                      |
+| **ToggleGroup** | single, multiple                                      | Group of toggle items                                                                         |
 
 ### Display
 
@@ -209,16 +214,16 @@ function MyScreen() {
 
 ### Overlays & Menus
 
-| Component        | Notes                                                                  |
-| ---------------- | ---------------------------------------------------------------------- |
-| **Dialog**       | Modal dialog with Header, Footer, Title, Description                   |
-| **AlertDialog**  | Confirmation dialog with Action/Cancel buttons                         |
-| **Popover**      | Position-aware popover (requires PortalHost)                           |
-| **Tooltip**      | Position-aware tooltip (requires PortalHost)                           |
-| **DropdownMenu** | DropdownMenuTrigger, Content, Item, Label, Separator                   |
-| **ContextMenu**  | Long-press context menu                                                |
-| **HoverCard**    | Position-aware hover card (requires PortalHost)                        |
-| **Menubar**      | Horizontal menu bar                                                    |
+| Component        | Notes                                                |
+| ---------------- | ---------------------------------------------------- |
+| **Dialog**       | Modal dialog with Header, Footer, Title, Description |
+| **AlertDialog**  | Confirmation dialog with Action/Cancel buttons       |
+| **Popover**      | Position-aware popover (requires PortalHost)         |
+| **Tooltip**      | Position-aware tooltip (requires PortalHost)         |
+| **DropdownMenu** | DropdownMenuTrigger, Content, Item, Label, Separator |
+| **ContextMenu**  | Long-press context menu                              |
+| **HoverCard**    | Position-aware hover card (requires PortalHost)      |
+| **Menubar**      | Horizontal menu bar                                  |
 
 ### Feedback
 
@@ -230,15 +235,64 @@ function MyScreen() {
 
 ### Auth
 
-| Block                  | Description                    |
-| ---------------------- | ------------------------------ |
-| **SignInForm**         | Email/password sign in         |
-| **SignUpForm**         | Registration form              |
-| **ForgotPasswordForm** | Password reset request         |
-| **ResetPasswordForm**  | Set new password               |
-| **VerifyEmailForm**    | Email verification code input  |
-| **SocialConnections**  | OAuth provider buttons         |
-| **UserMenu**           | Avatar dropdown with user info |
+| Block                  | Description                     |
+| ---------------------- | ------------------------------- |
+| **SignInForm**         | Email/password sign in          |
+| **SignUpForm**         | Registration form               |
+| **ForgotPasswordForm** | Password reset request          |
+| **ResetPasswordForm**  | Set new password                |
+| **VerifyEmailForm**    | Email verification code input   |
+| **SocialConnections**  | OAuth provider buttons          |
+| **UserMenu**           | Profile dropdown for auth flows |
+
+### Navigation
+
+| Block                 | Description                                |
+| --------------------- | ------------------------------------------ |
+| **AppShell**          | Layout shell with slots for navigation     |
+| **Header**            | Top app bar with back/actions              |
+| **BottomNav**         | Tab-style bottom navigation bar            |
+| **FloatingBottomNav** | Elevated bottom nav with safe area support |
+| **TabBar**            | Top tab bar with indicator                 |
+| **DrawerMenu**        | Drawer with sections and items             |
+
+### Lists
+
+| Block                | Description                          |
+| -------------------- | ------------------------------------ |
+| **ListItem**         | Title/subtitle row                   |
+| **NotificationItem** | Notification row with metadata       |
+| **SwipeableItem**    | Swipe actions (left/right) list item |
+
+### Commerce
+
+| Block               | Description                     |
+| ------------------- | ------------------------------- |
+| **ProductCard**     | Product card with badge/media   |
+| **PricingCard**     | Pricing tiers with feature list |
+| **CheckoutSummary** | Cart summary with line items    |
+
+### Profile & Settings
+
+| Block               | Description                         |
+| ------------------- | ----------------------------------- |
+| **ProfileHeader**   | Profile header with stats           |
+| **AccountCard**     | Account summary card                |
+| **SettingsSection** | Section header with optional action |
+| **SettingsItem**    | Row for toggles/links/settings      |
+
+### Splash & States
+
+| Block                | Description                    |
+| -------------------- | ------------------------------ |
+| **SplashScreen**     | Branded splash screen          |
+| **MinimalSplash**    | Minimal monochrome splash      |
+| **BrandedSplash**    | Splash with brand imagery      |
+| **OnboardingScreen** | Paged onboarding with slides   |
+| **LoadingScreen**    | Full-screen loading state      |
+| **EmptyState**       | Placeholder empty/content-less |
+| **ErrorState**       | Error message with action      |
+| **UserMenu**         | Avatar dropdown with user info |
 
 ### Navigation
 
