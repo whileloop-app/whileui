@@ -5,6 +5,7 @@
 - Use **latest stable versions** of packages. Ask if unsure.
 - Run `pnpm format && pnpm tsc --noEmit` after changes. Fix errors before completing.
 - **Keep `README.md` current** — Update component tables and blocks list when adding/removing features. README is the source of truth for users.
+- **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
 - Don't bloat the codebase.
 
 ## Uniwind Configuration

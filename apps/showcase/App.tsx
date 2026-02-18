@@ -3,6 +3,12 @@ import { View, ScrollView, Pressable, StatusBar, Dimensions } from 'react-native
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Uniwind, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import {
   useFonts,
   PlusJakartaSans_400Regular,
@@ -165,6 +171,51 @@ const categories: { key: CategoryKey; label: string; icon: string }[] = [
   { key: 'commerce', label: 'Commerce', icon: 'shopping-bag' },
 ];
 
+// ─── Haptic Feedback ─────────────────────────────────────────
+const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
+  switch (type) {
+    case 'light':
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      break;
+    case 'medium':
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      break;
+    case 'selection':
+      Haptics.selectionAsync();
+      break;
+  }
+};
+
+// ─── Animated Counter ────────────────────────────────────────
+function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?: number }) {
+  const animatedValue = useSharedValue(0);
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    animatedValue.value = withTiming(value, {
+      duration,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [value, duration]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const progress = animatedValue.value / value;
+      setDisplayValue(Math.round(animatedValue.value));
+      if (progress >= 0.99) {
+        setDisplayValue(value);
+        clearInterval(interval);
+      }
+    }, 16);
+    return () => clearInterval(interval);
+  }, [value]);
+
+  return <>{displayValue}</>;
+}
+
+// ─── Animated Pressable ──────────────────────────────────────
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 // Theme-aware icon colors (for @expo/vector-icons which need hex values)
 // Colors matched to Noir global.css theme
 const useIconColors = () => {
@@ -259,7 +310,10 @@ function AppContent() {
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3">
                   <Pressable
-                    onPress={() => setDrawerOpen(true)}
+                    onPress={() => {
+                      triggerHaptic('light');
+                      setDrawerOpen(true);
+                    }}
                     className="w-10 h-10 rounded-xl bg-muted items-center justify-center active:opacity-70"
                   >
                     <Feather name="menu" size={20} color={colors.foreground} />
@@ -274,7 +328,10 @@ function AppContent() {
                   </View>
                 </View>
                 <Pressable
-                  onPress={cycleTheme}
+                  onPress={() => {
+                    triggerHaptic('medium');
+                    cycleTheme();
+                  }}
                   className="w-10 h-10 rounded-xl bg-secondary items-center justify-center active:opacity-70"
                 >
                   <Feather
@@ -288,15 +345,21 @@ function AppContent() {
               {/* ─── Stats Strip ──────────────────────── */}
               <View className="flex-row mt-4 gap-3">
                 <View className="flex-1 bg-primary rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-primary-foreground">34</Text>
+                  <Text className="text-2xl font-bold text-primary-foreground">
+                    <AnimatedCounter value={34} duration={800} />
+                  </Text>
                   <Text className="text-xs text-primary-foreground/70">Components</Text>
                 </View>
                 <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-foreground">28</Text>
+                  <Text className="text-2xl font-bold text-foreground">
+                    <AnimatedCounter value={28} duration={1000} />
+                  </Text>
                   <Text className="text-xs text-muted-foreground">Blocks</Text>
                 </View>
                 <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-foreground">2</Text>
+                  <Text className="text-2xl font-bold text-foreground">
+                    <AnimatedCounter value={2} duration={600} />
+                  </Text>
                   <Text className="text-xs text-muted-foreground">Themes</Text>
                 </View>
               </View>
@@ -312,7 +375,10 @@ function AppContent() {
                 {categories.map((cat) => (
                   <Pressable
                     key={cat.key}
-                    onPress={() => setActiveTab(cat.key)}
+                    onPress={() => {
+                      triggerHaptic('selection');
+                      setActiveTab(cat.key);
+                    }}
                     className={cn(
                       'flex-row items-center gap-1.5 rounded-full px-4 py-2',
                       activeTab === cat.key ? 'bg-primary' : 'bg-muted'
