@@ -150,7 +150,7 @@ import {
   PricingCard,
   CheckoutSummary,
   cn,
-} from '@whileui/native';
+} from '@thewhileloop/whileui';
 
 type CategoryKey =
   | 'components'

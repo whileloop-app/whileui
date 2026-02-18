@@ -3,8 +3,8 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@whileui/native": ["../../packages/ui/src"],
-      "@whileui/native/*": ["../../packages/ui/src/*"]
+      "@thewhileloop/whileui": ["../../packages/ui/src"],
+      "@thewhileloop/whileui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [
