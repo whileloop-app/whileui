@@ -7,9 +7,9 @@ Beautiful, accessible, themeable React Native components built with [Uniwind](ht
 ## Installation
 
 ```bash
-npm install @whileui/native
+npm install @whileloop-app/whileui
 # or
-pnpm add @whileui/native
+pnpm add @whileloop-app/whileui
 ```
 
 ### Peer Dependencies
@@ -100,7 +100,7 @@ module.exports = withUniwindConfig({
 
 ```tsx
 import './global.css';
-import { Button, ButtonText } from '@whileui/native';
+import { Button, ButtonText } from '@whileloop-app/whileui';
 ```
 
 ## Usage
@@ -115,7 +115,7 @@ import {
   CardContent,
   Input,
   Text,
-} from '@whileui/native';
+} from '@whileloop-app/whileui';
 
 function MyScreen() {
   return (
@@ -377,7 +377,7 @@ MIT
 ## Button
 
 ```tsx
-import { Button, ButtonText, ButtonIcon } from '@whileui/native';
+import { Button, ButtonText, ButtonIcon } from '@whileloop-app/whileui';
 
 <Button variant="default" size="default" disabled={false} onPress={() => {}}>
   <ButtonIcon>
@@ -400,7 +400,7 @@ import { Button, ButtonText, ButtonIcon } from '@whileui/native';
 ## Input
 
 ```tsx
-import { Input } from '@whileui/native';
+import { Input } from '@whileloop-app/whileui';
 
 <Input placeholder="Email" variant="default" value={value} onChangeText={setValue} />;
 ```
@@ -421,7 +421,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@whileui/native';
+} from '@whileloop-app/whileui';
 
 <Card>
   <CardHeader>
@@ -436,7 +436,7 @@ import {
 ## Badge
 
 ```tsx
-import { Badge, BadgeText } from '@whileui/native';
+import { Badge, BadgeText } from '@whileloop-app/whileui';
 
 <Badge variant="default">
   <BadgeText>New</BadgeText>
@@ -450,7 +450,7 @@ import { Badge, BadgeText } from '@whileui/native';
 ## Alert
 
 ```tsx
-import { Alert, AlertTitle, AlertDescription } from '@whileui/native';
+import { Alert, AlertTitle, AlertDescription } from '@whileloop-app/whileui';
 
 <Alert variant="default">
   <AlertTitle>Heads up!</AlertTitle>
@@ -474,7 +474,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from '@whileui/native';
+} from '@whileloop-app/whileui';
 
 <Dialog>
   <DialogTrigger asChild>
@@ -512,7 +512,7 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
   AlertDialogCancel,
-} from '@whileui/native';
+} from '@whileloop-app/whileui';
 
 <AlertDialog>
   <AlertDialogTrigger asChild>
@@ -536,7 +536,7 @@ import {
 ## Checkbox
 
 ```tsx
-import { Checkbox } from '@whileui/native';
+import { Checkbox } from '@whileloop-app/whileui';
 
 <Checkbox checked={checked} onCheckedChange={setChecked} />;
 ```
@@ -550,7 +550,7 @@ import { Checkbox } from '@whileui/native';
 ## Switch
 
 ```tsx
-import { Switch } from '@whileui/native';
+import { Switch } from '@whileloop-app/whileui';
 
 <Switch checked={checked} onCheckedChange={setChecked} />;
 ```
@@ -563,7 +563,7 @@ import { Switch } from '@whileui/native';
 ## RadioGroup
 
 ```tsx
-import { RadioGroup, RadioGroupItem } from '@whileui/native';
+import { RadioGroup, RadioGroupItem } from '@whileloop-app/whileui';
 
 <RadioGroup value={value} onValueChange={setValue}>
   <RadioGroupItem value="option1" />
@@ -574,7 +574,7 @@ import { RadioGroup, RadioGroupItem } from '@whileui/native';
 ## Select
 
 ```tsx
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@whileui/native';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@whileloop-app/whileui';
 
 <Select value={value} onValueChange={setValue}>
   <SelectTrigger>
@@ -590,7 +590,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 ## Tabs
 
 ```tsx
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@whileui/native';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@whileloop-app/whileui';
 
 <Tabs defaultValue="tab1">
   <TabsList>
@@ -609,7 +609,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@whileui/native';
 ## Accordion
 
 ```tsx
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@whileui/native';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@whileloop-app/whileui';
 
 <Accordion type="single" collapsible>
   <AccordionItem value="item1">
@@ -631,7 +631,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@w
 ## Avatar
 
 ```tsx
-import { Avatar, AvatarImage, AvatarFallback } from '@whileui/native';
+import { Avatar, AvatarImage, AvatarFallback } from '@whileloop-app/whileui';
 
 <Avatar size="default">
   <AvatarImage src="https://..." />
@@ -646,7 +646,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@whileui/native';
 ## Progress
 
 ```tsx
-import { Progress } from '@whileui/native';
+import { Progress } from '@whileloop-app/whileui';
 
 <Progress value={50} size="default" />;
 ```
@@ -659,7 +659,7 @@ import { Progress } from '@whileui/native';
 ## Toast
 
 ```tsx
-import { ToastProvider, ToastContainer, useToast } from '@whileui/native';
+import { ToastProvider, ToastContainer, useToast } from '@whileloop-app/whileui';
 
 // Wrap app
 <ToastProvider>
@@ -682,7 +682,7 @@ toast({ title: 'Success', description: 'Saved!', variant: 'success' });
 ## Popover
 
 ```tsx
-import { Popover, PopoverTrigger, PopoverContent } from '@whileui/native';
+import { Popover, PopoverTrigger, PopoverContent } from '@whileloop-app/whileui';
 
 <Popover>
   <PopoverTrigger asChild>
@@ -706,7 +706,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-} from '@whileui/native';
+} from '@whileloop-app/whileui';
 
 <DropdownMenu>
   <DropdownMenuTrigger asChild>
@@ -734,7 +734,7 @@ import {
 ## SignInForm
 
 ```tsx
-import { SignInForm } from '@whileui/native';
+import { SignInForm } from '@whileloop-app/whileui';
 
 <SignInForm onSubmit={(email, password) => {}} onForgotPassword={() => {}} onSignUp={() => {}} />;
 ```
@@ -742,7 +742,7 @@ import { SignInForm } from '@whileui/native';
 ## SignUpForm
 
 ```tsx
-import { SignUpForm } from '@whileui/native';
+import { SignUpForm } from '@whileloop-app/whileui';
 
 <SignUpForm onSubmit={(name, email, password) => {}} onSignIn={() => {}} />;
 ```
@@ -750,7 +750,7 @@ import { SignUpForm } from '@whileui/native';
 ## BottomNav
 
 ```tsx
-import { BottomNav } from '@whileui/native';
+import { BottomNav } from '@whileloop-app/whileui';
 
 <BottomNav
   items={[
@@ -765,7 +765,7 @@ import { BottomNav } from '@whileui/native';
 ## Header
 
 ```tsx
-import { Header, HeaderBackButton } from '@whileui/native';
+import { Header, HeaderBackButton } from '@whileloop-app/whileui';
 
 <Header
   title="Settings"
@@ -778,7 +778,7 @@ import { Header, HeaderBackButton } from '@whileui/native';
 ## SplashScreen
 
 ```tsx
-import { SplashScreen } from '@whileui/native';
+import { SplashScreen } from '@whileloop-app/whileui';
 
 <SplashScreen
   logo={<MyLogo />}
@@ -800,7 +800,7 @@ import { SplashScreen } from '@whileui/native';
 ## EmptyState
 
 ```tsx
-import { EmptyState } from '@whileui/native';
+import { EmptyState } from '@whileloop-app/whileui';
 
 <EmptyState
   icon={<Icon />}
@@ -813,7 +813,7 @@ import { EmptyState } from '@whileui/native';
 ## ProfileHeader
 
 ```tsx
-import { ProfileHeader } from '@whileui/native';
+import { ProfileHeader } from '@whileloop-app/whileui';
 
 <ProfileHeader
   name="John Doe"
@@ -833,7 +833,7 @@ import { ProfileHeader } from '@whileui/native';
 ## SettingsSection / SettingsItem
 
 ```tsx
-import { SettingsSection, SettingsItem } from '@whileui/native';
+import { SettingsSection, SettingsItem } from '@whileloop-app/whileui';
 
 <SettingsSection title="Preferences">
   <SettingsItem
@@ -851,7 +851,7 @@ import { SettingsSection, SettingsItem } from '@whileui/native';
 ## ProductCard
 
 ```tsx
-import { ProductCard } from '@whileui/native';
+import { ProductCard } from '@whileloop-app/whileui';
 
 <ProductCard
   title="Product Name"
@@ -872,7 +872,7 @@ import { ProductCard } from '@whileui/native';
 ## PricingCard
 
 ```tsx
-import { PricingCard } from '@whileui/native';
+import { PricingCard } from '@whileloop-app/whileui';
 
 <PricingCard
   name="Pro"
@@ -893,7 +893,7 @@ import { PricingCard } from '@whileui/native';
 ## DrawerMenu
 
 ```tsx
-import { DrawerMenu } from '@whileui/native';
+import { DrawerMenu } from '@whileloop-app/whileui';
 
 <DrawerMenu
   visible={open}
