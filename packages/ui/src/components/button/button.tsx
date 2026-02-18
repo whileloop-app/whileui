@@ -90,6 +90,7 @@ export interface ButtonTextProps extends TextProps {
 
 export interface ButtonIconProps extends ViewProps {
   className?: string;
+  position?: 'left' | 'right';
 }
 
 // ─── Components ──────────────────────────────────────────────

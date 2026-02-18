@@ -122,7 +122,12 @@ function AccordionTrigger({ className, children, ...props }: AccordionTriggerPro
       {...props}
     >
       {children}
-      <View className={cn('border-foreground h-2 w-2 rotate-45 border-b-2 border-r-2 transition-transform', isOpen && 'rotate-[225deg]')} />
+      <View
+        className={cn(
+          'border-foreground h-2 w-2 rotate-45 border-b-2 border-r-2 transition-transform',
+          isOpen && 'rotate-[225deg]'
+        )}
+      />
     </Pressable>
   );
 }

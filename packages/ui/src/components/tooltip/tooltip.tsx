@@ -13,13 +13,15 @@ export interface TooltipProps {
   children: React.ReactNode;
 }
 
-export interface TooltipTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> {
+export interface TooltipTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof TooltipPrimitive.Trigger
+> {
   className?: string;
 }
 
-export interface TooltipContentProps
-  extends React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> {
+export interface TooltipContentProps extends React.ComponentPropsWithoutRef<
+  typeof TooltipPrimitive.Content
+> {
   className?: string;
   portalHost?: string;
 }

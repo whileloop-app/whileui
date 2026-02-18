@@ -10,28 +10,29 @@ export interface PopoverProps {
   children: React.ReactNode;
 }
 
-export interface PopoverTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger> {
+export interface PopoverTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverPrimitive.Trigger
+> {
   className?: string;
 }
 
-export interface PopoverContentProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> {
+export interface PopoverContentProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverPrimitive.Content
+> {
   className?: string;
   portalHost?: string;
 }
 
-export interface PopoverCloseProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Close> {
+export interface PopoverCloseProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverPrimitive.Close
+> {
   className?: string;
 }
 
 // ─── Components ──────────────────────────────────────────────
 
 function Popover({ onOpenChange, children }: PopoverProps) {
-  return (
-    <PopoverPrimitive.Root onOpenChange={onOpenChange}>{children}</PopoverPrimitive.Root>
-  );
+  return <PopoverPrimitive.Root onOpenChange={onOpenChange}>{children}</PopoverPrimitive.Root>;
 }
 
 const PopoverTrigger = React.forwardRef<

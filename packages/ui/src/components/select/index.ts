@@ -16,6 +16,7 @@ export {
   type SelectValueProps,
   type SelectContentProps,
   type SelectItemProps,
+  type SelectItemIconProps,
   type SelectGroupProps,
   type SelectLabelProps,
   type SelectSeparatorProps,

@@ -105,11 +105,7 @@ function SelectValue({
   const { value } = SelectPrimitive.useRootContext();
   return (
     <SelectPrimitive.Value
-      className={cn(
-        'text-foreground text-base',
-        !value && 'text-muted-foreground',
-        className
-      )}
+      className={cn('text-foreground text-base', !value && 'text-muted-foreground', className)}
       placeholder={placeholder}
       {...props}
     />
@@ -119,48 +115,35 @@ function SelectValue({
 const SelectContent = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Content>,
   SelectContentProps
->(
-  (
-    {
-      className,
-      children,
-      portalHost,
-      position = 'popper',
-      insets,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <SelectPrimitive.Portal hostName={portalHost}>
-        <FullWindowOverlay>
-          <SelectPrimitive.Overlay
-            style={Platform.select({ native: StyleSheet.absoluteFill })}
+>(({ className, children, portalHost, position = 'popper', insets, ...props }, ref) => {
+  return (
+    <SelectPrimitive.Portal hostName={portalHost}>
+      <FullWindowOverlay>
+        <SelectPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
+          <SelectPrimitive.Content
+            ref={ref}
+            position={position}
+            insets={insets}
+            className={cn(
+              'bg-popover border-border relative z-50 min-w-32 rounded-xl border shadow-lg',
+              Platform.select({
+                web: cn(
+                  'max-h-96 overflow-y-auto overflow-x-hidden',
+                  props.side === 'bottom' && 'translate-y-1',
+                  props.side === 'top' && '-translate-y-1'
+                ),
+                native: 'p-1',
+              }),
+              className
+            )}
+            {...props}
           >
-            <SelectPrimitive.Content
-              ref={ref}
-              position={position}
-              insets={insets}
+            <SelectPrimitive.Viewport
               className={cn(
-                'bg-popover border-border relative z-50 min-w-32 rounded-xl border shadow-lg',
-                Platform.select({
-                  web: cn(
-                    'max-h-96 overflow-y-auto overflow-x-hidden',
-                    props.side === 'bottom' && 'translate-y-1',
-                    props.side === 'top' && '-translate-y-1'
-                  ),
-                  native: 'p-1',
-                }),
-                className
-              )}
-              {...props}
-            >
-              <SelectPrimitive.Viewport
-                className={cn(
-                  'p-1',
-                  position === 'popper' &&
-                    Platform.select({
-                      web: 'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
+                'p-1',
+                position === 'popper' &&
+                  Platform.select({
+                    web: 'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
                   })
               )}
             >
@@ -168,11 +151,10 @@ const SelectContent = React.forwardRef<
             </SelectPrimitive.Viewport>
           </SelectPrimitive.Content>
         </SelectPrimitive.Overlay>
-        </FullWindowOverlay>
-      </SelectPrimitive.Portal>
-    );
-  }
-);
+      </FullWindowOverlay>
+    </SelectPrimitive.Portal>
+  );
+});
 SelectContent.displayName = 'SelectContent';
 
 const SelectItem = React.forwardRef<

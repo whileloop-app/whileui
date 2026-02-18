@@ -12,25 +12,22 @@ export interface HoverCardProps {
   children: React.ReactNode;
 }
 
-export interface HoverCardTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Trigger> {
+export interface HoverCardTriggerProps extends React.ComponentPropsWithoutRef<
+  typeof HoverCardPrimitive.Trigger
+> {
   className?: string;
 }
 
-export interface HoverCardContentProps
-  extends React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content> {
+export interface HoverCardContentProps extends React.ComponentPropsWithoutRef<
+  typeof HoverCardPrimitive.Content
+> {
   className?: string;
   portalHost?: string;
 }
 
 // ─── Components ──────────────────────────────────────────────
 
-function HoverCard({
-  onOpenChange,
-  openDelay,
-  closeDelay,
-  children,
-}: HoverCardProps) {
+function HoverCard({ onOpenChange, openDelay, closeDelay, children }: HoverCardProps) {
   return (
     <HoverCardPrimitive.Root
       onOpenChange={onOpenChange}
