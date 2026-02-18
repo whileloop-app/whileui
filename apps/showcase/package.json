@@ -20,7 +20,7 @@
     "@rn-primitives/select": "^1.2.0",
     "@rn-primitives/slot": "^1.2.0",
     "@rn-primitives/tooltip": "^1.2.0",
-    "@whileloop-app/whileui": "workspace:*",
+    "@thewhileloop/whileui": "workspace:*",
     "clsx": "^2.1.0",
     "expo": "~54.0.33",
     "expo-blur": "^15.0.8",

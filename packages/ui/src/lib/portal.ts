@@ -6,7 +6,7 @@
  *
  * @example
  * ```tsx
- * import { PortalHost } from '@whileloop-app/whileui';
+ * import { PortalHost } from '@thewhileloop/whileui';
  *
  * export default function App() {
  *   return (
