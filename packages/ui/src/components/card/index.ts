@@ -5,6 +5,7 @@ export {
   CardDescription,
   CardContent,
   CardFooter,
+  cardVariants,
   type CardProps,
   type CardHeaderProps,
   type CardTitleProps,

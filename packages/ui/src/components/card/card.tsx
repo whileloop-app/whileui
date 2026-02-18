@@ -1,20 +1,39 @@
 import React from 'react';
 import { View, Text, type ViewProps, type TextProps } from 'react-native';
 import { cn } from '../../lib/cn';
+import { tv, type VariantProps } from '../../lib/tv';
 
 // ─── Card ────────────────────────────────────────────────────
 
-export interface CardProps extends ViewProps {}
-
-const Card = React.forwardRef<View, CardProps>(({ className, ...props }, ref) => {
-  return (
-    <View
-      ref={ref}
-      className={cn('rounded-xl border border-border bg-card', className)}
-      {...props}
-    />
-  );
+const cardVariants = tv({
+  base: 'rounded-xl border border-border bg-card',
+  variants: {
+    padding: {
+      none: 'p-0',
+      sm: 'p-4',
+      default: 'p-6',
+      lg: 'p-8',
+    },
+    unstyled: {
+      true: 'rounded-none border-0 bg-transparent shadow-none',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    padding: 'default',
+    unstyled: false,
+  },
 });
+
+export interface CardProps extends ViewProps, VariantProps<typeof cardVariants> {}
+
+const Card = React.forwardRef<View, CardProps>(
+  ({ className, padding, unstyled, ...props }, ref) => {
+    return (
+      <View ref={ref} className={cn(cardVariants({ padding, unstyled }), className)} {...props} />
+    );
+  }
+);
 
 Card.displayName = 'Card';
 
@@ -23,7 +42,7 @@ Card.displayName = 'Card';
 export interface CardHeaderProps extends ViewProps {}
 
 const CardHeader = React.forwardRef<View, CardHeaderProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('p-6 pb-2', className)} {...props} />;
+  return <View ref={ref} className={cn('pb-2', className)} {...props} />;
 });
 
 CardHeader.displayName = 'CardHeader';
@@ -61,7 +80,7 @@ CardDescription.displayName = 'CardDescription';
 export interface CardContentProps extends ViewProps {}
 
 const CardContent = React.forwardRef<View, CardContentProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('p-6 pt-0', className)} {...props} />;
+  return <View ref={ref} className={cn('pt-0', className)} {...props} />;
 });
 
 CardContent.displayName = 'CardContent';
@@ -71,11 +90,11 @@ CardContent.displayName = 'CardContent';
 export interface CardFooterProps extends ViewProps {}
 
 const CardFooter = React.forwardRef<View, CardFooterProps>(({ className, ...props }, ref) => {
-  return <View ref={ref} className={cn('flex-row items-center p-6 pt-0', className)} {...props} />;
+  return <View ref={ref} className={cn('flex-row items-center pt-0', className)} {...props} />;
 });
 
 CardFooter.displayName = 'CardFooter';
 
 // ─── Exports ─────────────────────────────────────────────────
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, cardVariants };

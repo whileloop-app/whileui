@@ -3,6 +3,18 @@ export { cn } from './lib/cn';
 export { tv, type VariantProps } from './lib/tv';
 export { FontProvider, type FontFamilyMap } from './lib/font-context';
 export { PortalHost } from './lib/portal';
+export {
+  ThemeBridge,
+  applyThemeMode,
+  resolveThemeMode,
+  syncThemeMode,
+  useThemeBridge,
+  type ThemeMode,
+  type ThemeBridgeAdapter,
+  type ThemeBridgeProps,
+  type UseThemeBridgeOptions,
+  type UseThemeBridgeResult,
+} from './lib/theme-bridge';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';
@@ -28,6 +40,7 @@ export {
   CardDescription,
   CardContent,
   CardFooter,
+  cardVariants,
   type CardProps,
   type CardHeaderProps,
   type CardTitleProps,
@@ -37,6 +50,32 @@ export {
 } from './components/card';
 
 export { Input, inputVariants, type InputProps } from './components/input';
+export {
+  NumericInput,
+  numericInputVariants,
+  numericInputTextVariants,
+  type NumericInputProps,
+} from './components/numeric-input';
+export {
+  FormField,
+  FormLabel,
+  FormControl,
+  FormHint,
+  FormMessage,
+  formFieldVariants,
+  formControlVariants,
+  type FormFieldProps,
+  type FormLabelProps,
+  type FormControlProps,
+  type FormHintProps,
+  type FormMessageProps,
+} from './components/form-field';
+export {
+  LabeledField,
+  LabeledFieldControl,
+  type LabeledFieldProps,
+  type LabeledFieldControlProps,
+} from './components/labeled-field';
 
 export {
   Badge,
@@ -197,6 +236,34 @@ export {
   type ToggleGroupItemProps,
   type ToggleGroupItemTextProps,
 } from './components/toggle-group';
+export {
+  SegmentedControl,
+  SegmentedControlItem,
+  SegmentedControlItemText,
+  segmentedControlVariants,
+  segmentedControlItemVariants,
+  segmentedControlItemTextVariants,
+  type SegmentedControlProps,
+  type SegmentedControlItemProps,
+  type SegmentedControlItemTextProps,
+} from './components/segmented-control';
+export {
+  DataRow,
+  DataRowLeft,
+  DataRowCenter,
+  DataRowRight,
+  DataRowLabel,
+  DataRowDescription,
+  DataRowValue,
+  dataRowVariants,
+  type DataRowProps,
+  type DataRowLeftProps,
+  type DataRowCenterProps,
+  type DataRowRightProps,
+  type DataRowLabelProps,
+  type DataRowDescriptionProps,
+  type DataRowValueProps,
+} from './components/data-row';
 
 export {
   Popover,

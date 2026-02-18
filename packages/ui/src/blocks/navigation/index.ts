@@ -18,3 +18,9 @@ export {
   type DrawerMenuSection,
   type DrawerMenuProps,
 } from './drawer-menu';
+export {
+  NavigationSidebar,
+  type NavigationSidebarItem,
+  type NavigationSidebarSection,
+  type NavigationSidebarProps,
+} from './navigation-sidebar';

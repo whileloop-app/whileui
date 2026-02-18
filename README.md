@@ -4,7 +4,7 @@
 
 Beautiful, accessible, themeable React Native components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4. Inspired by [shadcn/ui](https://ui.shadcn.com/).
 
-Current version: **0.1.2**
+Current version: **0.2.0**
 
 ## Installation
 
@@ -177,27 +177,32 @@ function MyScreen() {
 
 ### Form Controls
 
-| Component       | Variants                                              | Notes                                                                                         |
-| --------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Button**      | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components                                               |
-| **Input**       | default, error                                        | TextInput wrapper with themed styling                                                         |
-| **Textarea**    | —                                                     | Multi-line text input                                                                         |
-| **Checkbox**    | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
-| **Switch**      | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
-| **RadioGroup**  | —                                                     | RadioGroup + RadioGroupItem                                                                   |
-| **Select**      | —                                                     | Uses `SelectOption` type `{value, label}`. Includes SelectGroup, SelectLabel, SelectSeparator |
-| **Label**       | —                                                     | Form field label                                                                              |
-| **Toggle**      | default, outline                                      | ToggleText sub-component                                                                      |
-| **ToggleGroup** | single, multiple                                      | Group of toggle items                                                                         |
+| Component            | Variants                                              | Notes                                                                                         |
+| -------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Button**           | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components                                               |
+| **Input**            | default, error                                        | TextInput wrapper with themed styling                                                         |
+| **NumericInput**     | default, error                                        | Numeric input with prefix/suffix slots, optional steppers, and compact size                   |
+| **FormField**        | default, compact                                      | Compound API: FormField, FormLabel, FormControl, FormHint, FormMessage                        |
+| **LabeledField**     | default, compact                                      | Field wrapper with label/helper/error plus left/right slots                                   |
+| **Textarea**         | —                                                     | Multi-line text input                                                                         |
+| **Checkbox**         | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
+| **Switch**           | —                                                     | Controlled/uncontrolled, accessibility roles                                                  |
+| **RadioGroup**       | —                                                     | RadioGroup + RadioGroupItem                                                                   |
+| **Select**           | —                                                     | Uses `SelectOption` type `{value, label}`. Includes SelectGroup, SelectLabel, SelectSeparator |
+| **Label**            | —                                                     | Form field label                                                                              |
+| **SegmentedControl** | single select                                         | SegmentedControl, SegmentedControlItem, SegmentedControlItemText with wrapping layout support |
+| **Toggle**           | default, outline                                      | ToggleText sub-component                                                                      |
+| **ToggleGroup**      | single, multiple                                      | Group of toggle items                                                                         |
 
 ### Display
 
 | Component       | Variants                                          | Notes                                                                           |
 | --------------- | ------------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Card**        | —                                                 | Compound: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter |
+| **Card**        | padding (none, sm, default, lg), unstyled         | Compound: Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter |
 | **Badge**       | default, secondary, destructive, outline, success | BadgeText sub-component                                                         |
 | **Alert**       | default, destructive, success, warning            | AlertTitle & AlertDescription                                                   |
 | **Avatar**      | sm, default, lg                                   | AvatarImage + AvatarFallback                                                    |
+| **DataRow**     | default, compact                                  | DataRow, DataRowLeft/Center/Right, DataRowLabel/Description/Value               |
 | **Separator**   | horizontal, vertical                              | Themed divider                                                                  |
 | **Progress**    | sm, default, lg                                   | Value-based progress bar with accessibility                                     |
 | **Spinner**     | sm, default, lg                                   | ActivityIndicator wrapper                                                       |
@@ -247,14 +252,15 @@ function MyScreen() {
 
 ### Navigation
 
-| Block                 | Description                                |
-| --------------------- | ------------------------------------------ |
-| **AppShell**          | Layout shell with slots for navigation     |
-| **Header**            | Top app bar with back/actions              |
-| **BottomNav**         | Tab-style bottom navigation bar            |
-| **FloatingBottomNav** | Elevated bottom nav with safe area support |
-| **TabBar**            | Top tab bar with indicator                 |
-| **DrawerMenu**        | Drawer with sections and items             |
+| Block                 | Description                                       |
+| --------------------- | ------------------------------------------------- |
+| **AppShell**          | Layout shell with slots for navigation            |
+| **NavigationSidebar** | Sidebar nav with grouped sections and footer slot |
+| **Header**            | Top app bar with back/actions                     |
+| **BottomNav**         | Tab-style bottom navigation bar                   |
+| **FloatingBottomNav** | Elevated bottom nav with safe area support        |
+| **TabBar**            | Top tab bar with indicator                        |
+| **DrawerMenu**        | Drawer with sections and items                    |
 
 ### Lists
 
@@ -296,23 +302,26 @@ function MyScreen() {
 
 ### Navigation
 
-| Block                 | Description                     |
-| --------------------- | ------------------------------- |
-| **Header**            | App header with title & actions |
-| **BottomNav**         | Bottom tab navigation           |
-| **FloatingBottomNav** | Floating bottom navigation      |
-| **TabBar**            | Horizontal tab bar              |
-| **DrawerMenu**        | Side drawer navigation          |
+| Block                 | Description                       |
+| --------------------- | --------------------------------- |
+| **NavigationSidebar** | Sidebar nav with grouped sections |
+| **Header**            | App header with title & actions   |
+| **BottomNav**         | Bottom tab navigation             |
+| **FloatingBottomNav** | Floating bottom navigation        |
+| **TabBar**            | Horizontal tab bar                |
+| **DrawerMenu**        | Side drawer navigation            |
 
 ### Layout
 
-| Block                | Description                   |
-| -------------------- | ----------------------------- |
-| **AppShell**         | Main app layout wrapper       |
-| **EmptyState**       | Empty content placeholder     |
-| **ErrorState**       | Error display with retry      |
-| **LoadingScreen**    | Full-screen loading indicator |
-| **OnboardingScreen** | Onboarding flow screen        |
+| Block                  | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| **AppShell**           | Main app layout wrapper                         |
+| **ActionBar**          | Sticky bottom action row with safe-area padding |
+| **ConfirmActionSheet** | Reusable destructive confirmation sheet         |
+| **EmptyState**         | Empty content placeholder                       |
+| **ErrorState**         | Error display with retry                        |
+| **LoadingScreen**      | Full-screen loading indicator                   |
+| **OnboardingScreen**   | Onboarding flow screen                          |
 
 ### Splash
 
@@ -368,6 +377,10 @@ whileui/
 │           ├── components/    # All components (copy these!)
 │           │   ├── button/
 │           │   ├── card/
+│           │   ├── form-field/
+│           │   ├── numeric-input/
+│           │   ├── segmented-control/
+│           │   ├── data-row/
 │           │   ├── dialog/
 │           │   └── ...
 │           ├── blocks/        # Pre-built screens
@@ -380,7 +393,8 @@ whileui/
 │           ├── lib/           # Utilities
 │           │   ├── cn.ts      # clsx + tailwind-merge
 │           │   ├── tv.ts      # tailwind-variants re-export
-│           │   └── font-context.ts
+│           │   ├── font-context.ts
+│           │   └── theme-bridge.ts
 │           └── index.ts       # Barrel export
 ├── apps/
 │   └── showcase/              # Expo demo app
@@ -408,12 +422,63 @@ Themes are defined in `global.css` using CSS variables with OKLCH colors:
 }
 ```
 
+### Token Contract (Release Baseline)
+
+The WhileUI token contract is strict for cross-app reuse. Define these in **every** theme variant (`@variant light`, `@variant dark`, and custom variants):
+
+- Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
+- Optional status tokens: `success`, `success-foreground`, `warning`, `warning-foreground`, `info`, `info-foreground`
+- Optional scale tokens: spacing (`--spacing`, `--spacing-*`), typography (`--text-*`, `--leading-*`, `--tracking-*`), radius (`--radius-*`), elevation (`--shadow-*`)
+
+Minimal contract example:
+
+```css
+@layer theme {
+  :root {
+    @variant light {
+      --color-background: oklch(1 0 0);
+      --color-foreground: oklch(0.15 0 0);
+      --color-card: oklch(1 0 0);
+      --color-card-foreground: oklch(0.15 0 0);
+      --color-primary: oklch(0.2 0 0);
+      --color-primary-foreground: oklch(0.98 0 0);
+      --color-secondary: oklch(0.95 0 0);
+      --color-secondary-foreground: oklch(0.15 0 0);
+      --color-muted: oklch(0.95 0 0);
+      --color-muted-foreground: oklch(0.45 0 0);
+      --color-accent: oklch(0.9 0.05 180);
+      --color-accent-foreground: oklch(0.15 0 0);
+      --color-destructive: oklch(0.58 0.2 26);
+      --color-destructive-foreground: oklch(0.98 0 0);
+      --color-border: oklch(0.9 0 0);
+      --color-input: oklch(0.92 0 0);
+      --color-ring: oklch(0.22 0 0);
+    }
+  }
+}
+```
+
 Switch themes at runtime via Uniwind:
 
 ```tsx
 import { Uniwind } from 'uniwind';
 
 Uniwind.setTheme('dark'); // or 'light' or 'system'
+```
+
+Or use the first-party ThemeBridge helper with optional persistence:
+
+```tsx
+import { useThemeBridge, type ThemeBridgeAdapter } from '@thewhileloop/whileui';
+
+const adapter: ThemeBridgeAdapter = {
+  loadThemeMode: async () => 'system',
+  saveThemeMode: async (mode) => {
+    await storage.setItem('theme-mode', mode);
+  },
+};
+
+const { mode, resolvedTheme, setMode, cycleMode } = useThemeBridge({ adapter });
 ```
 
 ## Using Components
@@ -483,6 +548,124 @@ import { Input } from '@thewhileloop/whileui';
 | placeholder | `string`               | —           | Placeholder text          |
 | editable    | `boolean`              | `true`      | Whether input is editable |
 
+## NumericInput
+
+```tsx
+import { NumericInput } from '@thewhileloop/whileui';
+
+<NumericInput
+  value={amount}
+  onValueChange={setAmount}
+  prefix={<Text className="text-muted-foreground">$</Text>}
+  suffix={<Text className="text-muted-foreground">USD</Text>}
+  min={0}
+  step={0.5}
+  showSteppers
+  size="compact"
+/>;
+```
+
+| Prop            | Type                              | Default     | Description                       |
+| --------------- | --------------------------------- | ----------- | --------------------------------- |
+| variant         | `'default' \| 'error'`            | `'default'` | Input style                       |
+| size            | `'default' \| 'compact'`          | `'default'` | Density size                      |
+| value           | `number \| null`                  | —           | Controlled numeric value          |
+| onValueChange   | `(value: number \| null) => void` | —           | Numeric value change callback     |
+| prefix / suffix | `ReactNode`                       | —           | Left/right slots                  |
+| showSteppers    | `boolean`                         | `false`     | Show decrement/increment controls |
+
+## FormField
+
+```tsx
+import {
+  FormField,
+  FormLabel,
+  FormControl,
+  FormHint,
+  FormMessage,
+  Input,
+} from '@thewhileloop/whileui';
+
+<FormField required invalid={Boolean(error)}>
+  <FormLabel>Email</FormLabel>
+  <FormControl>
+    <Input placeholder="you@example.com" />
+  </FormControl>
+  {error ? <FormMessage>{error}</FormMessage> : <FormHint>We'll never share your email.</FormHint>}
+</FormField>;
+```
+
+## LabeledField
+
+```tsx
+import { LabeledField, LabeledFieldControl, Input } from '@thewhileloop/whileui';
+
+<LabeledField
+  label="Username"
+  hint="3-20 characters"
+  leftSlot={<Icon />}
+  rightSlot={
+    <Button size="sm">
+      <ButtonText>Check</ButtonText>
+    </Button>
+  }
+>
+  <LabeledFieldControl>
+    <Input className="border-0 bg-transparent px-0" />
+  </LabeledFieldControl>
+</LabeledField>;
+```
+
+## SegmentedControl
+
+```tsx
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+  SegmentedControlItemText,
+} from '@thewhileloop/whileui';
+
+<SegmentedControl value={unit} onValueChange={setUnit} wrap>
+  <SegmentedControlItem value="metric">
+    <SegmentedControlItemText>Metric</SegmentedControlItemText>
+  </SegmentedControlItem>
+  <SegmentedControlItem value="imperial">
+    <SegmentedControlItemText>Imperial</SegmentedControlItemText>
+  </SegmentedControlItem>
+</SegmentedControl>;
+```
+
+## DataRow
+
+```tsx
+import {
+  DataRow,
+  DataRowLeft,
+  DataRowCenter,
+  DataRowRight,
+  DataRowLabel,
+  DataRowDescription,
+  DataRowValue,
+  Avatar,
+  AvatarFallback,
+} from '@thewhileloop/whileui';
+
+<DataRow>
+  <DataRowLeft>
+    <Avatar size="sm">
+      <AvatarFallback>JD</AvatarFallback>
+    </Avatar>
+  </DataRowLeft>
+  <DataRowCenter>
+    <DataRowLabel>Jane Doe</DataRowLabel>
+    <DataRowDescription>Product Designer</DataRowDescription>
+  </DataRowCenter>
+  <DataRowRight>
+    <DataRowValue>Owner</DataRowValue>
+  </DataRowRight>
+</DataRow>;
+```
+
 ## Card
 
 ```tsx
@@ -495,7 +678,7 @@ import {
   CardFooter,
 } from '@thewhileloop/whileui';
 
-<Card>
+<Card padding="default">
   <CardHeader>
     <CardTitle>Title</CardTitle>
     <CardDescription>Description</CardDescription>
@@ -503,7 +686,16 @@ import {
   <CardContent>{/* Content */}</CardContent>
   <CardFooter>{/* Footer */}</CardFooter>
 </Card>;
+
+<Card unstyled padding="none" className="rounded-xl border border-border bg-card">
+  {/* advanced custom layouts */}
+</Card>;
 ```
+
+| Prop     | Type                                  | Default     | Description                         |
+| -------- | ------------------------------------- | ----------- | ----------------------------------- |
+| padding  | `'none' \| 'sm' \| 'default' \| 'lg'` | `'default'` | Card interior padding               |
+| unstyled | `boolean`                             | `false`     | Remove built-in card surface styles |
 
 ## Badge
 
@@ -842,6 +1034,59 @@ import { BottomNav } from '@thewhileloop/whileui';
   ]}
   activeKey="home"
   onSelect={(key) => {}}
+/>;
+```
+
+## ActionBar
+
+```tsx
+import { ActionBar, Button, ButtonText } from '@thewhileloop/whileui';
+
+<ActionBar>
+  <Button variant="outline" className="flex-1">
+    <ButtonText>Cancel</ButtonText>
+  </Button>
+  <Button className="flex-1">
+    <ButtonText>Save</ButtonText>
+  </Button>
+</ActionBar>;
+```
+
+## ConfirmActionSheet
+
+```tsx
+import { ConfirmActionSheet } from '@thewhileloop/whileui';
+
+<ConfirmActionSheet
+  open={open}
+  onOpenChange={setOpen}
+  title="Delete project?"
+  description="This action cannot be undone."
+  confirmLabel="Delete"
+  destructive
+  onConfirm={() => deleteProject()}
+/>;
+```
+
+## NavigationSidebar
+
+```tsx
+import { NavigationSidebar } from '@thewhileloop/whileui';
+
+<NavigationSidebar
+  sections={[
+    {
+      title: 'Workspace',
+      items: [
+        { key: 'overview', label: 'Overview', icon: <Icon /> },
+        { key: 'billing', label: 'Billing', icon: <Icon />, badge: 2 },
+      ],
+    },
+  ]}
+  activeKey="overview"
+  onSelect={(key) => {}}
+  header={<Text>Acme Inc.</Text>}
+  footer={<Text className="text-xs text-muted-foreground">v1.0.0</Text>}
 />;
 ```
 
