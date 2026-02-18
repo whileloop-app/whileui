@@ -74,9 +74,7 @@ export function DrawerMenu({
   }));
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: interpolate(progress.value, [0, 1], [-drawerWidth, 0]) },
-    ],
+    transform: [{ translateX: interpolate(progress.value, [0, 1], [-drawerWidth, 0]) }],
   }));
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -90,9 +88,7 @@ export function DrawerMenu({
   return (
     <Animated.View style={[StyleSheet.absoluteFill, containerStyle]}>
       {/* Backdrop */}
-      <Animated.View
-        style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }, backdropStyle]}
-      >
+      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }, backdropStyle]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
