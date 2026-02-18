@@ -21,7 +21,7 @@ export interface InputProps extends TextInputProps, VariantProps<typeof inputVar
 }
 
 const Input = React.forwardRef<TextInput, InputProps>(
-  ({ className, variant, editable = true, placeholderTextColor = '#888', ...props }, ref) => {
+  ({ className, variant, editable = true, placeholderTextColor = '#737373', ...props }, ref) => {
     return (
       <TextInput
         ref={ref}

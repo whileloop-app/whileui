@@ -1,20 +1,23 @@
 import React from 'react';
-import { View, Pressable, Modal, Dimensions, type ViewStyle, type StyleProp } from 'react-native';
+import {
+  View,
+  Pressable,
+  useWindowDimensions,
+  StyleSheet,
+  type ViewStyle,
+  type StyleProp,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
-  runOnJS,
   interpolate,
 } from 'react-native-reanimated';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.85;
-
-// Industry standard timing
+const DRAWER_WIDTH_RATIO = 0.85;
 const OPEN_DURATION = 280;
 const CLOSE_DURATION = 250;
 
@@ -54,73 +57,43 @@ export function DrawerMenu({
   className,
   style,
 }: DrawerMenuProps) {
+  const { width: screenWidth } = useWindowDimensions();
+  const drawerWidth = screenWidth * DRAWER_WIDTH_RATIO;
   const progress = useSharedValue(0);
-  const [modalVisible, setModalVisible] = React.useState(false);
 
   React.useEffect(() => {
-    if (visible) {
-      setModalVisible(true);
-      progress.value = withTiming(1, {
-        duration: OPEN_DURATION,
-        easing: Easing.out(Easing.cubic),
-      });
-    } else {
-      progress.value = withTiming(
-        0,
-        {
-          duration: CLOSE_DURATION,
-          easing: Easing.in(Easing.cubic),
-        },
-        (finished) => {
-          if (finished) {
-            runOnJS(setModalVisible)(false);
-          }
-        }
-      );
-    }
+    progress.value = withTiming(visible ? 1 : 0, {
+      duration: visible ? OPEN_DURATION : CLOSE_DURATION,
+      easing: visible ? Easing.out(Easing.cubic) : Easing.in(Easing.cubic),
+    });
   }, [visible, progress]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: progress.value * 0.5,
+    pointerEvents: progress.value > 0 ? 'auto' : 'none',
   }));
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [
-      {
-        translateX: interpolate(progress.value, [0, 1], [-DRAWER_WIDTH, 0]),
-      },
+      { translateX: interpolate(progress.value, [0, 1], [-drawerWidth, 0]) },
     ],
+  }));
+
+  const containerStyle = useAnimatedStyle(() => ({
+    pointerEvents: progress.value > 0 ? 'auto' : 'none',
   }));
 
   const handleItemPress = (key: string) => {
     onSelect?.(key);
   };
 
-  if (!modalVisible && !visible) return null;
-
   return (
-    <Modal
-      visible={modalVisible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
+    <Animated.View style={[StyleSheet.absoluteFill, containerStyle]}>
       {/* Backdrop */}
       <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: '#000',
-          },
-          backdropStyle,
-        ]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }, backdropStyle]}
       >
-        <Pressable style={{ flex: 1 }} onPress={onClose} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
       {/* Drawer Panel */}
@@ -131,7 +104,7 @@ export function DrawerMenu({
             top: 0,
             bottom: 0,
             left: 0,
-            width: DRAWER_WIDTH,
+            width: drawerWidth,
           },
           drawerStyle,
           style,
@@ -195,6 +168,6 @@ export function DrawerMenu({
           {footer && <View className="px-5 py-4 mt-auto border-t border-border">{footer}</View>}
         </View>
       </Animated.View>
-    </Modal>
+    </Animated.View>
   );
 }

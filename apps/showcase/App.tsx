@@ -4,7 +4,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Uniwind, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import Animated, { useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import {
   useFonts,
   PlusJakartaSans_400Regular,
@@ -185,33 +185,36 @@ const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
 
 // ─── Animated Counter ────────────────────────────────────────
 function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?: number }) {
-  const animatedValue = useSharedValue(0);
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    animatedValue.value = withTiming(value, {
-      duration,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, [value, duration]);
+    let startTime: number | null = null;
+    let animationId: number;
+    const startValue = 0;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const progress = animatedValue.value / value;
-      setDisplayValue(Math.round(animatedValue.value));
-      if (progress >= 0.99) {
-        setDisplayValue(value);
-        clearInterval(interval);
+    // Cubic ease-out: fast start, slow finish
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+      const current = Math.round(startValue + (value - startValue) * easedProgress);
+
+      setDisplayValue(current);
+
+      if (progress < 1) {
+        animationId = requestAnimationFrame(animate);
       }
-    }, 16);
-    return () => clearInterval(interval);
-  }, [value]);
+    };
+
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
+  }, [value, duration]);
 
   return <>{displayValue}</>;
 }
-
-// ─── Animated Pressable ──────────────────────────────────────
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 // Theme-aware icon colors (for @expo/vector-icons which need hex values)
 // Colors matched to Noir global.css theme

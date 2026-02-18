@@ -112,7 +112,7 @@ function AlertDialogContent({ className, children, ...props }: AlertDialogConten
 
   return (
     <Modal visible={open} transparent animationType="fade">
-      <View className="flex-1 justify-center items-center bg-black/60 px-4">
+      <View className="flex-1 justify-center items-center bg-black/50 px-4">
         <View
           className={cn(
             'w-full max-w-lg rounded-lg border border-border bg-background p-6 shadow-lg',

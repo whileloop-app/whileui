@@ -111,7 +111,7 @@ function DialogContent({ className, children, ...props }: DialogContentProps) {
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
       <Pressable
-        className="flex-1 justify-center items-center bg-black/60 px-4"
+        className="flex-1 justify-center items-center bg-black/50 px-4"
         onPress={() => setOpen(false)}
       >
         <Pressable

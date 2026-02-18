@@ -117,7 +117,7 @@ export function OnboardingScreen({
             <View
               key={index}
               className={cn(
-                'h-2 rounded-full transition-all',
+                'h-2 rounded-full',
                 index === currentIndex ? 'w-6 bg-primary' : 'w-2 bg-muted'
               )}
             />

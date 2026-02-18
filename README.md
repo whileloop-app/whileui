@@ -113,11 +113,11 @@ Beautiful, accessible, themeable React Native components built with [Uniwind](ht
 
 ### Splash
 
-| Block            | Description                                      |
-| ---------------- | ------------------------------------------------ |
-| **SplashScreen** | Animated app launch splash with fade/scale/slide |
-| **MinimalSplash** | Preset: Simple fade animation                   |
-| **BrandedSplash** | Preset: Scale animation with loading indicator  |
+| Block             | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| **SplashScreen**  | Animated app launch splash with fade/scale/slide |
+| **MinimalSplash** | Preset: Simple fade animation                    |
+| **BrandedSplash** | Preset: Scale animation with loading indicator   |
 
 ### Profile
 

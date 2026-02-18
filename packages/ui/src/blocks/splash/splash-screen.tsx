@@ -74,10 +74,7 @@ function LoadingDot({ delay }: { delay: number }) {
   }));
 
   return (
-    <AnimatedView
-      style={animatedStyle}
-      className="h-2 w-2 rounded-full bg-muted-foreground"
-    />
+    <AnimatedView style={animatedStyle} className="h-2 w-2 rounded-full bg-muted-foreground" />
   );
 }
 
@@ -168,9 +165,7 @@ export function SplashScreen({
             <LoadingDot delay={150} />
             <LoadingDot delay={300} />
           </View>
-          {loadingText && (
-            <Text className="mt-3 text-sm text-muted-foreground">{loadingText}</Text>
-          )}
+          {loadingText && <Text className="mt-3 text-sm text-muted-foreground">{loadingText}</Text>}
         </AnimatedView>
       )}
     </View>
