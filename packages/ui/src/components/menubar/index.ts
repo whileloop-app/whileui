@@ -1,0 +1,16 @@
+export {
+  Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarLabel,
+  MenubarSeparator,
+  type MenubarProps,
+  type MenubarMenuProps,
+  type MenubarTriggerProps,
+  type MenubarContentProps,
+  type MenubarItemProps,
+  type MenubarLabelProps,
+  type MenubarSeparatorProps,
+} from './menubar';

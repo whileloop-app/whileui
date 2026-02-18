@@ -1,0 +1,27 @@
+{
+  "name": "@whileui/native",
+  "version": "0.1.0",
+  "description": "WhileUI Native — shadcn/ui for React Native. Copy-paste components you own.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0",
+    "react-native-reanimated": ">=3.0.0",
+    "uniwind": "*",
+    "tailwindcss": ">=3.3.0"
+  },
+  "dependencies": {
+    "tailwind-variants": "^0.3.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "^5.7.0"
+  }
+}
