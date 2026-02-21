@@ -1,29 +1,29 @@
 import { useCSSVariable } from 'uniwind';
+import { formatHex, parse } from 'culori';
 
-const HEX_RE = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
-const RGB_RE = /^rgba?\(/i;
-const HSL_RE = /^hsla?\(/i;
-const NAMED_RE = /^[a-z]+$/i;
+// 1. Remove the simple regex checks (isNativeColor)
+// 2. Add a robust converter function
+function resolveToHex(value: string | number | undefined, fallback: string): string {
+  if (value === undefined || value === null) return fallback;
+  
+  const s = String(value);
 
-function isNativeColor(value: string): boolean {
-  const s = value.trim();
-  if (!s) return false;
-  return HEX_RE.test(s) || RGB_RE.test(s) || HSL_RE.test(s) || NAMED_RE.test(s);
-}
-
-function toNativeColor(
-  value: string | number | undefined,
-  appFallback: string | number | undefined,
-  fallback: string
-): string {
-  if (value != null) {
-    const s = String(value);
-    if (isNativeColor(s)) return s;
+  // If it's already a simple hex/rgb string, return it (performance optimization)
+  if (s.startsWith('#') || s.startsWith('rgb')) {
+    return s;
   }
-  if (appFallback != null) {
-    const s = String(appFallback);
-    if (isNativeColor(s)) return s;
+
+  // Parse and convert modern CSS colors (oklch, hsl, etc.) to Hex
+  try {
+    const parsed = parse(s);
+    if (parsed) {
+      const hex = formatHex(parsed);
+      if (hex) return hex;
+    }
+  } catch (e) {
+    // console.warn('Failed to parse color:', value);
   }
+
   return fallback;
 }
 
@@ -54,15 +54,6 @@ export function useThemeColors(): ThemeColors {
     border,
     accent,
     destructive,
-    appPrimary,
-    appPrimaryForeground,
-    appForeground,
-    appMuted,
-    appMutedForeground,
-    appBackground,
-    appBorder,
-    appAccent,
-    appDestructive,
   ] = useCSSVariable([
     '--color-primary',
     '--color-primary-foreground',
@@ -73,28 +64,18 @@ export function useThemeColors(): ThemeColors {
     '--color-border',
     '--color-accent',
     '--color-destructive',
-    '--app-color-primary',
-    '--app-color-primary-foreground',
-    '--app-color-foreground',
-    '--app-color-muted',
-    '--app-color-muted-foreground',
-    '--app-color-background',
-    '--app-color-border',
-    '--app-color-accent',
-    '--app-color-destructive',
   ]);
 
-  // Fallbacks when undefined; prefer app hex tokens if theme colors are non-native (oklch).
   return {
-    primary: toNativeColor(primary, appPrimary, '#000000'),
-    primaryForeground: toNativeColor(primaryForeground, appPrimaryForeground, '#ffffff'),
-    foreground: toNativeColor(foreground, appForeground, '#000000'),
-    muted: toNativeColor(muted, appMuted, '#f5f5f5'),
-    mutedForeground: toNativeColor(mutedForeground, appMutedForeground, '#737373'),
-    background: toNativeColor(background, appBackground, '#ffffff'),
-    border: toNativeColor(border, appBorder, '#e5e5e5'),
-    accent: toNativeColor(accent, appAccent, '#22c55e'),
-    destructive: toNativeColor(destructive, appDestructive, '#dc2626'),
+    primary: resolveToHex(primary, '#000000'),
+    primaryForeground: resolveToHex(primaryForeground, '#ffffff'),
+    foreground: resolveToHex(foreground, '#000000'),
+    muted: resolveToHex(muted, '#f5f5f5'),
+    mutedForeground: resolveToHex(mutedForeground, '#737373'),
+    background: resolveToHex(background, '#ffffff'),
+    border: resolveToHex(border, '#e5e5e5'),
+    accent: resolveToHex(accent, '#22c55e'),
+    destructive: resolveToHex(destructive, '#dc2626'),
   };
 }
 

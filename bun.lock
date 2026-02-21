@@ -45,14 +45,16 @@
     },
     "packages/ui": {
       "name": "@thewhileloop/whileui",
-      "version": "0.2.7",
+      "version": "0.2.11",
       "dependencies": {
         "clsx": "^2.1.0",
+        "culori": "^4.0.2",
         "react-native-calendars": "^1.1314.0",
         "tailwind-merge": "^3.0.0",
         "tailwind-variants": "^0.3.0",
       },
       "devDependencies": {
+        "@types/culori": "^4.0.1",
         "@types/react": "~19.1.0",
         "react-native-screens": "^4.23.0",
         "typescript": "^5.7.0",
@@ -501,6 +503,8 @@
     "@types/babel__template": ["@types/babel__template@7.4.4", "", { "dependencies": { "@babel/parser": "^7.1.0", "@babel/types": "^7.0.0" } }, "sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A=="],
 
     "@types/babel__traverse": ["@types/babel__traverse@7.28.0", "", { "dependencies": { "@babel/types": "^7.28.2" } }, "sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q=="],
+
+    "@types/culori": ["@types/culori@4.0.1", "", {}, "sha512-43M51r/22CjhbOXyGT361GZ9vncSVQ39u62x5eJdBQFviI8zWp2X5jzqg7k4M6PVgDQAClpy2bUe2dtwEgEDVQ=="],
 
     "@types/graceful-fs": ["@types/graceful-fs@4.1.9", "", { "dependencies": { "@types/node": "*" } }, "sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ=="],
 

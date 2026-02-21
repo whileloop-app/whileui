@@ -69,11 +69,13 @@
   },
   "dependencies": {
     "clsx": "^2.1.0",
+    "culori": "^4.0.2",
     "react-native-calendars": "^1.1314.0",
     "tailwind-merge": "^3.0.0",
     "tailwind-variants": "^0.3.0"
   },
   "devDependencies": {
+    "@types/culori": "^4.0.1",
     "@types/react": "~19.1.0",
     "react-native-screens": "^4.23.0",
     "typescript": "^5.7.0"
