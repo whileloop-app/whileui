@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TextInput, type TextInputProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useThemeColors } from '../../lib/theme-colors';
 
 const inputVariants = tv({
   base: 'min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground',
@@ -37,6 +38,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
     },
     ref
   ) => {
+    const colors = useThemeColors();
     return (
       <View
         className={cn(
@@ -56,7 +58,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
             inputClassName
           )}
           editable={editable}
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
           {...props}
         />
         {suffix && <View className="pr-3">{suffix}</View>}

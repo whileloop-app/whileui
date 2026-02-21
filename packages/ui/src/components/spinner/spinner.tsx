@@ -1,6 +1,7 @@
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useThemeColors } from '../../lib/theme-colors';
 
 const spinnerVariants = tv({
   base: '',
@@ -27,13 +28,15 @@ export interface SpinnerProps
   className?: string;
 }
 
-function Spinner({ className, size, ...props }: SpinnerProps) {
+function Spinner({ className, size, color, ...props }: SpinnerProps) {
+  const colors = useThemeColors();
   const activityIndicatorSize =
     size && size in sizeMap ? sizeMap[size as keyof typeof sizeMap] : 'small';
 
   return (
     <ActivityIndicator
       size={activityIndicatorSize}
+      color={color ?? colors.foreground}
       className={cn(spinnerVariants({ size }), className)}
       {...props}
     />

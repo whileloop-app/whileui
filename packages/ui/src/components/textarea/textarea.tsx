@@ -2,6 +2,7 @@ import React from 'react';
 import { TextInput, type TextInputProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useThemeColors } from '../../lib/theme-colors';
 
 // ─── Variants ────────────────────────────────────────────────
 
@@ -30,13 +31,14 @@ export interface TextareaProps
 
 const Textarea = React.forwardRef<React.ComponentRef<typeof TextInput>, TextareaProps>(
   ({ className, size, placeholderTextColor, ...props }, ref) => {
+    const colors = useThemeColors();
     return (
       <TextInput
         ref={ref}
         className={cn(textareaVariants({ size }), className)}
         multiline
         textAlignVertical="top"
-        placeholderTextColor={placeholderTextColor}
+        placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
         {...props}
       />
     );

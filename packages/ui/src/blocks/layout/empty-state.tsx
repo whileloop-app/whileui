@@ -22,6 +22,14 @@ export interface EmptyStateProps extends ViewProps {
 
 // ─── Component ───────────────────────────────────────────────
 
+function DefaultEmptyIcon() {
+  return (
+    <View className="mb-6 h-14 w-14 items-center justify-center rounded-2xl border-2 border-dashed border-muted">
+      <View className="h-4 w-5 rounded-sm border border-muted-foreground" />
+    </View>
+  );
+}
+
 export function EmptyState({
   icon,
   title,
@@ -33,7 +41,9 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <View className={cn('flex-1 items-center justify-center p-8', className)} {...props}>
-      {icon && <View className="mb-6 text-muted-foreground">{icon}</View>}
+      <View className="mb-6">
+        {icon ? <View className="text-muted-foreground">{icon}</View> : <DefaultEmptyIcon />}
+      </View>
 
       <Text className="mb-2 text-center text-xl font-semibold text-foreground">{title}</Text>
 

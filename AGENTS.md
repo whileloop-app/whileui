@@ -136,7 +136,7 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - SafeAreaView: use `react-native-safe-area-context` (RN's deprecated)
 - **CSS box-shadow**: Not supported. Use `shadow-sm/md/lg` classes (soft shadows) or stacked Views for hard-edge 3D effects (NeoPOP style)
 - **Icon colors**: `@expo/vector-icons` requires hex values, not CSS classes. Use `useIconColors()` from the UI package (reads from global.css via `useCSSVariable`)
-- **Other RN primitives requiring hex**: ActivityIndicator (Spinner), TextInput's `placeholderTextColor` need hex. Add optional props (`spinnerColor`, `placeholderTextColor`); apps pass hex from theme when theming matters
+- **Other RN primitives requiring hex**: Spinner defaults to `useThemeColors().foreground`. Input, Textarea, NumericInput, SmartInput default `placeholderTextColor` to `mutedForeground`. Add optional override props when needed.
 
 ### Web & Responsive (Sites + Apps)
 

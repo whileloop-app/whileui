@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View, type TextInputProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useThemeColors } from '../../lib/theme-colors';
 
 const numericInputVariants = tv({
   base: 'w-full flex-row items-center rounded-md border bg-background',
@@ -120,6 +121,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
     },
     ref
   ) => {
+    const colors = useThemeColors();
     const [internalText, setInternalText] = useState(() => toInputText(defaultValue));
     const isControlled = value !== undefined;
     const textValue = isControlled ? toInputText(value) : internalText;
@@ -203,7 +205,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
           onBlur={handleBlur}
           keyboardType="decimal-pad"
           editable={editable}
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
           {...props}
         />
         {suffix ? <View className="shrink-0 pr-3">{suffix}</View> : null}

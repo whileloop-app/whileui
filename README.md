@@ -503,6 +503,29 @@ import { Uniwind } from 'uniwind';
 Uniwind.setTheme('dark'); // or 'light' or 'system'
 ```
 
+### Theme Colors for RN Primitives
+
+Some React Native APIs require hex color strings (icons, ActivityIndicator, react-native-calendars). Use `useThemeColors` or `useIconColors` to read from your `global.css` theme:
+
+```tsx
+import { useThemeColors, useIconColors } from '@thewhileloop/whileui';
+import { Feather } from '@expo/vector-icons';
+
+// Full palette (primary, foreground, muted, background, border, accent, destructive, etc.)
+const colors = useThemeColors();
+
+// Shorthand for icons: foreground, muted, primary, primaryForeground, accent, destructive
+const iconColors = useIconColors();
+
+<Feather name="heart" size={20} color={iconColors.muted} />
+<Spinner color={colors.foreground} />  // Spinner defaults to this when color not passed
+```
+
+- **useThemeColors** — Returns hex values for all semantic tokens. Use for Calendar themes, Spinner, placeholderTextColor overrides.
+- **useIconColors** — Subset for icons. Maps `muted` → `mutedForeground` (readable on backgrounds).
+
+Input, Textarea, NumericInput, SmartInput, Spinner, and LoadingScreen default to theme colors when you omit `placeholderTextColor` or `spinnerColor`.
+
 Or use the first-party ThemeBridge helper with optional persistence:
 
 ```tsx
@@ -559,12 +582,12 @@ import { Input } from '@thewhileloop/whileui';
 <Input placeholder="Email" variant="default" value={value} onChangeText={setValue} />;
 ```
 
-| Prop                 | Type                   | Default     | Description                                     |
-| -------------------- | ---------------------- | ----------- | ----------------------------------------------- |
-| variant              | `'default' \| 'error'` | `'default'` | Input style variant                             |
-| placeholder          | `string`               | —           | Placeholder text                                |
-| placeholderTextColor | `string`               | —           | Hex for placeholder (theme-aware when provided) |
-| editable             | `boolean`              | `true`      | Whether input is editable                       |
+| Prop                 | Type                   | Default     | Description                                              |
+| -------------------- | ---------------------- | ----------- | -------------------------------------------------------- |
+| variant              | `'default' \| 'error'` | `'default'` | Input style variant                                      |
+| placeholder          | `string`               | —           | Placeholder text                                         |
+| placeholderTextColor | `string`               | —           | Hex for placeholder; defaults to theme `mutedForeground` |
+| editable             | `boolean`              | `true`      | Whether input is editable                                |
 
 ## NumericInput
 

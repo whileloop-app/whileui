@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react';
 import { View, TextInput, KeyboardAvoidingView, Platform, type TextInputProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
 
 export interface SmartInputProps extends TextInputProps {
   /** Left slot: emoji, attach, etc. */
@@ -39,6 +40,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
   ref
 ) {
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
   const bottomPadding = safeArea ? Math.max(insets.bottom, 12) : 12;
 
   return (
@@ -69,7 +71,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
           multiline
           submitBehavior={submitBehavior}
           textAlignVertical="top"
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
           editable={editable}
           {...props}
         />
