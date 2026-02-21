@@ -22,7 +22,7 @@ function Skeleton({ className, ...props }: SkeletonProps) {
 
   useEffect(() => {
     opacity.value = withRepeat(
-      withTiming(0.5, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+      withTiming(0.35, { duration: 800, easing: Easing.inOut(Easing.ease) }),
       -1,
       true
     );

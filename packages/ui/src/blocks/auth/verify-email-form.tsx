@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { View } from 'react-native';
+import { Pressable } from '../../components/pressable';
 import { Button, ButtonText } from '../../components/button';
 import {
   Card,
@@ -12,7 +14,20 @@ import { Input } from '../../components/input';
 import { Label } from '../../components/label';
 import { Text } from '../../components/text';
 
-export function VerifyEmailForm() {
+export interface VerifyEmailFormProps {
+  /** Called when user submits verification code. Receives form values. */
+  onSubmit?: (data: { code: string }) => void;
+  /** Called when user taps "Resend" link. */
+  onResend?: () => void;
+}
+
+export function VerifyEmailForm({ onSubmit, onResend }: VerifyEmailFormProps = {}) {
+  const [code, setCode] = useState('');
+
+  const handleSubmit = () => {
+    onSubmit?.({ code });
+  };
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -29,16 +44,24 @@ export function VerifyEmailForm() {
             keyboardType="number-pad"
             maxLength={6}
             className="text-center text-lg tracking-widest"
+            value={code}
+            onChangeText={setCode}
           />
         </View>
       </CardContent>
       <CardFooter className="flex-col gap-4">
-        <Button className="w-full">
+        <Button className="w-full" onPress={handleSubmit}>
           <ButtonText>Verify Email</ButtonText>
         </Button>
-        <Text className="text-sm text-center text-muted-foreground">
-          Didn't receive code? <Text className="text-primary underline font-medium">Resend</Text>
-        </Text>
+        <Pressable
+          onPress={onResend}
+          className="flex-row justify-center"
+          accessibilityRole="button"
+        >
+          <Text className="text-sm text-center text-muted-foreground">
+            Didn't receive code? <Text className="text-primary underline font-medium">Resend</Text>
+          </Text>
+        </Pressable>
       </CardFooter>
     </Card>
   );

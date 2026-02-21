@@ -58,6 +58,8 @@
     "@rn-primitives/select": ">=1.0.0",
     "@rn-primitives/slot": ">=1.0.0",
     "@rn-primitives/tooltip": ">=1.0.0",
+    "expo": ">=52.0.0",
+    "expo-image": ">=2.0.0",
     "react": ">=19.0.0",
     "react-native": ">=0.81.0",
     "react-native-reanimated": ">=3.0.0",

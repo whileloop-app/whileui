@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, StatusBar, Platform } from 'react-native';
+import { View, ScrollView, Pressable, Modal, StatusBar, Platform } from 'react-native';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
@@ -53,6 +53,8 @@ import {
   Spinner,
   Textarea,
   Skeleton,
+  Stack,
+  Row,
   DataRow,
   DataRowLeft,
   DataRowCenter,
@@ -161,6 +163,7 @@ import {
   ErrorState,
   LoadingScreen,
   SplashScreen,
+  FormModalScreen,
   // Profile Blocks
   ProfileHeader,
   SettingsSection,
@@ -169,10 +172,14 @@ import {
   // Lists Blocks
   ListItem,
   NotificationItem,
+  TimelineFeed,
   // Commerce Blocks
   ProductCard,
   PricingCard,
   CheckoutSummary,
+  MetricCard,
+  // Media Blocks
+  SmartImage,
   cn,
 } from '@thewhileloop/whileui';
 
@@ -209,39 +216,6 @@ const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
       break;
   }
 };
-
-// ─── Animated Counter ────────────────────────────────────────
-function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?: number }) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    let startTime: number | null = null;
-    let animationId: number;
-    const startValue = 0;
-
-    // Cubic ease-out: fast start, slow finish
-    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeOutCubic(progress);
-      const current = Math.round(startValue + (value - startValue) * easedProgress);
-
-      setDisplayValue(current);
-
-      if (progress < 1) {
-        animationId = requestAnimationFrame(animate);
-      }
-    };
-
-    animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
-  }, [value, duration]);
-
-  return <>{displayValue}</>;
-}
 
 // Theme-aware icon colors (for @expo/vector-icons which need hex values)
 // Colors matched to Noir global.css theme
@@ -411,28 +385,6 @@ function AppContent() {
                   />
                 </Pressable>
               </View>
-
-              {/* ─── Stats Strip ──────────────────────── */}
-              <View className="flex-row mt-4 gap-3">
-                <View className="flex-1 bg-primary rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-primary-foreground">
-                    <AnimatedCounter value={34} duration={800} />
-                  </Text>
-                  <Text className="text-xs text-primary-foreground/70">Components</Text>
-                </View>
-                <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-foreground">
-                    <AnimatedCounter value={29} duration={1000} />
-                  </Text>
-                  <Text className="text-xs text-muted-foreground">Blocks</Text>
-                </View>
-                <View className="flex-1 bg-card border border-border rounded-xl px-3 py-2.5">
-                  <Text className="text-2xl font-bold text-foreground">
-                    <AnimatedCounter value={2} duration={600} />
-                  </Text>
-                  <Text className="text-xs text-muted-foreground">Themes</Text>
-                </View>
-              </View>
             </View>
 
             {/* ─── Category Tabs ───────────────────────── */}
@@ -587,7 +539,7 @@ function AppContent() {
               </View>
               <View>
                 <Text className="font-bold text-foreground text-lg">WhileUI</Text>
-                <Text className="text-xs text-muted-foreground">v1.0 · 34 components</Text>
+                <Text className="text-xs text-muted-foreground">v1.0</Text>
               </View>
             </View>
           }
@@ -1519,6 +1471,8 @@ function NavigationBlocksTab() {
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [formSaving, setFormSaving] = useState(false);
   const { toast } = useToast();
   const colors = useIconColors();
 
@@ -1583,6 +1537,66 @@ function LayoutBlocksTab() {
             },
           ]}
         />
+      </Section>
+
+      <Section
+        title="Form Modal Screen"
+        subtitle="Modal scaffold for forms with header, loading, and saving states"
+      >
+        <Button onPress={() => setFormModalOpen(true)}>
+          <ButtonText>Open Form Modal</ButtonText>
+        </Button>
+        <Modal
+          visible={formModalOpen}
+          animationType="slide"
+          onRequestClose={() => setFormModalOpen(false)}
+        >
+          <View style={{ flex: 1 }} className="bg-background">
+            <FormModalScreen
+              title="Edit Profile"
+              subtitle="Update your account details"
+              onClose={() => setFormModalOpen(false)}
+              saving={formSaving}
+              savingText="Saving..."
+              scrollEnabled
+            >
+              <View className="gap-4 pb-8">
+                <FormField>
+                  <FormLabel>Display Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Jane Doe" />
+                  </FormControl>
+                </FormField>
+                <FormField>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="jane@example.com" keyboardType="email-address" />
+                  </FormControl>
+                </FormField>
+                <FormField>
+                  <FormLabel>Bio</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Tell us about yourself" />
+                  </FormControl>
+                  <FormHint>Optional. Shown on your public profile.</FormHint>
+                </FormField>
+                <Button
+                  className="mt-2"
+                  onPress={() => {
+                    setFormSaving(true);
+                    setTimeout(() => {
+                      setFormSaving(false);
+                      toast({ title: 'Profile updated', variant: 'success' });
+                      setFormModalOpen(false);
+                    }, 1500);
+                  }}
+                >
+                  <ButtonText>Save Changes</ButtonText>
+                </Button>
+              </View>
+            </FormModalScreen>
+          </View>
+        </Modal>
       </Section>
 
       <Section title="Empty State" subtitle="When there's no content to show">
@@ -1741,6 +1755,26 @@ function ListsBlocksTab() {
           />
         </View>
       </Section>
+
+      <Section title="Timeline Feed" subtitle="Vertical feed with connecting lines">
+        <TimelineFeed
+          items={[
+            {
+              id: '1',
+              title: 'Order Placed',
+              subtitle: 'Your order has been received',
+              time: '10:30 AM',
+            },
+            {
+              id: '2',
+              title: 'Processing',
+              subtitle: 'We are preparing your order',
+              time: '11:15 AM',
+            },
+            { id: '3', title: 'Shipped', subtitle: 'Your order is on the way', time: '2:45 PM' },
+          ]}
+        />
+      </Section>
     </View>
   );
 }
@@ -1805,6 +1839,64 @@ function CommerceBlocksTab() {
           total="$370.44"
           onCheckout={() => {}}
         />
+      </Section>
+
+      <Section title="Metric Card" subtitle="Progress bars and segmented stats">
+        <Stack gap="md">
+          <MetricCard
+            label="Total Revenue"
+            value="$12,450"
+            subtitle="75% of Q1 target"
+            progress={75}
+          />
+          <Row gap="md">
+            <MetricCard label="Progress" value="75%" progress={75} className="flex-1" />
+            <MetricCard
+              label="Distribution"
+              value="100%"
+              segments={[
+                { value: 40, color: '#22c55e' },
+                { value: 30, color: '#eab308' },
+                { value: 30, color: '#3b82f6' },
+              ]}
+              className="flex-1"
+            />
+          </Row>
+        </Stack>
+      </Section>
+
+      <Section title="Smart Image" subtitle="expo-image with skeleton loading and fallback">
+        <Text variant="caption" className="text-muted-foreground mb-2">
+          Skeleton (pulsing) shows while loading. Images may load too fast to see it.
+        </Text>
+        <View className="flex-row gap-3 mb-3">
+          <View className="w-28 h-28 rounded-xl overflow-hidden">
+            <Skeleton className="w-full h-full rounded-xl" />
+          </View>
+          <View className="w-28 h-28 rounded-xl overflow-hidden">
+            <Skeleton className="w-full h-full rounded-xl" />
+          </View>
+        </View>
+        <Text variant="caption" className="text-muted-foreground mb-2">
+          SmartImage — same size boxes with skeleton while loading.
+        </Text>
+        <View className="flex-row gap-3">
+          <View className="w-28 h-28 rounded-xl overflow-hidden bg-muted">
+            <SmartImage
+              source={{ uri: 'https://picsum.photos/seed/whileui1/280' }}
+              alt="Sample image"
+              className="w-full h-full"
+            />
+          </View>
+          <View className="w-28 h-28 rounded-xl overflow-hidden bg-muted">
+            <SmartImage
+              source={{ uri: 'https://invalid-url-for-fallback-demo' }}
+              alt="Fallback demo"
+              fallbackSource={{ uri: 'https://picsum.photos/seed/whileui2/280' }}
+              className="w-full h-full"
+            />
+          </View>
+        </View>
       </Section>
     </View>
   );

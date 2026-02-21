@@ -9,7 +9,20 @@ import {
 } from '../../components/card';
 import { Text } from '../../components/text';
 
-export function SocialConnections() {
+export interface SocialConnectionsProps {
+  /** Called when user taps Google button. */
+  onGooglePress?: () => void;
+  /** Called when user taps Apple button. */
+  onApplePress?: () => void;
+  /** Called when user taps GitHub button. */
+  onGitHubPress?: () => void;
+}
+
+export function SocialConnections({
+  onGooglePress,
+  onApplePress,
+  onGitHubPress,
+}: SocialConnectionsProps = {}) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -17,15 +30,15 @@ export function SocialConnections() {
         <CardDescription>Connect your account with social providers.</CardDescription>
       </CardHeader>
       <CardContent className="gap-4">
-        <Button variant="outline" className="w-full flex-row gap-2">
+        <Button variant="outline" className="w-full flex-row gap-2" onPress={onGooglePress}>
           <Text className="font-bold">G</Text>
           <ButtonText>Continue with Google</ButtonText>
         </Button>
-        <Button variant="outline" className="w-full flex-row gap-2">
-          <Text className="font-bold"></Text>
+        <Button variant="outline" className="w-full flex-row gap-2" onPress={onApplePress}>
+          <Text className="font-bold">A</Text>
           <ButtonText>Continue with Apple</ButtonText>
         </Button>
-        <Button variant="outline" className="w-full flex-row gap-2">
+        <Button variant="outline" className="w-full flex-row gap-2" onPress={onGitHubPress}>
           <Text className="font-bold">GH</Text>
           <ButtonText>Continue with GitHub</ButtonText>
         </Button>

@@ -20,6 +20,9 @@ export {
 export { Text, textVariants, type TextProps } from './components/text';
 export { View, type ViewProps } from './components/view';
 export { Pressable, type PressableProps } from './components/pressable';
+export { Stack, stackVariants, type StackProps } from './components/stack';
+export { Row, rowVariants, type RowProps } from './components/row';
+export { Box, boxVariants, type BoxProps } from './components/box';
 
 // ─── Components ──────────────────────────────────────────────
 export {
@@ -361,3 +364,4 @@ export * from './blocks/profile';
 export * from './blocks/lists';
 export * from './blocks/commerce';
 export * from './blocks/splash';
+export * from './blocks/media';

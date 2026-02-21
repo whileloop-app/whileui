@@ -174,6 +174,9 @@ function MyScreen() {
 | **Text**      | Themed text with variant support |
 | **View**      | Themed view wrapper              |
 | **Pressable** | Themed pressable wrapper         |
+| **Stack**     | Vertical flex layout with gap    |
+| **Row**       | Horizontal flex layout with gap  |
+| **Box**       | Flexible container with variants |
 
 ### Form Controls
 
@@ -240,21 +243,21 @@ function MyScreen() {
 
 ### Auth
 
-| Block                  | Description                     |
-| ---------------------- | ------------------------------- |
-| **SignInForm**         | Email/password sign in          |
-| **SignUpForm**         | Registration form               |
-| **ForgotPasswordForm** | Password reset request          |
-| **ResetPasswordForm**  | Set new password                |
-| **VerifyEmailForm**    | Email verification code input   |
-| **SocialConnections**  | OAuth provider buttons          |
-| **UserMenu**           | Profile dropdown for auth flows |
+| Block                  | Description                           |
+| ---------------------- | ------------------------------------- |
+| **SignInForm**         | Email/password sign in with callbacks |
+| **SignUpForm**         | Registration form with callbacks      |
+| **ForgotPasswordForm** | Password reset request                |
+| **ResetPasswordForm**  | Set new password                      |
+| **VerifyEmailForm**    | Email verification code input         |
+| **SocialConnections**  | OAuth provider buttons                |
+| **UserMenu**           | Profile dropdown for auth flows       |
 
 ### Navigation
 
 | Block                 | Description                                       |
 | --------------------- | ------------------------------------------------- |
-| **AppShell**          | Layout shell with slots for navigation            |
+| **AppShell**          | Layout shell with header/footer/bottomNav slots   |
 | **NavigationSidebar** | Sidebar nav with grouped sections and footer slot |
 | **Header**            | Top app bar with back/actions                     |
 | **BottomNav**         | Tab-style bottom navigation bar                   |
@@ -262,21 +265,17 @@ function MyScreen() {
 | **TabBar**            | Top tab bar with indicator                        |
 | **DrawerMenu**        | Drawer with sections and items                    |
 
-### Lists
+### Layout
 
-| Block                | Description                          |
-| -------------------- | ------------------------------------ |
-| **ListItem**         | Title/subtitle row                   |
-| **NotificationItem** | Notification row with metadata       |
-| **SwipeableItem**    | Swipe actions (left/right) list item |
-
-### Commerce
-
-| Block               | Description                     |
-| ------------------- | ------------------------------- |
-| **ProductCard**     | Product card with badge/media   |
-| **PricingCard**     | Pricing tiers with feature list |
-| **CheckoutSummary** | Cart summary with line items    |
+| Block                  | Description                                     |
+| ---------------------- | ----------------------------------------------- |
+| **ActionBar**          | Sticky bottom action row with safe-area padding |
+| **ConfirmActionSheet** | Reusable destructive confirmation sheet         |
+| **FormModalScreen**    | Modal scaffold for forms with loading states    |
+| **EmptyState**         | Empty content placeholder                       |
+| **ErrorState**         | Error display with retry                        |
+| **LoadingScreen**      | Full-screen loading indicator                   |
+| **OnboardingScreen**   | Onboarding flow screen                          |
 
 ### Profile & Settings
 
@@ -286,6 +285,24 @@ function MyScreen() {
 | **AccountCard**     | Account summary card                |
 | **SettingsSection** | Section header with optional action |
 | **SettingsItem**    | Row for toggles/links/settings      |
+
+### Lists
+
+| Block                | Description                         |
+| -------------------- | ----------------------------------- |
+| **ListItem**         | Title/subtitle row                  |
+| **NotificationItem** | Notification row with metadata      |
+| **SwipeableItem**    | Swipe actions list item             |
+| **TimelineFeed**     | Vertical feed with connecting lines |
+
+### Commerce
+
+| Block               | Description                        |
+| ------------------- | ---------------------------------- |
+| **ProductCard**     | Product card with badge/media      |
+| **PricingCard**     | Pricing tiers with feature list    |
+| **CheckoutSummary** | Cart summary with line items       |
+| **MetricCard**      | Stats/progress card for dashboards |
 
 ### Splash & States
 
@@ -298,63 +315,65 @@ function MyScreen() {
 | **LoadingScreen**    | Full-screen loading state      |
 | **EmptyState**       | Placeholder empty/content-less |
 | **ErrorState**       | Error message with action      |
-| **UserMenu**         | Avatar dropdown with user info |
 
-### Navigation
+### Media
 
-| Block                 | Description                       |
-| --------------------- | --------------------------------- |
-| **NavigationSidebar** | Sidebar nav with grouped sections |
-| **Header**            | App header with title & actions   |
-| **BottomNav**         | Bottom tab navigation             |
-| **FloatingBottomNav** | Floating bottom navigation        |
-| **TabBar**            | Horizontal tab bar                |
-| **DrawerMenu**        | Side drawer navigation            |
+| Block          | Description                         |
+| -------------- | ----------------------------------- |
+| **SmartImage** | Image with aspect ratio and loading |
 
-### Layout
+## Layout Primitives (Stack, Row, Box)
 
-| Block                  | Description                                     |
-| ---------------------- | ----------------------------------------------- |
-| **AppShell**           | Main app layout wrapper                         |
-| **ActionBar**          | Sticky bottom action row with safe-area padding |
-| **ConfirmActionSheet** | Reusable destructive confirmation sheet         |
-| **EmptyState**         | Empty content placeholder                       |
-| **ErrorState**         | Error display with retry                        |
-| **LoadingScreen**      | Full-screen loading indicator                   |
-| **OnboardingScreen**   | Onboarding flow screen                          |
+Use `Stack` for vertical layouts, `Row` for horizontal layouts. Both support `gap`, `align`, and `justify` variants.
 
-### Splash
+```tsx
+import { Stack, Row, Box } from '@thewhileloop/whileui';
 
-| Block             | Description                                      |
-| ----------------- | ------------------------------------------------ |
-| **SplashScreen**  | Animated app launch splash with fade/scale/slide |
-| **MinimalSplash** | Preset: Simple fade animation                    |
-| **BrandedSplash** | Preset: Scale animation with loading indicator   |
+<Stack gap="lg">
+  <Text>Title</Text>
+  <Row gap="md" justify="between">
+    <Button>
+      <ButtonText>Cancel</ButtonText>
+    </Button>
+    <Button>
+      <ButtonText>Save</ButtonText>
+    </Button>
+  </Row>
+</Stack>;
+```
 
-### Profile
+| Prop    | Stack/Row                                                           | Values                   |
+| ------- | ------------------------------------------------------------------- | ------------------------ |
+| gap     | `'none' \| 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl'`           | Spacing between children |
+| align   | `'start' \| 'center' \| 'end' \| 'stretch' \| 'baseline'`           | Cross-axis alignment     |
+| justify | `'start' \| 'center' \| 'end' \| 'between' \| 'around' \| 'evenly'` | Main-axis alignment      |
 
-| Block               | Description                |
-| ------------------- | -------------------------- |
-| **ProfileHeader**   | User profile header        |
-| **AccountCard**     | Account info card          |
-| **SettingsItem**    | Settings list item         |
-| **SettingsSection** | Settings group with header |
+`Box` provides optional padding and margin variants for consistent spacing.
 
-### Lists
+## Full-Screen Composition
 
-| Block                | Description                      |
-| -------------------- | -------------------------------- |
-| **ListItem**         | Standard list item               |
-| **NotificationItem** | Notification list item           |
-| **SwipeableItem**    | Swipeable list item with actions |
+Standard pattern: `AppShell` with `header`, scrollable `children`, and `bottomNav`.
 
-### Commerce
+```tsx
+import { AppShell, Header, BottomNav, ScrollView } from '@thewhileloop/whileui';
 
-| Block               | Description                |
-| ------------------- | -------------------------- |
-| **ProductCard**     | Product display card       |
-| **PricingCard**     | Pricing tier card          |
-| **CheckoutSummary** | Order summary for checkout |
+<AppShell
+  header={<Header title="Home" rightActions={[...]} />}
+  bottomNav={
+    <BottomNav
+      items={[...]}
+      activeKey="home"
+      onSelect={(key) => setTab(key)}
+    />
+  }
+>
+  <ScrollView className="flex-1 p-4">
+    {/* Screen content */}
+  </ScrollView>
+</AppShell>
+```
+
+See [BLOCKS.md](./BLOCKS.md) for the full block catalog and [docs/BLUEPRINTS.md](./docs/BLUEPRINTS.md) for flow blueprints.
 
 ## Quick Start
 
@@ -362,7 +381,11 @@ function MyScreen() {
 # Install dependencies
 pnpm install
 
-# Run the showcase app
+# Run the starter app (minimal composable template)
+cd apps/starter
+npx expo start
+
+# Or run the full showcase
 cd apps/showcase
 npx expo start
 ```
@@ -389,7 +412,9 @@ whileui/
 │           │   ├── layout/
 │           │   ├── profile/
 │           │   ├── lists/
-│           │   └── commerce/
+│           │   ├── commerce/
+│           │   ├── splash/
+│           │   └── media/
 │           ├── lib/           # Utilities
 │           │   ├── cn.ts      # clsx + tailwind-merge
 │           │   ├── tv.ts      # tailwind-variants re-export
@@ -1011,16 +1036,44 @@ import {
 ```tsx
 import { SignInForm } from '@thewhileloop/whileui';
 
-<SignInForm onSubmit={(email, password) => {}} onForgotPassword={() => {}} onSignUp={() => {}} />;
+<SignInForm
+  onSubmit={({ email, password }) => signIn(email, password)}
+  onForgotPassword={() => navigate('ForgotPassword')}
+  onSignUp={() => navigate('SignUp')}
+  onGooglePress={() => signInWithGoogle()}
+  onApplePress={() => signInWithApple()}
+/>;
 ```
+
+| Prop             | Type                                  | Description                  |
+| ---------------- | ------------------------------------- | ---------------------------- |
+| onSubmit         | `(data: { email, password }) => void` | Called on sign-in submit     |
+| onForgotPassword | `() => void`                          | Called when "Forgot?" tapped |
+| onSignUp         | `() => void`                          | Called when "Sign Up" tapped |
+| onGooglePress    | `() => void`                          | Called when Google tapped    |
+| onApplePress     | `() => void`                          | Called when Apple tapped     |
 
 ## SignUpForm
 
 ```tsx
 import { SignUpForm } from '@thewhileloop/whileui';
 
-<SignUpForm onSubmit={(name, email, password) => {}} onSignIn={() => {}} />;
+<SignUpForm
+  onSubmit={({ firstName, lastName, email, password }) =>
+    signUp(firstName, lastName, email, password)
+  }
+  onSignIn={() => navigate('SignIn')}
+  onGooglePress={() => signInWithGoogle()}
+  onApplePress={() => signInWithApple()}
+/>;
 ```
+
+| Prop          | Type                                                       | Description                  |
+| ------------- | ---------------------------------------------------------- | ---------------------------- |
+| onSubmit      | `(data: { firstName, lastName, email, password }) => void` | Called on registration       |
+| onSignIn      | `() => void`                                               | Called when "Sign In" tapped |
+| onGooglePress | `() => void`                                               | Called when Google tapped    |
+| onApplePress  | `() => void`                                               | Called when Apple tapped     |
 
 ## BottomNav
 

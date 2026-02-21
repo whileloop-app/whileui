@@ -152,9 +152,6 @@ export function DrawerMenu({
                         >
                           {item.label}
                         </Text>
-                        {isActive && (
-                          <View className="w-1.5 h-1.5 rounded-full bg-primary ml-2" />
-                        )}
                         {item.badge !== undefined && (
                           <View className="bg-primary px-2 py-0.5 rounded-full min-w-[20px] items-center">
                             <Text className="text-xs font-semibold text-primary-foreground">

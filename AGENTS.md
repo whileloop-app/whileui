@@ -1,12 +1,37 @@
 # Agent Rules — WhileUI Native
 
+Guide for AI agents and contributors. Follow these conventions when editing the codebase.
+
 ## Core Rules
 
 - Use **latest stable versions** of packages. Ask if unsure.
-- Run `pnpm format && pnpm tsc --noEmit` after changes. Fix errors before completing.
+- Run `pnpm format && pnpm typecheck` after changes. Fix errors before completing.
 - **Keep `README.md` current** — Update component tables and blocks list when adding/removing features. README is the source of truth for users.
+- **Keep `docs/` current** — Update docs when blocks, flows, or discovery patterns change. See [Documentation](#documentation) below.
 - **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
 - Don't bloat the codebase.
+
+## Documentation
+
+When adding/removing blocks, components, or flows, update the relevant docs. Keep cross-references accurate.
+
+| File                 | Update when                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| `README.md`          | New/removed components, blocks, installation steps, API changes                              |
+| `BLOCKS.md`          | New/removed blocks, prop changes, tags, composition order                                    |
+| `docs/BLUEPRINTS.md` | New flow patterns, screen mappings, callback changes, block references in flows              |
+| `docs/AI_GUIDE.md`   | Discovery patterns, composition patterns, doc structure, block groups, Quick Reference table |
+| `AI_README.md`       | Entry-point links; update if doc structure or filenames change                               |
+
+**Rules:** README and BLOCKS.md are source of truth for users. AI_GUIDE.md points to them—fix broken links. Blueprints reference BLOCKS.md for prop details.
+
+### When Adding New Blocks
+
+1. Export from `packages/ui/src/blocks/<category>/index.ts` and `packages/ui/src/index.ts`
+2. Add to `BLOCKS.md` with props, types, and tags
+3. Add to `README.md` blocks table
+4. Add showcase demo in `apps/showcase/App.tsx` (or relevant tab)
+5. If it's a new flow pattern, add a blueprint in `docs/BLUEPRINTS.md`
 
 ## Uniwind Configuration
 
@@ -137,3 +162,68 @@ Add to this file when you discover:
 - Root causes of bugs (symptom → cause → fix)
 
 **Keep entries concise. Consolidate similar issues. Delete outdated rules.**
+
+## Custom Themes (Starter Kits)
+
+Create reusable theme presets that can be switched at runtime:
+
+### 1. Register in metro.config.js
+
+```js
+// metro.config.js
+module.exports = withUniwindConfig(config, {
+  cssEntryFile: './global.css',
+  extraThemes: ['noir', 'minimalist', 'brand-accent'],
+});
+```
+
+### 2. Define theme in global.css
+
+```css
+@layer theme {
+  :root.noir,
+  .noir {
+    @variant light {
+      --color-background: oklch(1 0 0);
+      --color-foreground: oklch(0 0 0);
+      --color-primary: oklch(0 0 0);
+      /* ... other variables */
+      --radius-sm: 0px;
+      --radius-md: 0px;
+    }
+    @variant dark {
+      /* dark mode variables */
+    }
+  }
+}
+```
+
+### 3. Switch at runtime
+
+```tsx
+import { Uniwind } from 'uniwind';
+
+// Switch to custom theme
+Uniwind.setTheme('noir');
+
+// Switch back to default light/dark
+Uniwind.setTheme('light');
+Uniwind.setTheme('dark');
+```
+
+### Required Theme Variables
+
+All themes must define these variables for components to work:
+
+- `--color-background`, `--color-foreground`
+- `--color-card`, `--color-card-foreground`
+- `--color-primary`, `--color-primary-foreground`
+- `--color-secondary`, `--color-secondary-foreground`
+- `--color-accent`, `--color-accent-foreground`
+- `--color-muted`, `--color-muted-foreground`
+- `--color-destructive`, `--color-destructive-foreground`
+- `--color-border`, `--color-input`, `--color-ring`
+- `--color-success`, `--color-success-foreground`
+- `--color-warning`, `--color-warning-foreground`
+- `--color-info`, `--color-info-foreground`
+- `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl`
