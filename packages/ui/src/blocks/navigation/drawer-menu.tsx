@@ -17,9 +17,9 @@ import Animated, {
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 
-const DRAWER_WIDTH_RATIO = 0.85;
-const OPEN_DURATION = 280;
-const CLOSE_DURATION = 250;
+const DRAWER_WIDTH_RATIO = 0.82;
+const OPEN_DURATION = 300;
+const CLOSE_DURATION = 220;
 
 export interface DrawerMenuItem {
   key: string;
@@ -64,7 +64,9 @@ export function DrawerMenu({
   React.useEffect(() => {
     progress.value = withTiming(visible ? 1 : 0, {
       duration: visible ? OPEN_DURATION : CLOSE_DURATION,
-      easing: visible ? Easing.out(Easing.cubic) : Easing.in(Easing.cubic),
+      easing: visible
+        ? Easing.bezier(0.2, 0.8, 0.2, 1) // Swift, decelerating entrance
+        : Easing.bezier(0.4, 0, 1, 1), // Accelerating, sharp exit
     });
   }, [visible, progress]);
 
@@ -101,13 +103,18 @@ export function DrawerMenu({
             bottom: 0,
             left: 0,
             width: drawerWidth,
+            shadowColor: '#000',
+            shadowOffset: { width: 4, height: 0 },
+            shadowOpacity: 0.15,
+            shadowRadius: 24,
+            elevation: 16,
           },
           drawerStyle,
           style,
         ]}
-        className={cn('bg-background border-r border-border', className)}
+        className={cn('bg-background border-r border-border rounded-r-2xl', className)}
       >
-        <View className="flex-1 pt-14">
+        <View className="flex-1 pt-14 pb-8">
           {/* Header */}
           {header && <View className="px-5 pb-4 mb-2 border-b border-border">{header}</View>}
 
@@ -128,14 +135,14 @@ export function DrawerMenu({
                         key={item.key}
                         onPress={() => handleItemPress(item.key)}
                         className={cn(
-                          'flex-row items-center gap-3 px-3 py-3 rounded-lg active:opacity-70',
-                          isActive && 'bg-primary/10'
+                          'flex-row items-center gap-3 px-4 py-3 mx-1 rounded-xl active:opacity-70 transition-colors',
+                          isActive && 'bg-primary/5'
                         )}
                       >
                         {item.icon}
                         <Text
                           className={cn(
-                            'flex-1 font-medium',
+                            'flex-1 text-[15px] font-semibold tracking-tight',
                             item.destructive
                               ? 'text-destructive'
                               : isActive
@@ -145,6 +152,9 @@ export function DrawerMenu({
                         >
                           {item.label}
                         </Text>
+                        {isActive && (
+                          <View className="w-1.5 h-1.5 rounded-full bg-primary ml-2" />
+                        )}
                         {item.badge !== undefined && (
                           <View className="bg-primary px-2 py-0.5 rounded-full min-w-[20px] items-center">
                             <Text className="text-xs font-semibold text-primary-foreground">
