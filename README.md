@@ -1,10 +1,8 @@
 # WhileUI Native
 
-> **shadcn/ui for React Native** — Copy-paste components you own.
+> Copy-paste components for React Native. You own the code.
 
-Beautiful, accessible, themeable React Native components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4. Inspired by [shadcn/ui](https://ui.shadcn.com/).
-
-Current version: **0.2.1**
+Beautiful, accessible, themeable components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4.
 
 ## Installation
 
@@ -165,6 +163,15 @@ function MyScreen() {
 - **Accessible** — Proper ARIA roles, keyboard support, controlled/uncontrolled state.
 - **Tree-Shakeable** — Only imports what you use. `sideEffects: false`.
 
+## Quick Reference (AI / Code Generation)
+
+- **Full-screen:** `AppShell` + `Header` in `header` + `BottomNav` in `bottomNav` + content in `children`
+- **Layout:** `Stack` (vertical), `Row` (horizontal) — both support `gap`, `align`, `justify`
+- **Auth callbacks:** Auth blocks use objects: `onSubmit({ email, password })`, `onSubmit({ firstName, lastName, email, password })`, etc. Wire to your auth service.
+- **PortalHost:** Add `<PortalHost />` at app root for Select, Popover, Tooltip, HoverCard.
+- **Uniwind:** `withUniwindConfig` must wrap metro config. `global.css` at app root, imported in `App.tsx`.
+- **Reference:** Block props in `packages/ui/src/blocks`; flow patterns in README "Flow Patterns" section.
+
 ## Components
 
 ### Primitives
@@ -276,6 +283,9 @@ function MyScreen() {
 | **ErrorState**         | Error display with retry                        |
 | **LoadingScreen**      | Full-screen loading indicator                   |
 | **OnboardingScreen**   | Onboarding flow screen                          |
+| **SplashScreen**       | Branded splash (fade/scale/slide variants)      |
+| **MinimalSplash**      | Minimal monochrome splash                       |
+| **BrandedSplash**      | Splash with brand imagery                       |
 
 ### Profile & Settings
 
@@ -304,17 +314,6 @@ function MyScreen() {
 | **CheckoutSummary** | Cart summary with line items       |
 | **MetricCard**      | Stats/progress card for dashboards |
 
-### Splash & States
-
-| Block                | Description                    |
-| -------------------- | ------------------------------ |
-| **SplashScreen**     | Branded splash screen          |
-| **MinimalSplash**    | Minimal monochrome splash      |
-| **BrandedSplash**    | Splash with brand imagery      |
-| **OnboardingScreen** | Paged onboarding with slides   |
-| **LoadingScreen**    | Full-screen loading state      |
-| **EmptyState**       | Placeholder empty/content-less |
-| **ErrorState**       | Error message with action      |
 
 ### Media
 
@@ -373,24 +372,24 @@ import { AppShell, Header, BottomNav, ScrollView } from '@thewhileloop/whileui';
 </AppShell>
 ```
 
-See [BLOCKS.md](./BLOCKS.md) for the full block catalog and [docs/BLUEPRINTS.md](./docs/BLUEPRINTS.md) for flow blueprints.
+### Flow Patterns
+
+| Flow       | Blocks                                                                         |
+| ---------- | ------------------------------------------------------------------------------ |
+| Auth       | SignInForm → SignUpForm → ForgotPasswordForm → VerifyEmailForm → ResetPasswordForm |
+| Settings   | ProfileHeader + SettingsSection + SettingsItem (+ FormModalScreen for edits)  |
+| E-commerce | ProductCard list → CheckoutSummary + ActionBar                                 |
+| App shell  | AppShell + Header + BottomNav + content                                        |
+
+Block props: see TypeScript interfaces in `packages/ui/src/blocks`.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 bun install
-
-# Run the starter app (minimal composable template)
-cd apps/starter
-npx expo start
-
-# Or run the full showcase
 cd apps/showcase
-npx expo start
-
-# Run on web (React Native Web)
-npx expo start --web
+bun run dev
+# Or: npx expo start --web
 ```
 
 ## Project Structure
@@ -509,19 +508,6 @@ const adapter: ThemeBridgeAdapter = {
 const { mode, resolvedTheme, setMode, cycleMode } = useThemeBridge({ adapter });
 ```
 
-## Using Components
-
-Copy any component folder from `packages/ui/src/components/` into your project:
-
-```tsx
-import { cn } from './lib/cn';
-import { tv, type VariantProps } from './lib/tv';
-
-// Use the component with className overrides
-<Button className="mt-4">
-  <ButtonText>Get Started</ButtonText>
-</Button>;
-```
 
 ## Tech Stack
 

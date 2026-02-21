@@ -1,37 +1,46 @@
 # Agent Rules — WhileUI Native
 
-Guide for AI agents and contributors. Follow these conventions when editing the codebase.
+Rules for AI agents and contributors editing this codebase. Follow every rule. No exceptions on docs.
 
 ## Core Rules
 
 - Use **latest stable versions** of packages. Ask if unsure.
 - Run `bun format && bun typecheck` after changes. Fix errors before completing.
-- **Keep `README.md` current** — Update component tables and blocks list when adding/removing features. README is the source of truth for users.
-- **Keep `docs/` current** — Update docs when blocks, flows, or discovery patterns change. See [Documentation](#documentation) below.
+- **Docs are mandatory** — README is the source of truth. Incomplete doc updates = task incomplete. Never leave docs stale.
 - **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
 - Don't bloat the codebase.
 
 ## Documentation
 
-When adding/removing blocks, components, or flows, update the relevant docs. Keep cross-references accurate.
+**Rule:** When you add, remove, or change a component or block, you MUST update README in the same change. Do not defer. Incomplete doc updates = task incomplete.
 
-| File                 | Update when                                                                                  |
-| -------------------- | -------------------------------------------------------------------------------------------- |
-| `README.md`          | New/removed components, blocks, installation steps, API changes                              |
-| `BLOCKS.md`          | New/removed blocks, prop changes, tags, composition order                                    |
-| `docs/BLUEPRINTS.md` | New flow patterns, screen mappings, callback changes, block references in flows              |
-| `docs/AI_GUIDE.md`   | Discovery patterns, composition patterns, doc structure, block groups, Quick Reference table |
-| `AI_README.md`       | Entry-point links; update if doc structure or filenames change                               |
+**Docs:** README only. Components table, blocks table, API Reference, Flow Patterns, Quick Reference.
 
-**Rules:** README and BLOCKS.md are source of truth for users. AI_GUIDE.md points to them—fix broken links. Blueprints reference BLOCKS.md for prop details.
+**Cross-references:** Fix broken links.
 
-### When Adding New Blocks
+### When Adding a Block (all required)
 
 1. Export from `packages/ui/src/blocks/<category>/index.ts` and `packages/ui/src/index.ts`
-2. Add to `BLOCKS.md` with props, types, and tags
-3. Add to `README.md` blocks table
-4. Add showcase demo in `apps/showcase/App.tsx` (or relevant tab)
-5. If it's a new flow pattern, add a blueprint in `docs/BLUEPRINTS.md`
+2. Add to `README.md` blocks table
+3. Add to README Blocks API section with key props
+4. Add showcase demo in `apps/showcase/App.tsx`
+5. If new flow: add to README Flow Patterns table
+
+**Do not skip steps 2–4.** Missing doc or showcase = incomplete.
+
+### When Adding a Component (all required)
+
+1. Export from `packages/ui/src/components/<name>/index.ts` and `packages/ui/src/index.ts`
+2. Add to `README.md` components table
+3. Add to README API Reference if notable props
+4. Add showcase demo in `apps/showcase/App.tsx`
+
+**Do not skip steps 2–4.**
+
+### When Changing Props or Removing
+
+- **Props:** Update README API section and Blocks API
+- **Removing:** Remove from README (all sections), showcase. No orphan references
 
 ## Uniwind Configuration
 

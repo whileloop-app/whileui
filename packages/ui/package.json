@@ -1,7 +1,7 @@
 {
   "name": "@thewhileloop/whileui",
   "version": "0.2.4",
-  "description": "WhileUI Native — shadcn/ui for React Native. Copy-paste components you own.",
+  "description": "WhileUI Native — Copy-paste components for React Native. You own the code.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,8 +13,7 @@
     "ui",
     "components",
     "tailwind",
-    "uniwind",
-    "shadcn"
+    "uniwind"
   ],
   "type": "module",
   "main": "dist/index.js",

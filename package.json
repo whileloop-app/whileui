@@ -1,7 +1,7 @@
 {
   "name": "whileui-native",
   "private": true,
-  "description": "WhileUI Native — shadcn/ui for React Native",
+  "description": "WhileUI Native — Copy-paste components for React Native",
   "packageManager": "bun",
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
