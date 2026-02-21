@@ -6,12 +6,18 @@ import { cn } from '../../lib/cn';
 export interface SmartInputProps extends TextInputProps {
   /** Left slot: emoji, attach, etc. */
   leftSlot?: React.ReactNode;
+  /** Center slot: intent selector, model picker, etc. */
+  centerSlot?: React.ReactNode;
   /** Right slot: send button, etc. */
   rightSlot?: React.ReactNode;
+  /** Bar = sticky bottom with border-t. Card = floating, no top border, rounded. */
+  variant?: 'bar' | 'card';
   /** Container className */
   className?: string;
   /** Input field className */
   inputClassName?: string;
+  /** 'newline' = Enter adds newline. 'submit' = Enter triggers onSubmitEditing. Default 'newline'. */
+  submitBehavior?: 'newline' | 'submit' | 'blurAndSubmit';
   /** Use safe area insets for bottom padding */
   safeArea?: boolean;
 }
@@ -19,9 +25,12 @@ export interface SmartInputProps extends TextInputProps {
 export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartInput(
   {
     leftSlot,
+    centerSlot,
     rightSlot,
+    variant = 'bar',
     className,
     inputClassName,
+    submitBehavior = 'newline',
     safeArea = true,
     placeholderTextColor,
     editable = true,
@@ -39,12 +48,15 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
     >
       <View
         className={cn(
-          'w-full flex-row items-center gap-2 border-t border-border bg-background px-3 py-2',
+          'w-full flex-row items-center gap-2 px-3 py-2 bg-background',
+          variant === 'bar' && 'border-t border-border',
+          variant === 'card' && 'rounded-2xl border border-border shadow-md',
           className
         )}
         style={{ paddingBottom: bottomPadding }}
       >
         {leftSlot && <View className="shrink-0">{leftSlot}</View>}
+        {centerSlot && <View className="shrink-0">{centerSlot}</View>}
         <TextInput
           ref={ref}
           className={cn(
@@ -53,7 +65,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
             inputClassName
           )}
           multiline
-          submitBehavior="newline"
+          submitBehavior={submitBehavior}
           textAlignVertical="top"
           placeholderTextColor={placeholderTextColor}
           editable={editable}

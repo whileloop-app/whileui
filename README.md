@@ -266,19 +266,19 @@ function MyScreen() {
 
 ### Layout
 
-| Block                  | Description                                        |
-| ---------------------- | -------------------------------------------------- |
-| **ActionBar**          | Sticky bottom action row with safe-area padding    |
-| **ConfirmActionSheet** | Reusable destructive confirmation sheet            |
-| **FormModalScreen**    | Modal scaffold for forms with loading states       |
-| **EmptyState**         | Empty content placeholder                          |
-| **ErrorState**         | Error display with retry                           |
-| **LoadingScreen**      | Full-screen loading indicator                      |
-| **SmartInput**         | Keyboard-aware compose input with left/right slots |
-| **OnboardingScreen**   | Onboarding flow screen                             |
-| **SplashScreen**       | Branded splash (fade/scale/slide variants)         |
-| **MinimalSplash**      | Minimal monochrome splash                          |
-| **BrandedSplash**      | Splash with brand imagery                          |
+| Block                  | Description                                                             |
+| ---------------------- | ----------------------------------------------------------------------- |
+| **ActionBar**          | Sticky bottom action row with safe-area padding                         |
+| **ConfirmActionSheet** | Reusable destructive confirmation sheet                                 |
+| **FormModalScreen**    | Modal scaffold for forms with loading states                            |
+| **EmptyState**         | Empty content placeholder                                               |
+| **ErrorState**         | Error display with retry                                                |
+| **LoadingScreen**      | Full-screen loading indicator                                           |
+| **SmartInput**         | Keyboard-aware compose input: left/center/right slots, bar/card variant |
+| **OnboardingScreen**   | Onboarding flow screen                                                  |
+| **SplashScreen**       | Branded splash (fade/scale/slide variants)                              |
+| **MinimalSplash**      | Minimal monochrome splash                                               |
+| **BrandedSplash**      | Splash with brand imagery                                               |
 
 ### Chat
 
@@ -1092,7 +1092,7 @@ import { ActionBar, Button, ButtonText } from '@thewhileloop/whileui';
 
 ## SmartInput
 
-Keyboard-aware compose input. Copy-paste block — uses semantic tokens, theme via `global.css`. Forwards ref to `TextInput`.
+Keyboard-aware compose input. `variant`: "bar" (sticky bottom) or "card" (floating). Slots: `leftSlot`, `centerSlot` (intent selector), `rightSlot`. `submitBehavior`: "newline" (default) or "submit"/"blurAndSubmit". Forwards ref to `TextInput`.
 
 ```tsx
 import { SmartInput, Button, ButtonText } from '@thewhileloop/whileui';
@@ -1139,19 +1139,19 @@ const [value, setValue] = useState('');
 />;
 ```
 
-| Prop                       | Type                     | Description                                       |
-| -------------------------- | ------------------------ | ------------------------------------------------- |
-| `messages`                 | `ChatMessage[]`          | `{ id, role, content, secondary?, contentSize? }` |
-| `value`                    | `string`                 | Input value                                       |
-| `onChangeText`             | `(text) => void`         | Input change                                      |
-| `onSend`                   | `() => void`             | Send handler                                      |
-| `suggestions`              | `string[]`               | Chips when empty                                  |
-| `leftSlot` / `rightSlot`   | `ReactNode`              | Attach, send, etc.                                |
-| `exampleMessage`           | `ChatMessage`            | Shown in empty state                              |
-| `renderMessage`            | `(msg) => ReactNode`     | Custom message (markdown, code, images)           |
-| `loadingIndicator`         | `ReactNode`              | Shown when loading (typing dots)                  |
-| `inputSafeArea`            | `boolean`                | SmartInput safe-area (default `true`)             |
-| `keyboardVerticalOffset`   | `number`                 | For header offset when keyboard opens             |
+| Prop                     | Type                 | Description                                       |
+| ------------------------ | -------------------- | ------------------------------------------------- |
+| `messages`               | `ChatMessage[]`      | `{ id, role, content, secondary?, contentSize? }` |
+| `value`                  | `string`             | Input value                                       |
+| `onChangeText`           | `(text) => void`     | Input change                                      |
+| `onSend`                 | `() => void`         | Send handler                                      |
+| `suggestions`            | `string[]`           | Chips when empty                                  |
+| `leftSlot` / `rightSlot` | `ReactNode`          | Attach, send, etc.                                |
+| `exampleMessage`         | `ChatMessage`        | Shown in empty state                              |
+| `renderMessage`          | `(msg) => ReactNode` | Custom message (markdown, code, images)           |
+| `loadingIndicator`       | `ReactNode`          | Shown when loading (typing dots)                  |
+| `inputSafeArea`          | `boolean`            | SmartInput safe-area (default `true`)             |
+| `keyboardVerticalOffset` | `number`             | For header offset when keyboard opens             |
 
 ## ConfirmActionSheet
 
