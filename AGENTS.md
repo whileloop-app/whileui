@@ -5,7 +5,7 @@ Guide for AI agents and contributors. Follow these conventions when editing the 
 ## Core Rules
 
 - Use **latest stable versions** of packages. Ask if unsure.
-- Run `pnpm format && pnpm typecheck` after changes. Fix errors before completing.
+- Run `bun format && bun typecheck` after changes. Fix errors before completing.
 - **Keep `README.md` current** — Update component tables and blocks list when adding/removing features. README is the source of truth for users.
 - **Keep `docs/` current** — Update docs when blocks, flows, or discovery patterns change. See [Documentation](#documentation) below.
 - **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
@@ -127,6 +127,17 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - SafeAreaView: use `react-native-safe-area-context` (RN's deprecated)
 - **CSS box-shadow**: Not supported. Use `shadow-sm/md/lg` classes (soft shadows) or stacked Views for hard-edge 3D effects (NeoPOP style)
 - **Icon colors**: `@expo/vector-icons` requires hex values, not CSS classes. Use a `useIconColors()` hook that reacts to theme changes
+- **Other RN primitives requiring hex**: ActivityIndicator (Spinner), TextInput's `placeholderTextColor` need hex. Add optional props (`spinnerColor`, `placeholderTextColor`); apps pass hex from theme when theming matters
+
+### Web & Responsive (Sites + Apps)
+
+WhileUI targets both native apps and web. Components should be web-aware by default where behavior differs:
+
+- **Overlays** (DrawerMenu, modals, sheets): Use sensible web defaults (e.g. max-width ~360px for drawers). Add optional `maxWidth` or `width` props for override.
+- **Platform.OS**: Use for behavior that truly differs (haptics, native APIs). Guard web-incompatible code (`if (Platform.OS === 'web') return`).
+- **useWindowDimensions**: Use for layout breakpoints when width matters (e.g. `width >= 768` for desktop layout).
+- **Override props**: Provide `maxWidth`, `width`, etc. so apps can customize. Library has smart defaults; apps opt in to overrides.
+- **Uniwind `web:` variant**: Use for platform-specific styling in apps; library may use `Platform.OS` for structural behavior.
 
 ## UI Standards
 

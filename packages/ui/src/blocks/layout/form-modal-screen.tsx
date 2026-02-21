@@ -17,6 +17,10 @@ export interface FormModalScreenProps extends Omit<ViewProps, 'className'> {
   loading?: boolean;
   saving?: boolean;
   savingText?: string;
+  /** Hex color for spinner in loading state. ActivityIndicator requires hex. */
+  loadingSpinnerColor?: string;
+  /** Hex color for spinner in saving banner. Defaults to platform (Android blue) when not set. */
+  savingSpinnerColor?: string;
   scrollEnabled?: boolean;
   children: React.ReactNode;
 }
@@ -31,6 +35,8 @@ function FormModalScreen({
   loading = false,
   saving = false,
   savingText = 'Saving...',
+  loadingSpinnerColor,
+  savingSpinnerColor,
   scrollEnabled = true,
   children,
   ...props
@@ -38,7 +44,7 @@ function FormModalScreen({
   const content = loading ? (
     <SafeAreaView style={{ flex: 1 }} className="bg-background" edges={['top']}>
       <View style={{ flex: 1 }} className="items-center justify-center">
-        <Spinner />
+        <Spinner color={loadingSpinnerColor} />
       </View>
     </SafeAreaView>
   ) : (
@@ -81,7 +87,7 @@ function FormModalScreen({
 
       {saving && (
         <View className="bg-primary px-4 py-2 flex-row items-center justify-center gap-2">
-          <Spinner size="sm" />
+          <Spinner size="sm" color={savingSpinnerColor} />
           <Text className="text-primary-foreground text-sm">{savingText}</Text>
         </View>
       )}

@@ -11,20 +11,20 @@ Current version: **0.2.1**
 ```bash
 npm install @thewhileloop/whileui
 # or
-pnpm add @thewhileloop/whileui
+bun add @thewhileloop/whileui
 ```
 
 ### Required Peer Dependencies
 
 ```bash
-pnpm add react@^19.0.0 react-native@^0.81.0 uniwind@^1.0.0 tailwindcss@^4.0.0
-pnpm add react-native-reanimated react-native-safe-area-context react-native-screens
+bun add react@^19.0.0 react-native@^0.81.0 uniwind@^1.0.0 tailwindcss@^4.0.0
+bun add react-native-reanimated react-native-safe-area-context react-native-screens
 ```
 
 ### Portal Dependencies (Select, Popover, Tooltip, HoverCard)
 
 ```bash
-pnpm add @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
+bun add @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
 ```
 
 ### Setup Uniwind (required)
@@ -379,7 +379,7 @@ See [BLOCKS.md](./BLOCKS.md) for the full block catalog and [docs/BLUEPRINTS.md]
 
 ```bash
 # Install dependencies
-pnpm install
+bun install
 
 # Run the starter app (minimal composable template)
 cd apps/starter
@@ -388,6 +388,9 @@ npx expo start
 # Or run the full showcase
 cd apps/showcase
 npx expo start
+
+# Run on web (React Native Web)
+npx expo start --web
 ```
 
 ## Project Structure
@@ -426,7 +429,7 @@ whileui/
 │       ├── App.tsx            # Component showcase
 │       ├── global.css         # Theme variables (OKLCH) — at app root!
 │       └── metro.config.js    # Uniwind + monorepo config
-└── package.json               # pnpm monorepo root
+└── package.json               # bun monorepo root
 ```
 
 ## Theming
@@ -526,7 +529,7 @@ import { tv, type VariantProps } from './lib/tv';
 - **Variants**: [tailwind-variants](https://www.tailwind-variants.org/) (`tv()`)
 - **Merging**: [clsx](https://github.com/lukeed/clsx) + [tailwind-merge](https://github.com/dcastil/tailwind-merge)
 - **Expo**: SDK 54
-- **Monorepo**: pnpm + Turborepo
+- **Monorepo**: bun + Turborepo
 
 ## License
 
@@ -567,11 +570,12 @@ import { Input } from '@thewhileloop/whileui';
 <Input placeholder="Email" variant="default" value={value} onChangeText={setValue} />;
 ```
 
-| Prop        | Type                   | Default     | Description               |
-| ----------- | ---------------------- | ----------- | ------------------------- |
-| variant     | `'default' \| 'error'` | `'default'` | Input style variant       |
-| placeholder | `string`               | —           | Placeholder text          |
-| editable    | `boolean`              | `true`      | Whether input is editable |
+| Prop                 | Type                   | Default     | Description                                      |
+| -------------------- | ---------------------- | ----------- | ------------------------------------------------ |
+| variant              | `'default' \| 'error'` | `'default'` | Input style variant                              |
+| placeholder          | `string`               | —           | Placeholder text                                 |
+| placeholderTextColor | `string`               | —           | Hex for placeholder (theme-aware when provided)  |
+| editable             | `boolean`              | `true`      | Whether input is editable                        |
 
 ## NumericInput
 
@@ -590,14 +594,15 @@ import { NumericInput } from '@thewhileloop/whileui';
 />;
 ```
 
-| Prop            | Type                              | Default     | Description                       |
-| --------------- | --------------------------------- | ----------- | --------------------------------- |
-| variant         | `'default' \| 'error'`            | `'default'` | Input style                       |
-| size            | `'default' \| 'compact'`          | `'default'` | Density size                      |
-| value           | `number \| null`                  | —           | Controlled numeric value          |
-| onValueChange   | `(value: number \| null) => void` | —           | Numeric value change callback     |
-| prefix / suffix | `ReactNode`                       | —           | Left/right slots                  |
-| showSteppers    | `boolean`                         | `false`     | Show decrement/increment controls |
+| Prop                 | Type                              | Default     | Description                       |
+| -------------------- | --------------------------------- | ----------- | --------------------------------- |
+| variant              | `'default' \| 'error'`            | `'default'` | Input style                       |
+| size                 | `'default' \| 'compact'`          | `'default'` | Density size                      |
+| value                | `number \| null`                  | —           | Controlled numeric value          |
+| onValueChange       | `(value: number \| null) => void` | —           | Numeric value change callback     |
+| placeholderTextColor | `string`                          | —           | Hex for placeholder               |
+| prefix / suffix      | `ReactNode`                       | —           | Left/right slots                  |
+| showSteppers        | `boolean`                         | `false`     | Show decrement/increment controls |
 
 ## FormField
 

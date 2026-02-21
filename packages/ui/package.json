@@ -47,7 +47,7 @@
     "build": "tsc -p tsconfig.json",
     "prepack": "cp ../../README.md README.md",
     "postpack": "rm -f README.md",
-    "prepare": "pnpm build",
+    "prepare": "bun run build",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

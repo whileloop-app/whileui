@@ -32,7 +32,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
       inputClassName,
       variant,
       editable = true,
-      placeholderTextColor = '#737373',
+      placeholderTextColor,
       ...props
     },
     ref

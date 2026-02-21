@@ -8,11 +8,19 @@ import { cn } from '../../lib/cn';
 export interface LoadingScreenProps extends ViewProps {
   message?: string;
   size?: 'sm' | 'md' | 'lg';
+  /** Hex color for spinner. ActivityIndicator requires hex. */
+  spinnerColor?: string;
 }
 
 // ─── Component ───────────────────────────────────────────────
 
-export function LoadingScreen({ message, size = 'md', className, ...props }: LoadingScreenProps) {
+export function LoadingScreen({
+  message,
+  size = 'md',
+  spinnerColor,
+  className,
+  ...props
+}: LoadingScreenProps) {
   const spinnerSizes = {
     sm: 'h-6 w-6',
     md: 'h-10 w-10',
@@ -22,7 +30,7 @@ export function LoadingScreen({ message, size = 'md', className, ...props }: Loa
   return (
     <View className={cn('flex-1 items-center justify-center bg-background', className)} {...props}>
       <View className={spinnerSizes[size]}>
-        <Spinner />
+        <Spinner color={spinnerColor} />
       </View>
       {message && <Text className="mt-4 text-muted-foreground">{message}</Text>}
     </View>

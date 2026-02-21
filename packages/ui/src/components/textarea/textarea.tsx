@@ -29,7 +29,7 @@ export interface TextareaProps
 // ─── Component ───────────────────────────────────────────────
 
 const Textarea = React.forwardRef<React.ComponentRef<typeof TextInput>, TextareaProps>(
-  ({ className, size, placeholderTextColor = '#888', ...props }, ref) => {
+  ({ className, size, placeholderTextColor, ...props }, ref) => {
     return (
       <TextInput
         ref={ref}

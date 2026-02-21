@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Pressable,
+  Platform,
   useWindowDimensions,
   StyleSheet,
   type ViewStyle,
@@ -42,9 +43,13 @@ export interface DrawerMenuProps {
   onSelect?: (key: string) => void;
   header?: React.ReactNode;
   footer?: React.ReactNode;
+  /** Max width in px. On web, defaults to 360 when not provided. */
+  maxWidth?: number;
   className?: string;
   style?: StyleProp<ViewStyle>;
 }
+
+const WEB_DEFAULT_MAX_WIDTH = 360;
 
 export function DrawerMenu({
   visible,
@@ -54,11 +59,14 @@ export function DrawerMenu({
   onSelect,
   header,
   footer,
+  maxWidth,
   className,
   style,
 }: DrawerMenuProps) {
   const { width: screenWidth } = useWindowDimensions();
-  const drawerWidth = screenWidth * DRAWER_WIDTH_RATIO;
+  const rawWidth = screenWidth * DRAWER_WIDTH_RATIO;
+  const effectiveMaxWidth = maxWidth ?? (Platform.OS === 'web' ? WEB_DEFAULT_MAX_WIDTH : undefined);
+  const drawerWidth = effectiveMaxWidth != null ? Math.min(rawWidth, effectiveMaxWidth) : rawWidth;
   const progress = useSharedValue(0);
 
   React.useEffect(() => {

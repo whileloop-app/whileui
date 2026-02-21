@@ -3,4 +3,4 @@ dist
 build
 .expo
 *.lock
-pnpm-lock.yaml
+bun.lockb

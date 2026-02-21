@@ -204,6 +204,7 @@ const categories: { key: CategoryKey; label: string; icon: string }[] = [
 
 // ─── Haptic Feedback ─────────────────────────────────────────
 const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
+  if (Platform.OS === 'web') return;
   switch (type) {
     case 'light':
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -348,7 +349,7 @@ function AppContent() {
           backgroundColor="transparent"
         />
         <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
-          <View className="flex-1">
+          <View className="flex-1 web:max-w-4xl web:w-full web:self-center">
             {/* ─── Header ──────────────────────────────── */}
             <View className="px-5 pt-4 pb-2">
               <View className="flex-row items-center justify-between">
@@ -425,8 +426,13 @@ function AppContent() {
             </View>
 
             <ScrollView
+              style={{ flex: 1 }}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 40, paddingHorizontal: 20 }}
+              contentContainerStyle={{
+                paddingBottom: 40,
+                paddingHorizontal: 20,
+                flexGrow: 1,
+              }}
             >
               {renderContent()}
             </ScrollView>
@@ -694,9 +700,11 @@ function ComponentsTab({
             <Feather name="heart" size={18} color={colors.foreground} />
           </Button>
         </View>
-        <Button disabled>
-          <ButtonText>Disabled</ButtonText>
-        </Button>
+        <View className="flex-row">
+          <Button disabled>
+            <ButtonText>Disabled</ButtonText>
+          </Button>
+        </View>
       </Section>
 
       {/* Theme Bridge */}
@@ -1479,12 +1487,8 @@ function LayoutBlocksTab() {
   return (
     <View className="gap-6">
       <Section title="Action Bar" subtitle="Sticky bottom action row with safe-area support">
-        <View className="rounded-xl border border-border bg-muted/20 p-3">
-          <ActionBar
-            sticky={false}
-            safeArea={false}
-            className="relative inset-auto rounded-lg border border-border"
-          >
+        <View className="rounded-xl border border-border overflow-hidden">
+          <ActionBar sticky={false} safeArea={false} className="relative inset-auto">
             <Button
               variant="outline"
               className="flex-1"

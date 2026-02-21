@@ -140,15 +140,16 @@ Same API as BottomNav with elevated styling.
 
 **Tags:** `navigation`
 
-| Prop      | Type                      | Required | Description             |
-| --------- | ------------------------- | -------- | ----------------------- |
-| visible   | `boolean`                 | Yes      | Drawer visibility       |
-| onClose   | `() => void`              | Yes      | Close callback          |
-| sections  | `Array<{ title, items }>` | Yes      | Menu sections           |
-| activeKey | `string`                  | No       | Active item key         |
-| onSelect  | `(key: string) => void`   | No       | Item selection callback |
-| header    | `ReactNode`               | No       | Drawer header           |
-| footer    | `ReactNode`               | No       | Drawer footer           |
+| Prop      | Type                      | Required | Description                                                 |
+| --------- | ------------------------- | -------- | ----------------------------------------------------------- |
+| visible   | `boolean`                 | Yes      | Drawer visibility                                           |
+| onClose   | `() => void`              | Yes      | Close callback                                              |
+| sections  | `Array<{ title, items }>` | Yes      | Menu sections                                               |
+| activeKey | `string`                  | No       | Active item key                                             |
+| onSelect  | `(key: string) => void`   | No       | Item selection callback                                     |
+| header    | `ReactNode`               | No       | Drawer header                                               |
+| footer    | `ReactNode`               | No       | Drawer footer                                               |
+| maxWidth  | `number`                  | No       | Max width in px. On web, defaults to 360 when not provided. |
 
 ### TabBar, NavigationSidebar
 
@@ -166,18 +167,20 @@ See README API Reference for full props.
 
 Modal scaffold for forms with title, close, loading, saving states.
 
-| Prop          | Type         | Required | Description                             |
-| ------------- | ------------ | -------- | --------------------------------------- |
-| title         | `string`     | Yes      | Modal title                             |
-| subtitle      | `string`     | No       | Modal subtitle                          |
-| onClose       | `() => void` | No       | Close callback                          |
-| loading       | `boolean`    | No       | Show loading spinner                    |
-| saving        | `boolean`    | No       | Disable actions, show saving state      |
-| savingText    | `string`     | No       | Text when saving (default: "Saving...") |
-| leftSlot      | `ReactNode`  | No       | Left header slot (replaces close)       |
-| rightSlot     | `ReactNode`  | No       | Right header slot                       |
-| scrollEnabled | `boolean`    | No       | Enable scroll (default: true)           |
-| children      | `ReactNode`  | Yes      | Form content                            |
+| Prop                | Type         | Required | Description                                                 |
+| ------------------- | ------------ | -------- | ----------------------------------------------------------- |
+| title               | `string`     | Yes      | Modal title                                                 |
+| subtitle            | `string`     | No       | Modal subtitle                                              |
+| onClose             | `() => void` | No       | Close callback                                              |
+| loading             | `boolean`    | No       | Show loading spinner                                        |
+| saving              | `boolean`    | No       | Disable actions, show saving state                          |
+| savingText          | `string`     | No       | Text when saving (default: "Saving...")                     |
+| loadingSpinnerColor | `string`     | No       | Hex color for loading spinner (ActivityIndicator requires hex) |
+| savingSpinnerColor  | `string`     | No       | Hex color for saving banner spinner (themed e.g. primary-foreground) |
+| leftSlot            | `ReactNode`  | No       | Left header slot (replaces close)                           |
+| rightSlot           | `ReactNode`  | No       | Right header slot                                           |
+| scrollEnabled       | `boolean`    | No       | Enable scroll (default: true)                               |
+| children            | `ReactNode`  | Yes      | Form content                                                |
 
 ### ActionBar
 
@@ -224,7 +227,11 @@ Sticky bottom action row. Children are typically Buttons.
 
 **Tags:** `layout`, `splash`
 
-See README for full props.
+| Prop          | Type     | Required | Description                       |
+| ------------- | -------- | -------- | --------------------------------- |
+| message       | `string` | No       | Loading message below spinner     |
+| size          | `string` | No       | `sm` \| `md` \| `lg` (default: `md`) |
+| spinnerColor  | `string` | No       | Hex color for spinner             |
 
 ---
 

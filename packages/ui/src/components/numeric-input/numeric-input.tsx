@@ -114,7 +114,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       variant = 'default',
       size = 'default',
       editable = true,
-      placeholderTextColor = '#737373',
+      placeholderTextColor,
       onBlur,
       ...props
     },

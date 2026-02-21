@@ -48,3 +48,6 @@ Thumbs.db
 
 # Uniwind
 uniwind-types.d.ts
+
+
+.pnpm-store/

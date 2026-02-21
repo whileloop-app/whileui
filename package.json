@@ -2,7 +2,8 @@
   "name": "whileui-native",
   "private": true,
   "description": "WhileUI Native — shadcn/ui for React Native",
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "bun",
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
