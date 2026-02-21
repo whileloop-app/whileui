@@ -83,7 +83,7 @@ const SelectTrigger = React.forwardRef<SelectTriggerRef, SelectTriggerProps>(
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          'border-input bg-background flex h-12 w-full flex-row items-center justify-between gap-2 rounded-lg border px-4 shadow-sm active:opacity-70',
+          'border-input bg-background flex min-h-12 w-full flex-row items-center justify-between gap-2 rounded-lg border px-4 shadow-sm active:opacity-70',
           props.disabled && 'opacity-50',
           className
         )}

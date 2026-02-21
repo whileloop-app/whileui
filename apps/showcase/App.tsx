@@ -183,12 +183,21 @@ import {
   MetricCard,
   // Media Blocks
   SmartImage,
+  // Date Picker Blocks
+  DatePickerModal,
+  DatePickerTrigger,
+  DatePickerInline,
+  DateRangePickerModal,
+  DateRangePickerTrigger,
+  type DateRange,
   cn,
+  useIconColors,
 } from '@thewhileloop/whileui';
 
 type CategoryKey =
   | 'components'
   | 'auth'
+  | 'forms'
   | 'navigation'
   | 'layout'
   | 'chat'
@@ -199,6 +208,7 @@ type CategoryKey =
 const categories: { key: CategoryKey; label: string; icon: string }[] = [
   { key: 'components', label: 'Components', icon: 'layers' },
   { key: 'auth', label: 'Auth', icon: 'lock' },
+  { key: 'forms', label: 'Forms', icon: 'edit-3' },
   { key: 'navigation', label: 'Navigation', icon: 'navigation' },
   { key: 'layout', label: 'Layout', icon: 'layout' },
   { key: 'chat', label: 'Chat', icon: 'message-circle' },
@@ -221,21 +231,6 @@ const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
       Haptics.selectionAsync();
       break;
   }
-};
-
-// Theme-aware icon colors (for @expo/vector-icons which need hex values)
-// Colors matched to Noir global.css theme
-const useIconColors = () => {
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
-  return {
-    foreground: isDark ? '#ffffff' : '#000000',
-    muted: isDark ? '#999999' : '#737373',
-    primary: isDark ? '#ffffff' : '#000000',
-    primaryForeground: isDark ? '#000000' : '#ffffff',
-    accent: isDark ? '#4ade80' : '#22c55e',
-    destructive: isDark ? '#ef4444' : '#dc2626',
-  };
 };
 
 const showcaseThemeStore: { mode: ThemeMode | null } = { mode: null };
@@ -329,6 +324,8 @@ function AppContent() {
         return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
       case 'auth':
         return <AuthBlocksTab />;
+      case 'forms':
+        return <FormsBlocksTab />;
       case 'navigation':
         return <NavigationBlocksTab />;
       case 'layout':
@@ -564,6 +561,17 @@ function AppContent() {
                   ),
                 },
                 {
+                  key: 'forms',
+                  label: 'Forms',
+                  icon: (
+                    <Feather
+                      name="edit-3"
+                      size={20}
+                      color={activeTab === 'forms' ? colors.primary : colors.muted}
+                    />
+                  ),
+                },
+                {
                   key: 'navigation',
                   label: 'Navigation',
                   icon: (
@@ -689,14 +697,9 @@ function ComponentsTab({
   onThemeModeChange: (mode: ThemeMode) => void;
 }) {
   const [progress, setProgress] = useState(45);
-  const [switchVal, setSwitchVal] = useState(true);
-  const [checkVal, setCheckVal] = useState(true);
   const [radioVal, setRadioVal] = useState('option-1');
   const [massUnit, setMassUnit] = useState('kg');
   const [heightUnit, setHeightUnit] = useState('cm');
-  const [budget, setBudget] = useState<number | null>(2500);
-  const [weight, setWeight] = useState<number | null>(72.4);
-  const [email, setEmail] = useState('');
   const [selectVal, setSelectVal] = useState<SelectOption | undefined>(undefined);
   const { toast } = useToast();
   const colors = useIconColors();
@@ -707,7 +710,6 @@ function ComponentsTab({
     left: 12,
     right: 12,
   };
-  const emailInvalid = email.length > 0 && !email.includes('@');
 
   React.useEffect(() => {
     const timer = setInterval(() => setProgress((p) => (p + 10) % 110), 1000);
@@ -826,76 +828,6 @@ function ComponentsTab({
             <SegmentedControlItemText>System</SegmentedControlItemText>
           </SegmentedControlItem>
         </SegmentedControl>
-      </Section>
-
-      {/* Form Controls */}
-      <Section
-        title="Form Controls"
-        subtitle="FormField, NumericInput, and compact field composition"
-      >
-        <FormField required invalid={emailInvalid}>
-          <FormLabel>Work Email</FormLabel>
-          <FormControl>
-            <Input
-              placeholder="you@company.com"
-              value={email}
-              onChangeText={setEmail}
-              variant={emailInvalid ? 'error' : 'default'}
-            />
-          </FormControl>
-          {emailInvalid ? (
-            <FormMessage>Please enter a valid email address.</FormMessage>
-          ) : (
-            <FormHint>We'll send invoices and account alerts to this email.</FormHint>
-          )}
-        </FormField>
-
-        <FormField density="compact">
-          <FormLabel>Weight</FormLabel>
-          <FormControl>
-            <NumericInput
-              size="compact"
-              value={weight}
-              min={0}
-              max={300}
-              step={0.1}
-              showSteppers
-              onValueChange={setWeight}
-              suffix={<Text className="text-xs text-muted-foreground">{massUnit}</Text>}
-            />
-          </FormControl>
-          <FormHint>Supports prefix/suffix slots and optional steppers.</FormHint>
-        </FormField>
-
-        <LabeledField
-          label="Monthly Budget"
-          hint="Used for alerts and spending caps"
-          leftSlot={<Feather name="dollar-sign" size={16} color={colors.muted} />}
-          rightSlot={<Text className="text-xs text-muted-foreground">USD</Text>}
-        >
-          <LabeledFieldControl>
-            <NumericInput
-              value={budget}
-              onValueChange={setBudget}
-              min={0}
-              step={50}
-              className="border-0 bg-transparent"
-              inputClassName="px-0"
-            />
-          </LabeledFieldControl>
-        </LabeledField>
-
-        <Textarea placeholder="Write something great..." />
-        <View className="flex-row items-center gap-6">
-          <View className="flex-row items-center gap-2">
-            <Checkbox checked={checkVal} onCheckedChange={setCheckVal} />
-            <Label onPress={() => setCheckVal(!checkVal)}>Terms & Privacy</Label>
-          </View>
-          <View className="flex-row items-center gap-2">
-            <Switch checked={switchVal} onCheckedChange={setSwitchVal} />
-            <Label onPress={() => setSwitchVal(!switchVal)}>Notify me</Label>
-          </View>
-        </View>
       </Section>
 
       {/* Selection */}
@@ -1305,7 +1237,7 @@ function ComponentsTab({
                 <Text className="text-sm text-foreground">34 headless components</Text>
               </View>
               <View className="flex-row items-center gap-2 p-2.5 bg-muted rounded-lg">
-                <Text className="text-sm text-foreground">28 pre-built blocks</Text>
+                <Text className="text-sm text-foreground">31 pre-built blocks</Text>
               </View>
               <View className="flex-row items-center gap-2 p-2.5 bg-muted rounded-lg">
                 <Text className="text-sm text-foreground">Full theming via design tokens</Text>
@@ -1441,6 +1373,208 @@ function ComponentsTab({
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
+      </Section>
+    </View>
+  );
+}
+
+// ─── Forms Blocks Tab ────────────────────────────────────────
+function FormsBlocksTab() {
+  const [email, setEmail] = useState('');
+  const [weight, setWeight] = useState<number | null>(72.4);
+  const [budget, setBudget] = useState<number | null>(2500);
+  const [checkVal, setCheckVal] = useState(false);
+  const [switchVal, setSwitchVal] = useState(true);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [formSaving, setFormSaving] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [dateRangePickerOpen, setDateRangePickerOpen] = useState(false);
+  const [selectedRange, setSelectedRange] = useState<DateRange | null>(null);
+  const { toast } = useToast();
+  const colors = useIconColors();
+
+  const emailInvalid = email.length > 0 && !email.includes('@');
+
+  return (
+    <View className="gap-6">
+      <Section
+        title="Form Controls"
+        subtitle="FormField, Input, NumericInput, LabeledField, and compact composition"
+      >
+        <FormField required invalid={emailInvalid}>
+          <FormLabel>Work Email</FormLabel>
+          <FormControl>
+            <Input
+              placeholder="you@company.com"
+              value={email}
+              onChangeText={setEmail}
+              variant={emailInvalid ? 'error' : 'default'}
+            />
+          </FormControl>
+          {emailInvalid ? (
+            <FormMessage>Please enter a valid email address.</FormMessage>
+          ) : (
+            <FormHint>We'll send invoices and account alerts to this email.</FormHint>
+          )}
+        </FormField>
+
+        <FormField density="compact">
+          <FormLabel>Weight</FormLabel>
+          <FormControl>
+            <NumericInput
+              size="compact"
+              value={weight}
+              min={0}
+              max={300}
+              step={0.1}
+              showSteppers
+              onValueChange={setWeight}
+              suffix={<Text className="text-xs text-muted-foreground">kg</Text>}
+            />
+          </FormControl>
+          <FormHint>Supports prefix/suffix slots and optional steppers.</FormHint>
+        </FormField>
+
+        <LabeledField
+          label="Monthly Budget"
+          hint="Used for alerts and spending caps"
+          leftSlot={<Feather name="dollar-sign" size={16} color={colors.muted} />}
+          rightSlot={<Text className="text-xs text-muted-foreground">USD</Text>}
+        >
+          <LabeledFieldControl>
+            <NumericInput
+              value={budget}
+              onValueChange={setBudget}
+              min={0}
+              step={50}
+              className="border-0 bg-transparent"
+              inputClassName="px-0"
+            />
+          </LabeledFieldControl>
+        </LabeledField>
+
+        <FormField>
+          <FormLabel>Notes</FormLabel>
+          <FormControl>
+            <Textarea placeholder="Write something great..." />
+          </FormControl>
+        </FormField>
+
+        <View className="flex-row items-center gap-6">
+          <View className="flex-row items-center gap-2">
+            <Checkbox checked={checkVal} onCheckedChange={setCheckVal} />
+            <Label onPress={() => setCheckVal(!checkVal)}>Terms & Privacy</Label>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <Switch checked={switchVal} onCheckedChange={setSwitchVal} />
+            <Label onPress={() => setSwitchVal(!switchVal)}>Notify me</Label>
+          </View>
+        </View>
+      </Section>
+
+      <Section
+        title="Date Picker Modal"
+        subtitle="Compact trigger opens bottom sheet with calendar"
+      >
+        <DatePickerModal
+          value={selectedDate}
+          onValueChange={(d) => {
+            setSelectedDate(d);
+            d && toast({ title: 'Date selected', description: d });
+          }}
+          open={datePickerOpen}
+          onOpenChange={setDatePickerOpen}
+          trigger={<DatePickerTrigger value={selectedDate} placeholder="Pick a date" />}
+          title="Select date"
+        />
+      </Section>
+
+      <Section title="Date Picker Inline" subtitle="Embedded calendar for forms or dashboards">
+        <DatePickerInline
+          value={selectedDate}
+          onValueChange={(d) => {
+            setSelectedDate(d);
+            d && toast({ title: 'Date selected', description: d });
+          }}
+        />
+      </Section>
+
+      <Section
+        title="Date Range Picker Modal"
+        subtitle="Select start and end dates with period marking"
+      >
+        <DateRangePickerModal
+          value={selectedRange}
+          onValueChange={(r) => {
+            setSelectedRange(r);
+            r && toast({ title: 'Range selected', description: `${r.start} – ${r.end}` });
+          }}
+          open={dateRangePickerOpen}
+          onOpenChange={setDateRangePickerOpen}
+          trigger={<DateRangePickerTrigger value={selectedRange} placeholder="Pick date range" />}
+          title="Select date range"
+        />
+      </Section>
+
+      <Section
+        title="Form Modal Screen"
+        subtitle="Modal scaffold for forms with header, loading, and saving states"
+      >
+        <Button onPress={() => setFormModalOpen(true)}>
+          <ButtonText>Open Form Modal</ButtonText>
+        </Button>
+        <Modal
+          visible={formModalOpen}
+          animationType="slide"
+          onRequestClose={() => setFormModalOpen(false)}
+        >
+          <View style={{ flex: 1 }} className="bg-background">
+            <FormModalScreen
+              title="Edit Profile"
+              subtitle="Update your account details"
+              onClose={() => setFormModalOpen(false)}
+              saving={formSaving}
+              savingText="Saving..."
+              scrollEnabled
+            >
+              <View className="gap-4 pb-8">
+                <FormField>
+                  <FormLabel>Display Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Jane Doe" />
+                  </FormControl>
+                </FormField>
+                <FormField>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="jane@example.com" keyboardType="email-address" />
+                  </FormControl>
+                </FormField>
+                <FormField>
+                  <FormLabel>Bio</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Tell us about yourself" />
+                  </FormControl>
+                  <FormHint>Optional. Shown on your public profile.</FormHint>
+                </FormField>
+                <Button
+                  className="mt-2"
+                  onPress={() => {
+                    setFormSaving(true);
+                    setTimeout(() => {
+                      setFormSaving(false);
+                      toast({ title: 'Profile updated', variant: 'success' });
+                      setFormModalOpen(false);
+                    }, 1500);
+                  }}
+                >
+                  <ButtonText>Save Changes</ButtonText>
+                </Button>
+              </View>
+            </FormModalScreen>
+          </View>
+        </Modal>
       </Section>
     </View>
   );
@@ -1676,8 +1810,6 @@ function ChatBlocksTab({
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
-  const [formModalOpen, setFormModalOpen] = useState(false);
-  const [formSaving, setFormSaving] = useState(false);
   const [smartInputValue, setSmartInputValue] = useState('');
   const { toast } = useToast();
   const colors = useIconColors();
@@ -1685,67 +1817,68 @@ function LayoutBlocksTab() {
   return (
     <View className="gap-6">
       <Section title="Action Bar" subtitle="Sticky bottom action row with safe-area support">
-        <View className="rounded-xl border border-border overflow-hidden">
-          <ActionBar sticky={false} safeArea={false} className="relative inset-auto">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onPress={() => {
-                triggerHaptic('light');
-                toast({
-                  title: 'Changes discarded',
-                  description: 'ActionBar cancel handler fired.',
-                });
-              }}
-            >
-              <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
-              className="flex-1"
-              onPress={() => {
-                triggerHaptic('medium');
-                toast({
-                  title: 'Changes saved',
-                  description: 'ActionBar primary action completed.',
-                  variant: 'success',
-                });
-              }}
-            >
-              <ButtonText>Save Changes</ButtonText>
-            </Button>
-          </ActionBar>
-        </View>
+        <ActionBar
+          sticky={false}
+          safeArea={false}
+          className="relative inset-auto rounded-xl border border-border"
+        >
+          <Button
+            variant="outline"
+            className="flex-1"
+            onPress={() => {
+              triggerHaptic('light');
+              toast({
+                title: 'Changes discarded',
+                description: 'ActionBar cancel handler fired.',
+              });
+            }}
+          >
+            <ButtonText>Cancel</ButtonText>
+          </Button>
+          <Button
+            className="flex-1"
+            onPress={() => {
+              triggerHaptic('medium');
+              toast({
+                title: 'Changes saved',
+                description: 'ActionBar primary action completed.',
+                variant: 'success',
+              });
+            }}
+          >
+            <ButtonText>Save Changes</ButtonText>
+          </Button>
+        </ActionBar>
       </Section>
 
       <Section
         title="Smart Input"
         subtitle="Standalone keyboard-aware input bar with left/right slots"
       >
-        <View className="rounded-xl border border-border overflow-hidden min-h-[100px]">
-          <SmartInput
-            value={smartInputValue}
-            onChangeText={setSmartInputValue}
-            placeholder="Type a message..."
-            safeArea={false}
-            leftSlot={
-              <Button variant="ghost" size="icon" onPress={() => triggerHaptic('light')}>
-                <Feather name="plus" size={20} color={colors.foreground} />
-              </Button>
-            }
-            rightSlot={
-              <Button
-                size="icon"
-                onPress={() => {
-                  triggerHaptic('medium');
-                  toast({ title: 'Sent', description: smartInputValue || '(empty)' });
-                  setSmartInputValue('');
-                }}
-              >
-                <Feather name="send" size={18} color={colors.primaryForeground} />
-              </Button>
-            }
-          />
-        </View>
+        <SmartInput
+          variant="card"
+          value={smartInputValue}
+          onChangeText={setSmartInputValue}
+          placeholder="Type a message..."
+          safeArea={false}
+          leftSlot={
+            <Button variant="ghost" size="icon" onPress={() => triggerHaptic('light')}>
+              <Feather name="plus" size={20} color={colors.foreground} />
+            </Button>
+          }
+          rightSlot={
+            <Button
+              size="icon"
+              onPress={() => {
+                triggerHaptic('medium');
+                toast({ title: 'Sent', description: smartInputValue || '(empty)' });
+                setSmartInputValue('');
+              }}
+            >
+              <Feather name="send" size={18} color={colors.primaryForeground} />
+            </Button>
+          }
+        />
       </Section>
 
       <Section
@@ -1770,66 +1903,6 @@ function LayoutBlocksTab() {
             },
           ]}
         />
-      </Section>
-
-      <Section
-        title="Form Modal Screen"
-        subtitle="Modal scaffold for forms with header, loading, and saving states"
-      >
-        <Button onPress={() => setFormModalOpen(true)}>
-          <ButtonText>Open Form Modal</ButtonText>
-        </Button>
-        <Modal
-          visible={formModalOpen}
-          animationType="slide"
-          onRequestClose={() => setFormModalOpen(false)}
-        >
-          <View style={{ flex: 1 }} className="bg-background">
-            <FormModalScreen
-              title="Edit Profile"
-              subtitle="Update your account details"
-              onClose={() => setFormModalOpen(false)}
-              saving={formSaving}
-              savingText="Saving..."
-              scrollEnabled
-            >
-              <View className="gap-4 pb-8">
-                <FormField>
-                  <FormLabel>Display Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Jane Doe" />
-                  </FormControl>
-                </FormField>
-                <FormField>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="jane@example.com" keyboardType="email-address" />
-                  </FormControl>
-                </FormField>
-                <FormField>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Tell us about yourself" />
-                  </FormControl>
-                  <FormHint>Optional. Shown on your public profile.</FormHint>
-                </FormField>
-                <Button
-                  className="mt-2"
-                  onPress={() => {
-                    setFormSaving(true);
-                    setTimeout(() => {
-                      setFormSaving(false);
-                      toast({ title: 'Profile updated', variant: 'success' });
-                      setFormModalOpen(false);
-                    }, 1500);
-                  }}
-                >
-                  <ButtonText>Save Changes</ButtonText>
-                </Button>
-              </View>
-            </FormModalScreen>
-          </View>
-        </Modal>
       </Section>
 
       <Section title="Empty State" subtitle="When there's no content to show">

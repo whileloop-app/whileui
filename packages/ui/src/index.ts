@@ -15,6 +15,7 @@ export {
   type UseThemeBridgeOptions,
   type UseThemeBridgeResult,
 } from './lib/theme-bridge';
+export { useThemeColors, useIconColors, type ThemeColors } from './lib/theme-colors';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';
@@ -366,3 +367,4 @@ export * from './blocks/lists';
 export * from './blocks/commerce';
 export * from './blocks/splash';
 export * from './blocks/media';
+export * from './blocks/datepicker';

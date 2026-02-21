@@ -321,6 +321,14 @@ function MyScreen() {
 | -------------- | ----------------------------------- |
 | **SmartImage** | Image with aspect ratio and loading |
 
+### Date Picker
+
+| Block                    | Description                                       |
+| ------------------------ | ------------------------------------------------- |
+| **DatePickerModal**      | Bottom sheet modal with calendar, compact trigger |
+| **DatePickerInline**     | Inline calendar for forms or dashboards           |
+| **DateRangePickerModal** | Range selection modal with period marking         |
+
 ## Layout Primitives (Stack, Row, Box)
 
 Use `Stack` for vertical layouts, `Row` for horizontal layouts. Both support `gap`, `align`, and `justify` variants.
@@ -377,6 +385,7 @@ import { AppShell, Header, BottomNav, ScrollView } from '@thewhileloop/whileui';
 | Flow       | Blocks                                                                             |
 | ---------- | ---------------------------------------------------------------------------------- |
 | Auth       | SignInForm → SignUpForm → ForgotPasswordForm → VerifyEmailForm → ResetPasswordForm |
+| Forms      | FormField + Input/NumericInput/LabeledField + DatePickerModal + FormModalScreen    |
 | Settings   | ProfileHeader + SettingsSection + SettingsItem (+ FormModalScreen for edits)       |
 | E-commerce | ProductCard list → CheckoutSummary + ActionBar                                     |
 | Chat       | Chat + ChatSuggestions + SmartInput (attach, send). Extensible for images/tags     |
@@ -1152,6 +1161,63 @@ const [value, setValue] = useState('');
 | `loadingIndicator`       | `ReactNode`          | Shown when loading (typing dots)                  |
 | `inputSafeArea`          | `boolean`            | SmartInput safe-area (default `true`)             |
 | `keyboardVerticalOffset` | `number`             | For header offset when keyboard opens             |
+
+## DatePickerModal / DatePickerInline / DateRangePickerModal
+
+Date selection blocks using react-native-calendars. Theme-aware via `useCalendarTheme` (Uniwind light/dark). Optional `theme` prop for custom hex colors.
+
+**DatePickerModal** — Compact trigger opens bottom sheet with calendar. Use `DatePickerTrigger` as the trigger content.
+
+**DatePickerInline** — Calendar embedded inline for forms or dashboards.
+
+**DateRangePickerModal** — Range selection with period marking. Use `DateRangePickerTrigger` as the trigger content.
+
+```tsx
+import {
+  DatePickerModal,
+  DatePickerTrigger,
+  DatePickerInline,
+  DateRangePickerModal,
+  DateRangePickerTrigger,
+  type DateRange,
+} from '@thewhileloop/whileui';
+
+// Single date (modal)
+const [date, setDate] = useState<string | null>(null);
+const [open, setOpen] = useState(false);
+
+<DatePickerModal
+  value={date}
+  onValueChange={setDate}
+  open={open}
+  onOpenChange={setOpen}
+  trigger={<DatePickerTrigger value={date} placeholder="Pick a date" />}
+  title="Select date"
+/>;
+
+// Inline calendar
+<DatePickerInline value={date} onValueChange={setDate} />;
+
+// Date range (modal)
+const [range, setRange] = useState<DateRange | null>(null);
+
+<DateRangePickerModal
+  value={range}
+  onValueChange={setRange}
+  open={rangeOpen}
+  onOpenChange={setRangeOpen}
+  trigger={<DateRangePickerTrigger value={range} placeholder="Pick range" />}
+/>;
+```
+
+| Prop                    | Type                                   | Description                     |
+| ----------------------- | -------------------------------------- | ------------------------------- |
+| `value`                 | `string \| null` / `DateRange \| null` | Selected date(s) YYYY-MM-DD     |
+| `onValueChange`         | `(date) => void`                       | Change handler                  |
+| `open` / `onOpenChange` | —                                      | Modal state (modal variants)    |
+| `trigger`               | `ReactNode`                            | Custom trigger (modal variants) |
+| `minDate` / `maxDate`   | `string`                               | YYYY-MM-DD bounds               |
+| `theme`                 | `CalendarTheme`                        | Override calendar hex colors    |
 
 ## ConfirmActionSheet
 

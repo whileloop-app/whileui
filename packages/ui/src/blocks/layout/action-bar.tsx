@@ -22,8 +22,8 @@ export function ActionBar({
   return (
     <View
       className={cn(
-        'w-full flex-row items-center gap-3 border-t border-border bg-background px-4 pt-3',
-        sticky && 'absolute inset-x-0 bottom-0',
+        'w-full flex-row items-center gap-3 bg-background px-4 pt-3',
+        sticky && 'absolute inset-x-0 bottom-0 border-t border-border',
         elevated && 'shadow-lg',
         className
       )}

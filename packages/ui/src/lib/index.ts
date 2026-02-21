@@ -1,6 +1,7 @@
 export { cn } from './cn';
 export { tv, type VariantProps } from './tv';
 export { PortalHost } from './portal';
+export { useThemeColors, useIconColors, type ThemeColors } from './theme-colors';
 export {
   ThemeBridge,
   applyThemeMode,

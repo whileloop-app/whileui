@@ -4,7 +4,7 @@ import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 
 const inputVariants = tv({
-  base: 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground',
+  base: 'min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground',
   variants: {
     variant: {
       default: 'border-input',

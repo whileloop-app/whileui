@@ -69,6 +69,7 @@
   },
   "dependencies": {
     "clsx": "^2.1.0",
+    "react-native-calendars": "^1.1314.0",
     "tailwind-merge": "^3.0.0",
     "tailwind-variants": "^0.3.0"
   },
