@@ -4,26 +4,18 @@
 
 Beautiful, accessible, themeable components built with [Uniwind](https://uniwind.dev) + Tailwind CSS v4.
 
+**Requirements:** React 19+, React Native 0.81+, Expo 52+ (if using Expo). Supports React Native Web.
+
 ## Installation
 
 ```bash
-npm install @thewhileloop/whileui
-# or
 bun add @thewhileloop/whileui
-```
-
-### Required Peer Dependencies
-
-```bash
-bun add react@^19.0.0 react-native@^0.81.0 uniwind@^1.0.0 tailwindcss@^4.0.0
-bun add react-native-reanimated react-native-safe-area-context react-native-screens
-```
-
-### Portal Dependencies (Select, Popover, Tooltip, HoverCard)
-
-```bash
+bun add react@^19.0.0 react-native@^0.81.0 uniwind@^1.0.0 tailwindcss@^4.0.0 react-native-reanimated react-native-safe-area-context react-native-screens
+# Only if you use Select, Popover, Tooltip, or HoverCard:
 bun add @rn-primitives/portal @rn-primitives/hooks @rn-primitives/slot @rn-primitives/select @rn-primitives/popover @rn-primitives/tooltip @rn-primitives/hover-card
 ```
+
+Use `npm install` instead of `bun add` if you prefer npm.
 
 ### Setup Uniwind (required)
 
@@ -122,7 +114,7 @@ export default function App() {
 }
 ```
 
-> **Note:** `<PortalHost />` must be added at the root of your app (as the last child) to enable portal-based components like Select, Popover, Tooltip, and HoverCard to render correctly.
+> **Note:** If you use Select, Popover, Tooltip, or HoverCard, add `<PortalHost />` at the root of your app (as the last child).
 
 ## Usage
 
@@ -274,18 +266,27 @@ function MyScreen() {
 
 ### Layout
 
-| Block                  | Description                                     |
-| ---------------------- | ----------------------------------------------- |
-| **ActionBar**          | Sticky bottom action row with safe-area padding |
-| **ConfirmActionSheet** | Reusable destructive confirmation sheet         |
-| **FormModalScreen**    | Modal scaffold for forms with loading states    |
-| **EmptyState**         | Empty content placeholder                       |
-| **ErrorState**         | Error display with retry                        |
-| **LoadingScreen**      | Full-screen loading indicator                   |
-| **OnboardingScreen**   | Onboarding flow screen                          |
-| **SplashScreen**       | Branded splash (fade/scale/slide variants)      |
-| **MinimalSplash**      | Minimal monochrome splash                       |
-| **BrandedSplash**      | Splash with brand imagery                       |
+| Block                  | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| **ActionBar**          | Sticky bottom action row with safe-area padding    |
+| **ConfirmActionSheet** | Reusable destructive confirmation sheet            |
+| **FormModalScreen**    | Modal scaffold for forms with loading states       |
+| **EmptyState**         | Empty content placeholder                          |
+| **ErrorState**         | Error display with retry                           |
+| **LoadingScreen**      | Full-screen loading indicator                      |
+| **SmartInput**         | Keyboard-aware compose input with left/right slots |
+| **OnboardingScreen**   | Onboarding flow screen                             |
+| **SplashScreen**       | Branded splash (fade/scale/slide variants)         |
+| **MinimalSplash**      | Minimal monochrome splash                          |
+| **BrandedSplash**      | Splash with brand imagery                          |
+
+### Chat
+
+| Block                 | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| **Chat**              | AI-style chat: messages, suggestions, SmartInput |
+| **ChatMessageBubble** | Message bubble (user/assistant, big/small text)  |
+| **ChatSuggestions**   | Suggestion chips when empty                      |
 
 ### Profile & Settings
 
@@ -313,7 +314,6 @@ function MyScreen() {
 | **PricingCard**     | Pricing tiers with feature list    |
 | **CheckoutSummary** | Cart summary with line items       |
 | **MetricCard**      | Stats/progress card for dashboards |
-
 
 ### Media
 
@@ -374,12 +374,13 @@ import { AppShell, Header, BottomNav, ScrollView } from '@thewhileloop/whileui';
 
 ### Flow Patterns
 
-| Flow       | Blocks                                                                         |
-| ---------- | ------------------------------------------------------------------------------ |
+| Flow       | Blocks                                                                             |
+| ---------- | ---------------------------------------------------------------------------------- |
 | Auth       | SignInForm → SignUpForm → ForgotPasswordForm → VerifyEmailForm → ResetPasswordForm |
-| Settings   | ProfileHeader + SettingsSection + SettingsItem (+ FormModalScreen for edits)  |
-| E-commerce | ProductCard list → CheckoutSummary + ActionBar                                 |
-| App shell  | AppShell + Header + BottomNav + content                                        |
+| Settings   | ProfileHeader + SettingsSection + SettingsItem (+ FormModalScreen for edits)       |
+| E-commerce | ProductCard list → CheckoutSummary + ActionBar                                     |
+| Chat       | Chat + ChatSuggestions + SmartInput (attach, send). Extensible for images/tags     |
+| App shell  | AppShell + Header + BottomNav + content                                            |
 
 Block props: see TypeScript interfaces in `packages/ui/src/blocks`.
 
@@ -508,7 +509,6 @@ const adapter: ThemeBridgeAdapter = {
 const { mode, resolvedTheme, setMode, cycleMode } = useThemeBridge({ adapter });
 ```
 
-
 ## Tech Stack
 
 - **Styling**: [Uniwind](https://uniwind.dev) (free tier) + Tailwind CSS v4
@@ -516,12 +516,6 @@ const { mode, resolvedTheme, setMode, cycleMode } = useThemeBridge({ adapter });
 - **Merging**: [clsx](https://github.com/lukeed/clsx) + [tailwind-merge](https://github.com/dcastil/tailwind-merge)
 - **Expo**: SDK 54
 - **Monorepo**: bun + Turborepo
-
-## License
-
-MIT
-
----
 
 # API Reference
 
@@ -556,12 +550,12 @@ import { Input } from '@thewhileloop/whileui';
 <Input placeholder="Email" variant="default" value={value} onChangeText={setValue} />;
 ```
 
-| Prop                 | Type                   | Default     | Description                                      |
-| -------------------- | ---------------------- | ----------- | ------------------------------------------------ |
-| variant              | `'default' \| 'error'` | `'default'` | Input style variant                              |
-| placeholder          | `string`               | —           | Placeholder text                                 |
-| placeholderTextColor | `string`               | —           | Hex for placeholder (theme-aware when provided)  |
-| editable             | `boolean`              | `true`      | Whether input is editable                        |
+| Prop                 | Type                   | Default     | Description                                     |
+| -------------------- | ---------------------- | ----------- | ----------------------------------------------- |
+| variant              | `'default' \| 'error'` | `'default'` | Input style variant                             |
+| placeholder          | `string`               | —           | Placeholder text                                |
+| placeholderTextColor | `string`               | —           | Hex for placeholder (theme-aware when provided) |
+| editable             | `boolean`              | `true`      | Whether input is editable                       |
 
 ## NumericInput
 
@@ -585,10 +579,10 @@ import { NumericInput } from '@thewhileloop/whileui';
 | variant              | `'default' \| 'error'`            | `'default'` | Input style                       |
 | size                 | `'default' \| 'compact'`          | `'default'` | Density size                      |
 | value                | `number \| null`                  | —           | Controlled numeric value          |
-| onValueChange       | `(value: number \| null) => void` | —           | Numeric value change callback     |
+| onValueChange        | `(value: number \| null) => void` | —           | Numeric value change callback     |
 | placeholderTextColor | `string`                          | —           | Hex for placeholder               |
 | prefix / suffix      | `ReactNode`                       | —           | Left/right slots                  |
-| showSteppers        | `boolean`                         | `false`     | Show decrement/increment controls |
+| showSteppers         | `boolean`                         | `false`     | Show decrement/increment controls |
 
 ## FormField
 
@@ -1096,6 +1090,69 @@ import { ActionBar, Button, ButtonText } from '@thewhileloop/whileui';
 </ActionBar>;
 ```
 
+## SmartInput
+
+Keyboard-aware compose input. Copy-paste block — uses semantic tokens, theme via `global.css`. Forwards ref to `TextInput`.
+
+```tsx
+import { SmartInput, Button, ButtonText } from '@thewhileloop/whileui';
+
+<SmartInput
+  value={message}
+  onChangeText={setMessage}
+  placeholder="Type a message..."
+  leftSlot={
+    <Button variant="ghost" size="icon">
+      <Icon name="add" />
+    </Button>
+  }
+  rightSlot={
+    <Button size="icon" onPress={handleSend}>
+      <ButtonText>Send</ButtonText>
+    </Button>
+  }
+/>;
+```
+
+## Chat
+
+AI-style chat: message list, suggestion chips when empty, SmartInput with attach/send slots. Uses semantic tokens; theme via `global.css`. Copy-paste block — edit directly. `renderMessage` for markdown/code, `loadingIndicator` for typing state.
+
+```tsx
+import { Chat, type ChatMessage } from '@thewhileloop/whileui';
+
+const [messages, setMessages] = useState<ChatMessage[]>([...]);
+const [value, setValue] = useState('');
+
+<Chat
+  messages={messages}
+  value={value}
+  onChangeText={setValue}
+  onSend={() => { /* append user msg, clear input */ }}
+  placeholder="Message..."
+  suggestions={['Summarize this', 'Explain simply', 'Translate']}
+  onSuggestionPress={(text) => setValue(text)}
+  emptyTitle="How can I help?"
+  emptyDescription="Ask anything."
+  leftSlot={<Button variant="ghost" size="icon"><Icon name="paperclip" /></Button>}
+  rightSlot={<Button size="icon" onPress={handleSend}><Icon name="send" /></Button>}
+/>;
+```
+
+| Prop                       | Type                     | Description                                       |
+| -------------------------- | ------------------------ | ------------------------------------------------- |
+| `messages`                 | `ChatMessage[]`          | `{ id, role, content, secondary?, contentSize? }` |
+| `value`                    | `string`                 | Input value                                       |
+| `onChangeText`             | `(text) => void`         | Input change                                      |
+| `onSend`                   | `() => void`             | Send handler                                      |
+| `suggestions`              | `string[]`               | Chips when empty                                  |
+| `leftSlot` / `rightSlot`   | `ReactNode`              | Attach, send, etc.                                |
+| `exampleMessage`           | `ChatMessage`            | Shown in empty state                              |
+| `renderMessage`            | `(msg) => ReactNode`     | Custom message (markdown, code, images)           |
+| `loadingIndicator`         | `ReactNode`              | Shown when loading (typing dots)                  |
+| `inputSafeArea`            | `boolean`                | SmartInput safe-area (default `true`)             |
+| `keyboardVerticalOffset`   | `number`                 | For header offset when keyboard opens             |
+
 ## ConfirmActionSheet
 
 ```tsx
@@ -1285,3 +1342,7 @@ import { DrawerMenu } from '@thewhileloop/whileui';
   footer={<Text>v1.0</Text>}
 />;
 ```
+
+## License
+
+MIT — [Source](https://github.com/whileloop-app/whileui)

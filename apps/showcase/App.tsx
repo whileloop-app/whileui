@@ -158,6 +158,9 @@ import {
   DrawerMenu,
   // Layout Blocks
   ActionBar,
+  SmartInput,
+  Chat,
+  type ChatMessage,
   ConfirmActionSheet,
   EmptyState,
   ErrorState,
@@ -188,6 +191,7 @@ type CategoryKey =
   | 'auth'
   | 'navigation'
   | 'layout'
+  | 'chat'
   | 'profile'
   | 'lists'
   | 'commerce';
@@ -197,6 +201,7 @@ const categories: { key: CategoryKey; label: string; icon: string }[] = [
   { key: 'auth', label: 'Auth', icon: 'lock' },
   { key: 'navigation', label: 'Navigation', icon: 'navigation' },
   { key: 'layout', label: 'Layout', icon: 'layout' },
+  { key: 'chat', label: 'Chat', icon: 'message-circle' },
   { key: 'profile', label: 'Profile', icon: 'user' },
   { key: 'lists', label: 'Lists', icon: 'list' },
   { key: 'commerce', label: 'Commerce', icon: 'shopping-bag' },
@@ -338,6 +343,89 @@ function AppContent() {
         return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
     }
   };
+
+  // Chat as separate full-page — no header/tabs, just chat UI
+  if (activeTab === 'chat') {
+    return (
+      <SafeAreaProvider>
+        <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
+        <View style={{ flex: 1 }} className="bg-background">
+          <StatusBar
+            barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
+            translucent
+            backgroundColor="transparent"
+          />
+          <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+            <ChatBlocksTab
+              onBack={() => {
+                triggerHaptic('light');
+                setActiveTab('components');
+              }}
+              onMenuPress={() => {
+                triggerHaptic('light');
+                setDrawerOpen(true);
+              }}
+              colors={colors}
+            />
+          </SafeAreaView>
+          <ToastContainer position="top" className="mt-12" />
+          <DrawerMenu
+            visible={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            sections={[
+              {
+                title: 'Back',
+                items: [
+                  {
+                    key: 'components',
+                    label: 'Back to Showcase',
+                    icon: <Feather name="arrow-left" size={20} color={colors.muted} />,
+                  },
+                ],
+              },
+              {
+                title: 'Other Blocks',
+                items: categories
+                  .filter((c) => c.key !== 'chat')
+                  .map((cat) => ({
+                    key: cat.key,
+                    label: cat.label,
+                    icon: (
+                      <Feather
+                        name={cat.icon as any}
+                        size={20}
+                        color={activeTab === cat.key ? colors.primary : colors.muted}
+                      />
+                    ),
+                  })),
+              },
+            ]}
+            activeKey={activeTab}
+            onSelect={(key) => {
+              setActiveTab(key as CategoryKey);
+              setDrawerOpen(false);
+            }}
+            header={
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-primary items-center justify-center">
+                  <Text className="text-primary-foreground font-bold">W</Text>
+                </View>
+                <View>
+                  <Text className="font-bold text-foreground text-lg">WhileUI</Text>
+                  <Text className="text-xs text-muted-foreground">v1.0</Text>
+                </View>
+              </View>
+            }
+            footer={
+              <Text className="text-xs text-muted-foreground text-center">
+                Built with ❤️ for React Native
+              </Text>
+            }
+          />
+        </View>
+      </SafeAreaProvider>
+    );
+  }
 
   return (
     <SafeAreaProvider>
@@ -494,6 +582,17 @@ function AppContent() {
                       name="layout"
                       size={20}
                       color={activeTab === 'layout' ? colors.primary : colors.muted}
+                    />
+                  ),
+                },
+                {
+                  key: 'chat',
+                  label: 'Chat',
+                  icon: (
+                    <Feather
+                      name="message-circle"
+                      size={20}
+                      color={(activeTab as CategoryKey) === 'chat' ? colors.primary : colors.muted}
                     />
                   ),
                 },
@@ -1475,12 +1574,111 @@ function NavigationBlocksTab() {
   );
 }
 
+// ─── Chat Blocks Tab ────────────────────────────────────────
+function ChatBlocksTab({
+  onBack,
+  onMenuPress,
+  colors,
+}: {
+  onBack?: () => void;
+  onMenuPress?: () => void;
+  colors?: ReturnType<typeof useIconColors>;
+}) {
+  const iconColors = colors ?? useIconColors();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const exampleMessage: ChatMessage = {
+    id: 'example',
+    role: 'assistant',
+    content:
+      'I can help with summaries, explanations, translations, and more. Try a suggestion below or type your own question.',
+    secondary: 'Example message',
+    contentSize: 'default',
+  };
+  const [inputValue, setInputValue] = useState('');
+  const { toast } = useToast();
+
+  const handleSend = () => {
+    if (!inputValue.trim()) return;
+    triggerHaptic('medium');
+    setMessages((prev) => [
+      ...prev,
+      { id: `u-${Date.now()}`, role: 'user', content: inputValue.trim(), secondary: 'Just now' },
+    ]);
+    setInputValue('');
+    toast({ title: 'Sent' });
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Chat
+        messages={messages}
+        value={inputValue}
+        onChangeText={setInputValue}
+        onSend={handleSend}
+        placeholder="Message..."
+        suggestions={[
+          'Summarize this document',
+          "Explain like I'm 5",
+          'Translate to Spanish',
+          'Write a haiku',
+        ]}
+        onSuggestionPress={(text) => {
+          setInputValue(text);
+          toast({ title: 'Suggestion selected' });
+        }}
+        emptyTitle="How can I help?"
+        emptyDescription="Ask anything. Supports text, images & attachments."
+        exampleMessage={exampleMessage}
+        header={
+          <View className="flex-row items-center gap-3 border-b border-border bg-background px-4 py-3">
+            {onBack && (
+              <Pressable
+                onPress={onBack}
+                className="w-10 h-10 items-center justify-center rounded-xl active:opacity-70 -ml-1"
+              >
+                <Feather name="arrow-left" size={22} color={iconColors.foreground} />
+              </Pressable>
+            )}
+            <View className="flex-1">
+              <Text className="text-lg font-semibold text-foreground">Chat</Text>
+              <Text className="text-sm text-muted-foreground">AI conversation</Text>
+            </View>
+            {onMenuPress && (
+              <Pressable
+                onPress={onMenuPress}
+                className="w-10 h-10 items-center justify-center rounded-xl bg-muted active:opacity-70"
+              >
+                <Feather name="menu" size={20} color={iconColors.foreground} />
+              </Pressable>
+            )}
+          </View>
+        }
+        leftSlot={
+          <Button
+            variant="ghost"
+            size="icon"
+            onPress={() => toast({ title: 'Attach (coming soon)' })}
+          >
+            <Feather name="paperclip" size={20} color={iconColors.foreground} />
+          </Button>
+        }
+        rightSlot={
+          <Button size="icon" disabled={!inputValue.trim()} onPress={handleSend}>
+            <Feather name="send" size={18} color={iconColors.primaryForeground} />
+          </Button>
+        }
+      />
+    </View>
+  );
+}
+
 // ─── Layout Blocks Tab ──────────────────────────────────────
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [formSaving, setFormSaving] = useState(false);
+  const [smartInputValue, setSmartInputValue] = useState('');
   const { toast } = useToast();
   const colors = useIconColors();
 
@@ -1516,6 +1714,37 @@ function LayoutBlocksTab() {
               <ButtonText>Save Changes</ButtonText>
             </Button>
           </ActionBar>
+        </View>
+      </Section>
+
+      <Section
+        title="Smart Input"
+        subtitle="Standalone keyboard-aware input bar with left/right slots"
+      >
+        <View className="rounded-xl border border-border overflow-hidden min-h-[100px]">
+          <SmartInput
+            value={smartInputValue}
+            onChangeText={setSmartInputValue}
+            placeholder="Type a message..."
+            safeArea={false}
+            leftSlot={
+              <Button variant="ghost" size="icon" onPress={() => triggerHaptic('light')}>
+                <Feather name="plus" size={20} color={colors.foreground} />
+              </Button>
+            }
+            rightSlot={
+              <Button
+                size="icon"
+                onPress={() => {
+                  triggerHaptic('medium');
+                  toast({ title: 'Sent', description: smartInputValue || '(empty)' });
+                  setSmartInputValue('');
+                }}
+              >
+                <Feather name="send" size={18} color={colors.primaryForeground} />
+              </Button>
+            }
+          />
         </View>
       </Section>
 

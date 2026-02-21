@@ -10,6 +10,7 @@ export { EmptyState, type EmptyStateProps } from './empty-state';
 export { ErrorState, type ErrorStateProps } from './error-state';
 export { FormModalScreen, type FormModalScreenProps } from './form-modal-screen';
 export { LoadingScreen, type LoadingScreenProps } from './loading-screen';
+export { SmartInput, type SmartInputProps } from './smart-input';
 export {
   OnboardingScreen,
   type OnboardingScreenProps,

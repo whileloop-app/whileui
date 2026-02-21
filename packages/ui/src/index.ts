@@ -358,6 +358,7 @@ export {
 
 // ─── Blocks ──────────────────────────────────────────────────
 export * from './blocks/auth';
+export * from './blocks/chat';
 export * from './blocks/navigation';
 export * from './blocks/layout';
 export * from './blocks/profile';

@@ -3,7 +3,10 @@
   "private": true,
   "description": "WhileUI Native - Copy-paste components for React Native",
   "packageManager": "bun",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",

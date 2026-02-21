@@ -183,6 +183,11 @@ Add to this file when you discover:
 
 **Keep entries concise. Consolidate similar issues. Delete outdated rules.**
 
+### Blocks vs components
+
+- **Blocks** = copy-paste compositions. No themeability props needed — people edit the block code directly. Use semantic tokens; theme via `global.css`.
+- **Components** = imported dependencies. Must be themeable (semantic classes, `*Variants` for extension).
+
 ## Custom Themes (Starter Kits)
 
 Create reusable theme presets that can be switched at runtime:
