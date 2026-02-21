@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import { useUniwind } from 'uniwind';
 import { Calendar, type DateData } from 'react-native-calendars';
+import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
@@ -14,7 +15,7 @@ export interface DatePickerInlineProps {
   minDate?: string;
   /** Maximum selectable date YYYY-MM-DD */
   maxDate?: string;
-  /** Override calendar theme (hex colors) */
+  /** Override calendar theme (RN color strings) */
   theme?: CalendarTheme;
   className?: string;
 }
@@ -29,6 +30,19 @@ export function DatePickerInline({
 }: DatePickerInlineProps) {
   const { theme } = useUniwind();
   const calendarTheme = useCalendarTheme(customTheme);
+  const arrowColor =
+    calendarTheme.arrowColor ??
+    calendarTheme.monthTextColor ??
+    calendarTheme.dayTextColor ??
+    '#000000';
+  const renderArrow = useCallback(
+    (direction: 'left' | 'right') => (
+      <Text className="text-base font-medium" style={{ color: arrowColor }}>
+        {direction === 'left' ? '<' : '>'}
+      </Text>
+    ),
+    [arrowColor]
+  );
 
   const markedDates = useMemo(() => {
     if (!value) return undefined;
@@ -55,6 +69,7 @@ export function DatePickerInline({
         minDate={minDate}
         maxDate={maxDate}
         theme={calendarTheme as Record<string, unknown>}
+        renderArrow={renderArrow}
         enableSwipeMonths
       />
     </View>

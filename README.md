@@ -505,7 +505,7 @@ Uniwind.setTheme('dark'); // or 'light' or 'system'
 
 ### Theme Colors for RN Primitives
 
-Some React Native APIs require hex color strings (icons, ActivityIndicator, react-native-calendars). Use `useThemeColors` or `useIconColors` to read from your `global.css` theme:
+Some React Native APIs require native color strings (hex/rgb/hsl/named). Use `useThemeColors` or `useIconColors` to read from your `global.css` theme. If your theme uses `oklch(...)`, add `--app-color-*` hex fallbacks — `useThemeColors` will use them when `--color-*` is not RN-native.
 
 ```tsx
 import { useThemeColors, useIconColors } from '@thewhileloop/whileui';
@@ -521,10 +521,41 @@ const iconColors = useIconColors();
 <Spinner color={colors.foreground} />  // Spinner defaults to this when color not passed
 ```
 
-- **useThemeColors** — Returns hex values for all semantic tokens. Use for Calendar themes, Spinner, placeholderTextColor overrides.
+- **useThemeColors** — Returns RN-safe color strings for all semantic tokens. Falls back to `--app-color-*` when `--color-*` is not RN-native (e.g. `oklch(...)`).
 - **useIconColors** — Subset for icons. Maps `muted` → `mutedForeground` (readable on backgrounds).
 
 Input, Textarea, NumericInput, SmartInput, Spinner, and LoadingScreen default to theme colors when you omit `placeholderTextColor` or `spinnerColor`.
+
+Optional RN fallback tokens (hex/rgb/hsl/named):
+
+```css
+@layer theme {
+  :root {
+    @variant light {
+      --app-color-primary: #000000;
+      --app-color-primary-foreground: #ffffff;
+      --app-color-foreground: #000000;
+      --app-color-muted: #f5f5f5;
+      --app-color-muted-foreground: #737373;
+      --app-color-background: #ffffff;
+      --app-color-border: #e5e5e5;
+      --app-color-accent: #22c55e;
+      --app-color-destructive: #dc2626;
+    }
+    @variant dark {
+      --app-color-primary: #ffffff;
+      --app-color-primary-foreground: #000000;
+      --app-color-foreground: #ffffff;
+      --app-color-muted: #2e2e2e;
+      --app-color-muted-foreground: #999999;
+      --app-color-background: #000000;
+      --app-color-border: #3d3d3d;
+      --app-color-accent: #22c55e;
+      --app-color-destructive: #dc2626;
+    }
+  }
+}
+```
 
 Or use the first-party ThemeBridge helper with optional persistence:
 
@@ -1187,7 +1218,7 @@ const [value, setValue] = useState('');
 
 ## DatePickerModal / DatePickerInline / DateRangePickerModal
 
-Date selection blocks using react-native-calendars. Theme-aware via `useCalendarTheme` (Uniwind light/dark). Optional `theme` prop for custom hex colors.
+Date selection blocks using react-native-calendars. Theme-aware via `useCalendarTheme` (Uniwind light/dark). Optional `theme` prop for custom RN color strings (hex/rgb/hsl/named). `CalendarTheme` maps to react-native-calendars Theme and supports `arrowColor`, `disabledArrowColor`, and optional font keys.
 
 **DatePickerModal** — Compact trigger opens bottom sheet with calendar. Use `DatePickerTrigger` as the trigger content.
 
@@ -1240,7 +1271,7 @@ const [range, setRange] = useState<DateRange | null>(null);
 | `open` / `onOpenChange` | —                                      | Modal state (modal variants)    |
 | `trigger`               | `ReactNode`                            | Custom trigger (modal variants) |
 | `minDate` / `maxDate`   | `string`                               | YYYY-MM-DD bounds               |
-| `theme`                 | `CalendarTheme`                        | Override calendar hex colors    |
+| `theme`                 | `CalendarTheme`                        | Override calendar colors        |
 
 ## ConfirmActionSheet
 

@@ -37,7 +37,7 @@ export interface DateRangePickerModalProps {
   minDate?: string;
   /** Maximum selectable date YYYY-MM-DD */
   maxDate?: string;
-  /** Override calendar theme (hex colors) */
+  /** Override calendar theme (RN color strings) */
   theme?: CalendarTheme;
   /** Trigger element. If not provided, no trigger is rendered. */
   trigger?: React.ReactNode;
@@ -104,6 +104,19 @@ export function DateRangePickerModal({
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const calendarTheme = useCalendarTheme(customTheme);
+  const arrowColor =
+    calendarTheme.arrowColor ??
+    calendarTheme.monthTextColor ??
+    calendarTheme.dayTextColor ??
+    '#000000';
+  const renderArrow = useCallback(
+    (direction: 'left' | 'right') => (
+      <Text className="text-base font-medium" style={{ color: arrowColor }}>
+        {direction === 'left' ? '<' : '>'}
+      </Text>
+    ),
+    [arrowColor]
+  );
 
   const [draftStart, setDraftStart] = useState<string | null>(value?.start ?? null);
   const [draftEnd, setDraftEnd] = useState<string | null>(value?.end ?? null);
@@ -207,6 +220,7 @@ export function DateRangePickerModal({
                 minDate={minDate}
                 maxDate={maxDate}
                 theme={calendarTheme as Record<string, unknown>}
+                renderArrow={renderArrow}
                 enableSwipeMonths
               />
             </View>

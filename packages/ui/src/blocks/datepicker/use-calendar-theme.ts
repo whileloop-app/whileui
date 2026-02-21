@@ -16,8 +16,21 @@ export interface CalendarTheme {
   dotColor?: string;
   selectedDotColor?: string;
   arrowColor?: string;
+  disabledArrowColor?: string;
   monthTextColor?: string;
   indicatorColor?: string;
+  textDayFontFamily?: string;
+  textMonthFontFamily?: string;
+  textDayHeaderFontFamily?: string;
+  textDayFontWeight?: string;
+  textMonthFontWeight?: string;
+  textDayHeaderFontWeight?: string;
+  textDayFontSize?: number;
+  textMonthFontSize?: number;
+  textDayHeaderFontSize?: number;
+  todayButtonFontFamily?: string;
+  todayButtonFontWeight?: string;
+  todayButtonFontSize?: number;
 }
 
 function buildCalendarTheme(c: ThemeColors): CalendarTheme {
@@ -30,6 +43,7 @@ function buildCalendarTheme(c: ThemeColors): CalendarTheme {
     todayBackgroundColor: c.muted,
     dayTextColor: c.foreground,
     textDisabledColor: c.border,
+    disabledArrowColor: c.border,
     dotColor: c.accent,
     selectedDotColor: c.primaryForeground,
     arrowColor: c.foreground,

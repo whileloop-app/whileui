@@ -196,6 +196,17 @@
 
       --color-info: oklch(0.62 0.18 250);
       --color-info-foreground: oklch(1 0 0);
+
+      /* Hex fallbacks for RN primitives (icons, calendars, spinners) */
+      --app-color-primary: #000000;
+      --app-color-primary-foreground: #ffffff;
+      --app-color-foreground: #000000;
+      --app-color-muted: #f5f5f5;
+      --app-color-muted-foreground: #737373;
+      --app-color-background: #ffffff;
+      --app-color-border: #e5e5e5;
+      --app-color-accent: #22c55e;
+      --app-color-destructive: #dc2626;
     }
 
     /* ─── Dark Mode: True Black ─────────────────────────────── */
@@ -246,6 +257,17 @@
 
       --color-info: oklch(0.7 0.16 250);
       --color-info-foreground: oklch(1 0 0);
+
+      /* Hex fallbacks for RN primitives (icons, calendars, spinners) */
+      --app-color-primary: #ffffff;
+      --app-color-primary-foreground: #000000;
+      --app-color-foreground: #ffffff;
+      --app-color-muted: #2e2e2e;
+      --app-color-muted-foreground: #999999;
+      --app-color-background: #000000;
+      --app-color-border: #3d3d3d;
+      --app-color-accent: #22c55e;
+      --app-color-destructive: #dc2626;
     }
   }
 }

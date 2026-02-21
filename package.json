@@ -2,7 +2,7 @@
   "name": "whileui-native",
   "private": true,
   "description": "WhileUI Native - Copy-paste components for React Native",
-  "packageManager": "bun",
+  "packageManager": "bun@1.3.9",
   "workspaces": [
     "packages/*",
     "apps/*"
