@@ -101,7 +101,7 @@ export function ConfirmActionSheet({
                   key={action.key}
                   className={cn(
                     'min-h-11 items-center justify-center rounded-md border px-4 py-2 active:opacity-70',
-                    isCancel ? 'border-input bg-background' : 'border-transparent bg-secondary',
+                    isCancel ? 'border-border bg-muted' : 'border-transparent bg-secondary',
                     isDestructive && 'bg-destructive/10 border-destructive/30',
                     action.disabled && 'opacity-50'
                   )}

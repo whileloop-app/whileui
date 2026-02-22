@@ -129,7 +129,7 @@ export function ChatSuggestions({ suggestions, onSelect, className }: ChatSugges
           onPress={() => onSelect(text)}
           accessibilityRole="button"
           accessibilityLabel={`Suggestion: ${text}`}
-          className="rounded-full border border-input bg-background px-4 py-2 active:bg-muted"
+          className="rounded-full border border-border bg-muted px-4 py-2 active:bg-muted"
         >
           <Text className="text-sm text-foreground">{text}</Text>
         </Pressable>

@@ -45,7 +45,7 @@ function LabeledField({
       <FormControl>
         <View
           className={cn(
-            'flex-row items-center gap-2 rounded-md border border-input bg-background px-3',
+            'flex-row items-center gap-2 rounded-md border border-border bg-muted px-3',
             isInvalid && 'border-destructive',
             disabled && 'opacity-60',
             controlWrapperClassName

@@ -85,6 +85,8 @@ Required in both `light` and `dark` (and any custom theme):
 
 React Native requires explicit font-family per weight. When changing fonts, update BOTH `--font-sans` in `@theme` AND the `.font-*` CSS classes in `global.css`.
 
+Apps using custom fonts must wrap the app in `FontProvider` with a `FontFamilyMap` (see `font-context.ts`). Text, ButtonText, and Label use `useResolveFontFamily()` to apply the correct font via the `style` prop and strip font-weight classes from `className` so Uniwind doesn't override. **Do not pass `fontWeight`** in the style—with discrete font files (e.g. Nunito_700Bold), the family name encodes weight. Passing `fontWeight` on Android triggers synthetic bold and distorts B, D, P, R.
+
 ## Component Patterns
 
 ### Variant API with tv()
@@ -137,6 +139,7 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - **CSS box-shadow**: Not supported. Use `shadow-sm/md/lg` classes (soft shadows) or stacked Views for hard-edge 3D effects (NeoPOP style)
 - **Icon colors**: `@expo/vector-icons` requires hex values, not CSS classes. Use `useIconColors()` from the UI package (reads from global.css via `useCSSVariable`)
 - **Other RN primitives requiring hex**: Spinner defaults to `useThemeColors().foreground`. Input, Textarea, NumericInput, SmartInput default `placeholderTextColor` to `mutedForeground`. Add optional override props when needed.
+- **Custom fonts on Android**: Pass only `fontFamily` in style—never `fontWeight`. Passing both triggers `setTypeface(_, BOLD)` and synthetic bold, distorting B/D/P/R. Use `FontProvider` + `useResolveFontFamily` (Text, ButtonText, Label).
 
 ### Web & Responsive (Sites + Apps)
 
@@ -185,6 +188,7 @@ Add to this file when you discover:
 
 ### Core component robustness
 
+- **Android font B/D distorted:** Symptom: bold/semibold custom fonts render B, D, P, R incorrectly on Android only. Cause: passing `fontWeight` with `fontFamily` triggers synthetic bold. Fix: use `FontProvider` + `useResolveFontFamily` (applies only `fontFamily` via style, strips font-weight from `className`).
 - **Text/label line-height:** Avoid `leading-none` — clips ascenders (P, h, l). Use `leading-tight` or `leading-snug` for labels.
 - **Form-like visibility:** Use `border-border bg-muted` (not `border-input bg-background`) for inputs, selects, labeled fields — ensures visibility on light themes.
 - **Small touch targets:** Components under 44px (e.g. Checkbox h-5, Radio h-5, Switch h-7) need `hitSlop` so effective touch area ≥ 44px.

@@ -1,7 +1,12 @@
 // ─── Utilities ───────────────────────────────────────────────
 export { cn } from './lib/cn';
 export { tv, type VariantProps } from './lib/tv';
-export { FontProvider, type FontFamilyMap } from './lib/font-context';
+export {
+  FontProvider,
+  type FontFamilyMap,
+  type ResolvedFont,
+  type ResolvedFontResult,
+} from './lib/font-context';
 export { PortalHost } from './lib/portal';
 export {
   ThemeBridge,

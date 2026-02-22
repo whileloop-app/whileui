@@ -100,7 +100,7 @@ const FormLabel = React.forwardRef<Text, FormLabelProps>(
       <Text
         ref={ref}
         className={cn(
-          'text-sm font-medium leading-none text-foreground',
+          'text-sm font-medium leading-tight text-foreground',
           invalid && 'text-destructive',
           disabled && 'text-muted-foreground',
           className

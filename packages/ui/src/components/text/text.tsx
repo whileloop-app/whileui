@@ -14,7 +14,7 @@ const textVariants = tv({
       subtitle: 'text-lg font-medium',
       body: 'text-base font-normal',
       caption: 'text-sm text-muted-foreground font-normal',
-      label: 'text-sm font-medium leading-none',
+      label: 'text-sm font-medium leading-tight',
       code: 'font-mono text-sm bg-muted rounded px-1 py-0.5',
     },
     size: {
@@ -37,12 +37,13 @@ export interface TextProps extends RNTextProps, VariantProps<typeof textVariants
 const Text = React.forwardRef<RNText, TextProps>(
   ({ className, variant, size, style, ...props }, ref) => {
     const resolved = cn(textVariants({ variant, size }), className);
-    const fontFamily = useResolveFontFamily(resolved);
+    const font = useResolveFontFamily(resolved);
+
     return (
       <RNText
         ref={ref}
-        className={resolved}
-        style={fontFamily ? [{ fontFamily }, style] : style}
+        className={font ? font.className : resolved}
+        style={font ? [font.style, style] : style}
         {...props}
       />
     );

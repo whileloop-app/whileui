@@ -6,13 +6,13 @@ import { useResolveFontFamily } from '../../lib/font-context';
 export interface LabelProps extends TextProps {}
 
 const Label = React.forwardRef<Text, LabelProps>(({ className, style, ...props }, ref) => {
-  const resolved = cn('text-sm font-medium text-foreground leading-none', className);
-  const fontFamily = useResolveFontFamily(resolved);
+  const resolved = cn('text-sm font-medium text-foreground leading-tight', className);
+  const font = useResolveFontFamily(resolved);
   return (
     <Text
       ref={ref}
-      className={resolved}
-      style={fontFamily ? [{ fontFamily }, style] : style}
+      className={font ? font.className : resolved}
+      style={font ? [font.style, style] : style}
       {...props}
     />
   );

@@ -127,10 +127,14 @@ function ButtonText({
   const variant = variantProp ?? context.variant;
   const size = sizeProp ?? context.size;
   const resolved = cn(buttonTextVariants({ variant, size }), className);
-  const fontFamily = useResolveFontFamily(resolved);
+  const font = useResolveFontFamily(resolved);
 
   return (
-    <Text className={resolved} style={fontFamily ? [{ fontFamily }, style] : style} {...props} />
+    <Text
+      className={font ? font.className : resolved}
+      style={font ? [font.style, style] : style}
+      {...props}
+    />
   );
 }
 

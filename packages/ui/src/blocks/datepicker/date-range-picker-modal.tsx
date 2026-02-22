@@ -189,7 +189,7 @@ export function DateRangePickerModal({
         <Pressable
           onPress={handleOpen}
           className={cn(
-            'min-h-10 w-full flex-row items-center rounded-lg border border-input bg-background px-4',
+            'min-h-10 w-full flex-row items-center rounded-lg border border-border bg-muted px-4',
             className
           )}
         >

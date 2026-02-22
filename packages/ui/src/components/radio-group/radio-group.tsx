@@ -63,10 +63,11 @@ function RadioGroupItem({ value: itemValue, className, ...props }: RadioGroupIte
     <Pressable
       className={cn(
         'h-5 w-5 rounded-full border-2 items-center justify-center',
-        isSelected ? 'border-primary' : 'border-input',
+        isSelected ? 'border-primary' : 'border-border',
         className
       )}
       onPress={() => onValueChange(itemValue)}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       {...props}
     >
       {isSelected && <View className="h-2.5 w-2.5 rounded-full bg-primary" />}
