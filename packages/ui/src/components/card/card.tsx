@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, type ViewProps, type TextProps } from 'react-native';
+import { View, type ViewProps, type TextProps } from 'react-native';
+import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 
@@ -51,15 +52,17 @@ CardHeader.displayName = 'CardHeader';
 
 export interface CardTitleProps extends TextProps {}
 
-const CardTitle = React.forwardRef<Text, CardTitleProps>(({ className, ...props }, ref) => {
-  return (
-    <Text
-      ref={ref}
-      className={cn('text-xl font-semibold text-card-foreground tracking-tight', className)}
-      {...props}
-    />
-  );
-});
+const CardTitle = React.forwardRef<React.ComponentRef<typeof Text>, CardTitleProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <Text
+        ref={ref}
+        className={cn('text-xl font-semibold text-card-foreground tracking-tight', className)}
+        {...props}
+      />
+    );
+  }
+);
 
 CardTitle.displayName = 'CardTitle';
 
@@ -67,7 +70,7 @@ CardTitle.displayName = 'CardTitle';
 
 export interface CardDescriptionProps extends TextProps {}
 
-const CardDescription = React.forwardRef<Text, CardDescriptionProps>(
+const CardDescription = React.forwardRef<React.ComponentRef<typeof Text>, CardDescriptionProps>(
   ({ className, ...props }, ref) => {
     return <Text ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />;
   }

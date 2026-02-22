@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - 2026-02-22
+
+### Added
+
+- **PageSkeleton:** Variant-based page layouts (dashboard, list, settings, card, generic). Composes Skeleton, Stack, Row, View. Props: `variant`, `count`, `padding`, `className`.
+
+## [1.0.1] - 2026-02-22
+
+### Fixed
+
+- **Android font distortion (B, D, P, R):** Bold/semibold custom fonts rendered incorrectly on Android due to synthetic bold when `fontWeight` was passed with `fontFamily`. Now `useResolveFontFamily` applies only `fontFamily` via the style prop (no `fontWeight`). Apps using custom fonts must wrap the app in `FontProvider` with a `FontFamilyMap`.
+
 ## [1.0.0] - 2026-02-22
 
 ### Breaking

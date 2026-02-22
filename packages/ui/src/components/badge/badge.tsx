@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
-import { View, Text, type ViewProps, type TextProps } from 'react-native';
+import { View, type ViewProps, type TextProps } from 'react-native';
+import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 

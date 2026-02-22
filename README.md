@@ -152,7 +152,7 @@ function MyScreen() {
 **Core package** exports:
 
 - **Primitives** — Button, Input, Card, Text, etc.
-- **Generic layout blocks** — EmptyState, ErrorState, LoadingScreen, ContentSkeleton
+- **Generic layout blocks** — EmptyState, ErrorState, LoadingScreen, ContentSkeleton, PageSkeleton
 - **Layout infrastructure** — FormModalScreen, ConfirmActionSheet, SmartInput, ActionBar
 - **Navigation, Chat, Lists, Commerce, Media, DatePicker** — Blocks that rarely need app-specific customization
 
@@ -291,6 +291,7 @@ Copy from `apps/showcase/templates/auth/`:
 | **Sheet**                   | Bottom sheet modal with header/content/footer slots                     |
 | **FormModalScreen**         | Modal scaffold for forms with loading states                            |
 | **ContentSkeleton**         | Page/content placeholder with variants (list, card, generic)            |
+| **PageSkeleton**            | Variant-based page layouts (dashboard, list, settings, card, generic)   |
 | **ErrorBoundary**           | React ErrorBoundary that renders ErrorState by default                  |
 | **EmptyState**              | Empty content placeholder                                               |
 | **ErrorState**              | Error display with retry                                                |
@@ -1431,6 +1432,28 @@ import { ContentSkeleton } from '@thewhileloop/whileui';
 | ------- | ------------------------------- | -------- | --------------------------------------- |
 | variant | `'list' \| 'card' \| 'generic'` | `'list'` | Layout preset                           |
 | rows    | `number`                        | `4`      | Number of list rows (list variant only) |
+
+## PageSkeleton
+
+Variant-based page layouts for loading states. Replaces app-specific skeletons with presets for dashboard, list, settings, card, and generic pages.
+
+```tsx
+import { PageSkeleton } from '@thewhileloop/whileui';
+
+<PageSkeleton variant="dashboard" />
+<PageSkeleton variant="list" count={5} />
+<PageSkeleton variant="settings" count={6} />
+<PageSkeleton variant="card" />
+<PageSkeleton variant="generic" />
+<PageSkeleton variant="list" padding="none" className="flex-1" />
+```
+
+| Prop      | Type                                                         | Default                | Description                             |
+| --------- | ------------------------------------------------------------ | ---------------------- | --------------------------------------- |
+| variant   | `'dashboard' \| 'list' \| 'settings' \| 'card' \| 'generic'` | required               | Layout preset                           |
+| count     | `number`                                                     | 3 (list), 4 (settings) | Rows/items for list or settings variant |
+| padding   | `'none' \| 'sm' \| 'default' \| 'lg'`                        | `'default'`            | Container padding                       |
+| className | `string`                                                     | —                      | Outer container classes                 |
 
 ## ErrorBoundary
 

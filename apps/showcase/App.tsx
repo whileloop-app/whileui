@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  ScrollView,
-  Pressable,
-  Modal,
-  StatusBar,
-  Platform,
-  Text as RNText,
-  StyleSheet,
-} from 'react-native';
+import { View, ScrollView, Pressable, Modal, StatusBar, Platform, StyleSheet } from 'react-native';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
@@ -177,6 +168,7 @@ import {
   type ChatMessage,
   ConfirmActionSheet,
   ContentSkeleton,
+  PageSkeleton,
   Sheet,
   SheetHeader,
   SheetContent,
@@ -773,42 +765,6 @@ function PrimitivesTab({
   return (
     <View>
       <Section title="Typography" subtitle="Text, badges, and type scale">
-        {/* TODO: TEMP DEBUG — remove after fixing cross-platform font issue */}
-        {__DEV__ && (
-          <View className="bg-destructive/10 rounded-lg p-3 mb-3 gap-2">
-            <RNText style={{ color: 'red', fontSize: 11, fontWeight: '700' }}>
-              FONT DEBUG — {Platform.OS}
-            </RNText>
-
-            <RNText style={{ fontSize: 11, color: '#666' }}>
-              ── text-4xl bold (same as "Build faster") ──
-            </RNText>
-            <RNText style={{ fontFamily: 'Nunito_700Bold', fontSize: 36 }}>
-              A: Direct style beautiful
-            </RNText>
-            <Text className="text-4xl font-bold text-foreground tracking-tight">
-              B: className beautiful
-            </Text>
-
-            <RNText style={{ fontSize: 11, color: '#666' }}>
-              ── text-3xl bold (same as "WhileUI" header) ──
-            </RNText>
-            <RNText style={{ fontFamily: 'Nunito_700Bold', fontSize: 30 }}>
-              C: Direct style WhileUI
-            </RNText>
-            <Text className="text-3xl font-bold text-foreground tracking-tight">
-              D: className WhileUI
-            </Text>
-
-            <RNText style={{ fontSize: 11, color: '#666' }}>
-              ── text-base regular (same as body text) ──
-            </RNText>
-            <RNText style={{ fontFamily: 'Nunito_400Regular', fontSize: 15 }}>
-              E: Direct style body text
-            </RNText>
-            <Text className="text-base text-foreground">F: className body text</Text>
-          </View>
-        )}
         <Text className="text-4xl font-bold text-foreground tracking-tight">
           Build faster,{'\n'}ship beautiful.
         </Text>
@@ -2140,6 +2096,47 @@ function LayoutBlocksTab() {
                 <Text className="mb-1 text-xs text-muted-foreground">generic</Text>
                 <View className="rounded-xl border border-border overflow-hidden bg-background">
                   <ContentSkeleton variant="generic" />
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Section>
+
+      <Section
+        title="Page Skeleton"
+        subtitle="Variant-based page layouts: dashboard, list, settings, card, generic. Replaces app-specific skeletons."
+      >
+        <View className="gap-6">
+          <View>
+            <Text className="mb-2 text-sm text-muted-foreground">Variants</Text>
+            <View className="gap-4">
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">dashboard</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <PageSkeleton variant="dashboard" />
+                </View>
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">list (count=5)</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <PageSkeleton variant="list" count={5} />
+                </View>
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">settings (count=6)</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <PageSkeleton variant="settings" count={6} />
+                </View>
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">card</Text>
+                <PageSkeleton variant="card" />
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">generic</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <PageSkeleton variant="generic" />
                 </View>
               </View>
             </View>
