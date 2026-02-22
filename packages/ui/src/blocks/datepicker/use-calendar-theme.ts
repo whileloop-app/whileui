@@ -1,3 +1,4 @@
+import { useCSSVariable } from 'uniwind';
 import type { ThemeColors } from '../../lib/theme-colors';
 import { useThemeColors } from '../../lib/theme-colors';
 
@@ -33,7 +34,7 @@ export interface CalendarTheme {
   todayButtonFontSize?: number;
 }
 
-function buildCalendarTheme(c: ThemeColors): CalendarTheme {
+function buildCalendarTheme(c: ThemeColors, fontFamily?: string): CalendarTheme {
   return {
     calendarBackground: c.background,
     textSectionTitleColor: c.mutedForeground,
@@ -48,6 +49,11 @@ function buildCalendarTheme(c: ThemeColors): CalendarTheme {
     selectedDotColor: c.primaryForeground,
     arrowColor: c.foreground,
     monthTextColor: c.foreground,
+    ...(fontFamily && {
+      textDayFontFamily: fontFamily,
+      textMonthFontFamily: fontFamily,
+      textDayHeaderFontFamily: fontFamily,
+    }),
   };
 }
 
@@ -58,7 +64,9 @@ function buildCalendarTheme(c: ThemeColors): CalendarTheme {
  */
 export function useCalendarTheme(customTheme?: CalendarTheme): CalendarTheme {
   const c = useThemeColors();
-  const base = buildCalendarTheme(c);
+  const [fontSans] = useCSSVariable(['--font-sans']);
+  const fontFamily = typeof fontSans === 'string' && fontSans ? fontSans : undefined;
+  const base = buildCalendarTheme(c, fontFamily);
   if (!customTheme) return base;
   const merged = { ...base };
   for (const [k, v] of Object.entries(customTheme)) {

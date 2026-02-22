@@ -5,7 +5,7 @@ import { formatHex, parse } from 'culori';
 // 2. Add a robust converter function
 function resolveToHex(value: string | number | undefined, fallback: string): string {
   if (value === undefined || value === null) return fallback;
-  
+
   const s = String(value);
 
   // If it's already a simple hex/rgb string, return it (performance optimization)

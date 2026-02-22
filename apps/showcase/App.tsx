@@ -7,12 +7,12 @@ import * as Haptics from 'expo-haptics';
 import Animated from 'react-native-reanimated';
 import {
   useFonts,
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-  PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
+  Nunito_400Regular,
+  Nunito_500Medium,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from '@expo-google-fonts/nunito';
 import './global.css';
 import {
   FontProvider,
@@ -244,11 +244,11 @@ const showcaseThemeAdapter: ThemeBridgeAdapter = {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    PlusJakartaSans_400Regular,
-    PlusJakartaSans_500Medium,
-    PlusJakartaSans_600SemiBold,
-    PlusJakartaSans_700Bold,
-    PlusJakartaSans_800ExtraBold,
+    Nunito_400Regular,
+    Nunito_500Medium,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
   });
 
   if (!fontsLoaded) {
@@ -256,11 +256,11 @@ export default function App() {
   }
 
   const fontMap = {
-    'font-normal': 'PlusJakartaSans_400Regular',
-    'font-medium': 'PlusJakartaSans_500Medium',
-    'font-semibold': 'PlusJakartaSans_600SemiBold',
-    'font-bold': 'PlusJakartaSans_700Bold',
-    'font-extrabold': 'PlusJakartaSans_800ExtraBold',
+    'font-normal': 'Nunito_400Regular',
+    'font-medium': 'Nunito_500Medium',
+    'font-semibold': 'Nunito_600SemiBold',
+    'font-bold': 'Nunito_700Bold',
+    'font-extrabold': 'Nunito_800ExtraBold',
   };
 
   return (

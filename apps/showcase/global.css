@@ -4,8 +4,8 @@
 @source '../../packages/ui/src';
 
 /* ═══════════════════════════════════════════════════════════════
-   NOIR — Premium Mobile Design System
-   High contrast • Bold typography • Generous spacing
+   Warm Autumn Glow — Design System
+   Deep Space Blue • Flag Red • Princeton Orange • Sunflower Gold • Vanilla Custard
    ═══════════════════════════════════════════════════════════════ */
 
 @theme {
@@ -109,165 +109,178 @@
   --shadow-none: 0 0 0 rgba(0, 0, 0, 0);
 
   /* ─── Font ─────────────────────────────────────────────────── */
-  /* Geometric sans-serif for clean, modern aesthetic             */
-  --font-sans: PlusJakartaSans_400Regular;
+  /* Nunito — round, warm sans for Warm Autumn Glow                */
+  --font-sans: Nunito_400Regular;
 }
 
 /* ─── Explicit Font Mappings for React Native ────────────────── */
-/* Premium geometric sans-serif                                   */
+/* Nunito: friendly, rounded sans for autumn warmth               */
 .font-normal,
 .font-sans {
-  font-family: 'PlusJakartaSans_400Regular';
+  font-family: 'Nunito_400Regular';
   font-weight: 400;
 }
 
 .font-medium {
-  font-family: 'PlusJakartaSans_500Medium';
+  font-family: 'Nunito_500Medium';
   font-weight: 500;
 }
 
 .font-semibold {
-  font-family: 'PlusJakartaSans_600SemiBold';
+  font-family: 'Nunito_600SemiBold';
   font-weight: 600;
 }
 
 .font-bold {
-  font-family: 'PlusJakartaSans_700Bold';
+  font-family: 'Nunito_700Bold';
   font-weight: 700;
 }
 
 .font-extrabold {
-  font-family: 'PlusJakartaSans_800ExtraBold';
+  font-family: 'Nunito_800ExtraBold';
   font-weight: 800;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   THEME COLORS — Noir Design System
-   Pure black/white base • Green accent • High contrast
+   THEME COLORS — Warm Autumn Glow
+   Deep Space Blue • Flag Red • Princeton Orange • Sunflower Gold • Vanilla Custard
+   Fiery autumn warmth, cozy and bold
    ═══════════════════════════════════════════════════════════════ */
 
 @layer theme {
   :root {
-    /* ─── Light Mode: Clean White ───────────────────────────── */
+    /* ─── Light Mode: Vanilla Custard base, Deep Space Blue text ───── */
     @variant light {
-      /* Core: Pure white backgrounds, pure black text */
-      --color-background: oklch(1 0 0);
-      --color-foreground: oklch(0 0 0);
+      /* Core: Vanilla Custard (#eae2b7) — soft ivory, inviting coziness */
+      --color-background: oklch(0.91 0.05 95);
+      --color-foreground: oklch(0.26 0.07 250);
 
-      /* Cards: Slightly warm white for depth */
-      --color-card: oklch(0.99 0.002 90);
-      --color-card-foreground: oklch(0 0 0);
+      /* Cards: Slightly lighter vanilla */
+      --color-card: oklch(0.94 0.04 95);
+      --color-card-foreground: oklch(0.26 0.07 250);
 
       /* Popovers/Modals */
-      --color-popover: oklch(1 0 0);
-      --color-popover-foreground: oklch(0 0 0);
+      --color-popover: oklch(0.94 0.04 95);
+      --color-popover-foreground: oklch(0.26 0.07 250);
 
-      /* Primary: Bold black CTAs */
-      --color-primary: oklch(0 0 0);
-      --color-primary-foreground: oklch(1 0 0);
+      /* Primary: Deep Space Blue (#003049) — ambition, star-lit depth */
+      --color-primary: oklch(0.26 0.07 250);
+      --color-primary-foreground: oklch(0.92 0.04 95);
 
-      /* Secondary: Light gray for secondary actions */
-      --color-secondary: oklch(0.95 0 0);
-      --color-secondary-foreground: oklch(0 0 0);
+      /* Secondary: Light vanilla */
+      --color-secondary: oklch(0.95 0.03 95);
+      --color-secondary-foreground: oklch(0.26 0.07 250);
 
-      /* Accent: Green for highlights/active states */
-      --color-accent: oklch(0.72 0.19 145);
-      --color-accent-foreground: oklch(0 0 0);
+      /* Accent: Princeton Orange (#f77f00) — bold, playful, movement */
+      --color-accent: oklch(0.65 0.19 55);
+      --color-accent-foreground: oklch(0.99 0.002 85);
 
-      /* Muted: Subtle backgrounds */
-      --color-muted: oklch(0.965 0 0);
-      --color-muted-foreground: oklch(0.45 0 0);
+      /* Muted: Subtle warm backgrounds */
+      --color-muted: oklch(0.93 0.04 95);
+      --color-muted-foreground: oklch(0.42 0.04 75);
 
-      /* Destructive: Red for errors/destructive actions */
-      --color-destructive: oklch(0.55 0.22 25);
-      --color-destructive-foreground: oklch(1 0 0);
+      /* Destructive: Flag Red (#d62828) — vivid, bold */
+      --color-destructive: oklch(0.52 0.19 25);
+      --color-destructive-foreground: oklch(0.99 0.002 85);
 
-      /* Borders: Very subtle gray */
-      --color-border: oklch(0.92 0 0);
-      --color-input: oklch(0.95 0 0);
-      --color-ring: oklch(0 0 0);
+      /* Borders: Warm vanilla-gray */
+      --color-border: oklch(0.86 0.04 95);
+      --color-input: oklch(0.92 0.04 95);
+      --color-ring: oklch(0.26 0.07 250);
 
-      /* Status Colors */
-      --color-success: oklch(0.72 0.19 145);
-      --color-success-foreground: oklch(0 0 0);
+      /* Status: Success (warm green), Warning = Sunflower Gold, Info = Deep Space Blue */
+      --color-success: oklch(0.52 0.16 155);
+      --color-success-foreground: oklch(0.99 0.002 85);
 
-      --color-warning: oklch(0.85 0.17 75);
-      --color-warning-foreground: oklch(0.2 0 0);
+      --color-warning: oklch(0.82 0.14 85);
+      --color-warning-foreground: oklch(0.24 0.05 75);
 
-      --color-info: oklch(0.62 0.18 250);
-      --color-info-foreground: oklch(1 0 0);
+      --color-info: oklch(0.38 0.08 250);
+      --color-info-foreground: oklch(0.92 0.04 95);
 
-      /* Hex fallbacks for RN primitives (icons, calendars, spinners) */
-      --app-color-primary: #000000;
-      --app-color-primary-foreground: #ffffff;
-      --app-color-foreground: #000000;
-      --app-color-muted: #f5f5f5;
-      --app-color-muted-foreground: #737373;
-      --app-color-background: #ffffff;
-      --app-color-border: #e5e5e5;
-      --app-color-accent: #22c55e;
-      --app-color-destructive: #dc2626;
+      /* Hex fallbacks for RN primitives */
+      --app-color-primary: #003049;
+      --app-color-primary-foreground: #eae2b7;
+      --app-color-foreground: #003049;
+      --app-color-muted: #f0ebd8;
+      --app-color-muted-foreground: #5c5344;
+      --app-color-background: #eae2b7;
+      --app-color-border: #ddd5b8;
+      --app-color-accent: #f77f00;
+      --app-color-destructive: #d62828;
+      --app-color-success: #2d9d6e;
+      --app-color-success-foreground: #ffffff;
+      --app-color-warning: #fcbf49;
+      --app-color-warning-foreground: #2d2926;
+      --app-color-info: #003049;
+      --app-color-info-foreground: #eae2b7;
     }
 
-    /* ─── Dark Mode: True Black ─────────────────────────────── */
+    /* ─── Dark Mode: Deep Space Blue base, Vanilla Custard text ───── */
     @variant dark {
-      /* Core: True black background, white text */
-      --color-background: oklch(0 0 0);
-      --color-foreground: oklch(1 0 0);
+      /* Core: Deep Space Blue (#003049) — infinite dark, star-lit */
+      --color-background: oklch(0.2 0.06 250);
+      --color-foreground: oklch(0.91 0.05 95);
 
-      /* Cards: Slightly elevated dark gray */
-      --color-card: oklch(0.14 0 0);
-      --color-card-foreground: oklch(1 0 0);
+      /* Cards: Elevated dark blue */
+      --color-card: oklch(0.24 0.06 250);
+      --color-card-foreground: oklch(0.91 0.05 95);
 
       /* Popovers/Modals */
-      --color-popover: oklch(0.16 0 0);
-      --color-popover-foreground: oklch(1 0 0);
+      --color-popover: oklch(0.26 0.06 250);
+      --color-popover-foreground: oklch(0.91 0.05 95);
 
-      /* Primary: White buttons on black — inverted */
-      --color-primary: oklch(1 0 0);
-      --color-primary-foreground: oklch(0 0 0);
+      /* Primary: Princeton Orange (#f77f00) — fiery pop on dark */
+      --color-primary: oklch(0.65 0.19 55);
+      --color-primary-foreground: oklch(0.2 0.06 250);
 
-      /* Secondary: Dark gray for secondary actions */
-      --color-secondary: oklch(0.2 0 0);
-      --color-secondary-foreground: oklch(1 0 0);
+      /* Secondary: Dark blue-gray */
+      --color-secondary: oklch(0.28 0.05 250);
+      --color-secondary-foreground: oklch(0.88 0.04 95);
 
-      /* Accent: Green — pops on dark */
-      --color-accent: oklch(0.75 0.19 145);
-      --color-accent-foreground: oklch(0 0 0);
+      /* Accent: Sunflower Gold (#fcbf49) — radiant on dark */
+      --color-accent: oklch(0.82 0.14 85);
+      --color-accent-foreground: oklch(0.22 0.05 85);
 
-      /* Muted: Subtle dark backgrounds */
-      --color-muted: oklch(0.18 0 0);
-      --color-muted-foreground: oklch(0.6 0 0);
+      /* Muted: Subtle dark blue */
+      --color-muted: oklch(0.26 0.05 250);
+      --color-muted-foreground: oklch(0.65 0.04 95);
 
-      /* Destructive: Red for errors */
-      --color-destructive: oklch(0.55 0.2 25);
-      --color-destructive-foreground: oklch(1 0 0);
+      /* Destructive: Flag Red — vivid on dark */
+      --color-destructive: oklch(0.58 0.19 25);
+      --color-destructive-foreground: oklch(0.95 0.02 95);
 
-      /* Borders: Subtle dark gray */
-      --color-border: oklch(0.24 0 0);
-      --color-input: oklch(0.2 0 0);
-      --color-ring: oklch(1 0 0);
+      /* Borders: Dark blue */
+      --color-border: oklch(0.32 0.05 250);
+      --color-input: oklch(0.26 0.05 250);
+      --color-ring: oklch(0.65 0.19 55);
 
       /* Status Colors */
-      --color-success: oklch(0.75 0.19 145);
-      --color-success-foreground: oklch(0 0 0);
+      --color-success: oklch(0.58 0.16 155);
+      --color-success-foreground: oklch(0.98 0.02 155);
 
-      --color-warning: oklch(0.88 0.16 75);
-      --color-warning-foreground: oklch(0.15 0 0);
+      --color-warning: oklch(0.82 0.14 85);
+      --color-warning-foreground: oklch(0.22 0.05 85);
 
-      --color-info: oklch(0.7 0.16 250);
-      --color-info-foreground: oklch(1 0 0);
+      --color-info: oklch(0.5 0.1 250);
+      --color-info-foreground: oklch(0.92 0.04 95);
 
-      /* Hex fallbacks for RN primitives (icons, calendars, spinners) */
-      --app-color-primary: #ffffff;
-      --app-color-primary-foreground: #000000;
-      --app-color-foreground: #ffffff;
-      --app-color-muted: #2e2e2e;
-      --app-color-muted-foreground: #999999;
-      --app-color-background: #000000;
-      --app-color-border: #3d3d3d;
-      --app-color-accent: #22c55e;
-      --app-color-destructive: #dc2626;
+      /* Hex fallbacks */
+      --app-color-primary: #f77f00;
+      --app-color-primary-foreground: #003049;
+      --app-color-foreground: #eae2b7;
+      --app-color-muted: #1a4058;
+      --app-color-muted-foreground: #b8b09a;
+      --app-color-background: #003049;
+      --app-color-border: #1a4a65;
+      --app-color-accent: #fcbf49;
+      --app-color-destructive: #d62828;
+      --app-color-success: #2d9d6e;
+      --app-color-success-foreground: #e8f5f0;
+      --app-color-warning: #fcbf49;
+      --app-color-warning-foreground: #2d2926;
+      --app-color-info: #4a7a9a;
+      --app-color-info-foreground: #eae2b7;
     }
   }
 }
