@@ -1,9 +1,9 @@
+/**
+ * AccountCard — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { View, Pressable, type PressableProps } from 'react-native';
-import { Text } from '../../components/text';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/avatar';
-import { cn } from '../../lib/cn';
-
-// ─── Types ───────────────────────────────────────────────────
+import { Avatar, AvatarFallback, AvatarImage, Text, cn } from '@thewhileloop/whileui';
 
 export interface AccountCardProps extends Omit<PressableProps, 'children'> {
   name: string;
@@ -13,8 +13,6 @@ export interface AccountCardProps extends Omit<PressableProps, 'children'> {
   badge?: string;
   rightElement?: React.ReactNode;
 }
-
-// ─── Component ───────────────────────────────────────────────
 
 export function AccountCard({
   name,

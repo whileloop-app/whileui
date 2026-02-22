@@ -1,15 +1,14 @@
+/**
+ * SettingsSection — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { View, type ViewProps } from 'react-native';
-import { Text } from '../../components/text';
-import { cn } from '../../lib/cn';
-
-// ─── Types ───────────────────────────────────────────────────
+import { Text, cn } from '@thewhileloop/whileui';
 
 export interface SettingsSectionProps extends ViewProps {
   title?: string;
   description?: string;
 }
-
-// ─── Component ───────────────────────────────────────────────
 
 export function SettingsSection({
   title,

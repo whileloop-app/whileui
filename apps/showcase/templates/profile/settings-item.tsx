@@ -1,10 +1,10 @@
+/**
+ * SettingsItem — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import React from 'react';
 import { View, Pressable, type PressableProps } from 'react-native';
-import { Text } from '../../components/text';
-import { Switch } from '../../components/switch';
-import { cn } from '../../lib/cn';
-
-// ─── Types ───────────────────────────────────────────────────
+import { Text, Switch, cn } from '@thewhileloop/whileui';
 
 export interface SettingsItemProps extends Omit<PressableProps, 'children'> {
   icon?: React.ReactNode;
@@ -17,8 +17,6 @@ export interface SettingsItemProps extends Omit<PressableProps, 'children'> {
   destructive?: boolean;
   showBorder?: boolean;
 }
-
-// ─── Component ───────────────────────────────────────────────
 
 export function SettingsItem({
   icon,
@@ -46,14 +44,12 @@ export function SettingsItem({
       disabled={isToggle}
       {...props}
     >
-      {/* Icon */}
       {icon && (
         <View className={cn('mr-3', destructive ? 'text-destructive' : 'text-muted-foreground')}>
           {icon}
         </View>
       )}
 
-      {/* Content */}
       <View className="flex-1">
         <Text className={cn('text-base', destructive ? 'text-destructive' : 'text-foreground')}>
           {label}
@@ -61,7 +57,6 @@ export function SettingsItem({
         {description && <Text className="text-sm text-muted-foreground">{description}</Text>}
       </View>
 
-      {/* Right Side */}
       {type === 'toggle' && onToggle && (
         <Switch checked={toggleValue || false} onCheckedChange={onToggle} />
       )}

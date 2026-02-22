@@ -1,24 +1,25 @@
+/**
+ * UserMenu — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { View } from 'react-native';
-import { Avatar, AvatarFallback } from '../../components/avatar';
-import { Button } from '../../components/button';
 import {
+  Avatar,
+  AvatarFallback,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../../components/dropdown-menu';
-import { Text } from '../../components/text';
+  Text,
+} from '@thewhileloop/whileui';
 
 export interface UserMenuProps {
-  /** User's email to display. */
   email?: string;
-  /** User's display name. */
   name?: string;
-  /** Avatar fallback initials (e.g. "JD"). */
   avatarFallback?: string;
-  /** Called when user selects a menu item. Key: 'profile' | 'billing' | 'settings' | 'new-team' | 'logout'. */
   onSelect?: (key: string) => void;
 }
 

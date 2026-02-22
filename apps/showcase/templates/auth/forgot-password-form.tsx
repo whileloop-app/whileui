@@ -1,23 +1,26 @@
+/**
+ * ForgotPasswordForm — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Pressable } from '../../components/pressable';
-import { Button, ButtonText } from '../../components/button';
 import {
+  Button,
+  ButtonText,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/card';
-import { Input } from '../../components/input';
-import { Label } from '../../components/label';
-import { Text } from '../../components/text';
+  Input,
+  Label,
+  Pressable,
+  Text,
+} from '@thewhileloop/whileui';
 
 export interface ForgotPasswordFormProps {
-  /** Called when user submits email. Receives form values. */
   onSubmit?: (data: { email: string }) => void;
-  /** Called when user taps "Back to Sign In" link. */
   onBackToSignIn?: () => void;
 }
 

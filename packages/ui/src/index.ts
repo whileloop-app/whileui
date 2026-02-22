@@ -15,7 +15,13 @@ export {
   type UseThemeBridgeOptions,
   type UseThemeBridgeResult,
 } from './lib/theme-bridge';
-export { useThemeColors, useIconColors, type ThemeColors } from './lib/theme-colors';
+export {
+  useThemeColors,
+  useThemeTokens,
+  useIconColors,
+  useResolvedThemeColors,
+  type ThemeColors,
+} from './lib/theme-colors';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';
@@ -358,11 +364,9 @@ export {
 } from './components/toast';
 
 // ─── Blocks ──────────────────────────────────────────────────
-export * from './blocks/auth';
 export * from './blocks/chat';
 export * from './blocks/navigation';
 export * from './blocks/layout';
-export * from './blocks/profile';
 export * from './blocks/lists';
 export * from './blocks/commerce';
 export * from './blocks/splash';

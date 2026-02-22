@@ -15,6 +15,16 @@ import {
 } from '@expo-google-fonts/nunito';
 import './global.css';
 import {
+  SignInForm,
+  SignUpForm,
+  ForgotPasswordForm,
+  VerifyEmailForm,
+  ResetPasswordForm,
+  SocialConnections,
+  UserMenu,
+} from './templates/auth';
+import { ProfileHeader, SettingsSection, SettingsItem, AccountCard } from './templates/profile';
+import {
   FontProvider,
   PortalHost,
   ThemeBridge,
@@ -141,14 +151,6 @@ import {
   ToastProvider,
   ToastContainer,
   useToast,
-  // Auth Blocks
-  SignInForm,
-  SignUpForm,
-  ForgotPasswordForm,
-  VerifyEmailForm,
-  ResetPasswordForm,
-  SocialConnections,
-  UserMenu,
   // Navigation Blocks
   BottomNav,
   FloatingBottomNav,
@@ -162,16 +164,14 @@ import {
   Chat,
   type ChatMessage,
   ConfirmActionSheet,
+  ContentSkeleton,
   EmptyState,
+  ErrorBoundary,
   ErrorState,
   LoadingScreen,
+  PullToRefreshScrollView,
   SplashScreen,
   FormModalScreen,
-  // Profile Blocks
-  ProfileHeader,
-  SettingsSection,
-  SettingsItem,
-  AccountCard,
   // Lists Blocks
   ListItem,
   NotificationItem,
@@ -195,9 +195,11 @@ import {
 } from '@thewhileloop/whileui';
 
 type CategoryKey =
-  | 'components'
-  | 'auth'
+  | 'primitives'
+  | 'controls'
+  | 'overlays'
   | 'forms'
+  | 'auth'
   | 'navigation'
   | 'layout'
   | 'chat'
@@ -206,10 +208,12 @@ type CategoryKey =
   | 'commerce';
 
 const categories: { key: CategoryKey; label: string; icon: string }[] = [
-  { key: 'components', label: 'Components', icon: 'layers' },
-  { key: 'auth', label: 'Auth', icon: 'lock' },
+  { key: 'primitives', label: 'Primitives', icon: 'box' },
+  { key: 'controls', label: 'Controls', icon: 'sliders' },
+  { key: 'overlays', label: 'Overlays', icon: 'layers' },
   { key: 'forms', label: 'Forms', icon: 'edit-3' },
-  { key: 'navigation', label: 'Navigation', icon: 'navigation' },
+  { key: 'auth', label: 'Auth', icon: 'lock' },
+  { key: 'navigation', label: 'Navigation', icon: 'compass' },
   { key: 'layout', label: 'Layout', icon: 'layout' },
   { key: 'chat', label: 'Chat', icon: 'message-circle' },
   { key: 'profile', label: 'Profile', icon: 'user' },
@@ -284,7 +288,7 @@ function AppContent() {
     initialMode: 'system',
   });
   const [showSplash, setShowSplash] = useState(true);
-  const [activeTab, setActiveTab] = useState<CategoryKey>('components');
+  const [activeTab, setActiveTab] = useState<CategoryKey>('primitives');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const colors = useIconColors();
 
@@ -320,12 +324,16 @@ function AppContent() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'components':
-        return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
-      case 'auth':
-        return <AuthBlocksTab />;
+      case 'primitives':
+        return <PrimitivesTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
+      case 'controls':
+        return <ControlsTab />;
+      case 'overlays':
+        return <OverlaysTab />;
       case 'forms':
         return <FormsBlocksTab />;
+      case 'auth':
+        return <AuthBlocksTab />;
       case 'navigation':
         return <NavigationBlocksTab />;
       case 'layout':
@@ -337,7 +345,7 @@ function AppContent() {
       case 'commerce':
         return <CommerceBlocksTab />;
       default:
-        return <ComponentsTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
+        return <PrimitivesTab themeMode={themeMode} onThemeModeChange={setThemeMode} />;
     }
   };
 
@@ -356,7 +364,7 @@ function AppContent() {
             <ChatBlocksTab
               onBack={() => {
                 triggerHaptic('light');
-                setActiveTab('components');
+                setActiveTab('primitives');
               }}
               onMenuPress={() => {
                 triggerHaptic('light');
@@ -534,29 +542,35 @@ function AppContent() {
               title: 'Components',
               items: [
                 {
-                  key: 'components',
-                  label: 'All Components',
+                  key: 'primitives',
+                  label: 'Primitives',
+                  icon: (
+                    <Feather
+                      name="box"
+                      size={20}
+                      color={activeTab === 'primitives' ? colors.primary : colors.muted}
+                    />
+                  ),
+                },
+                {
+                  key: 'controls',
+                  label: 'Controls',
+                  icon: (
+                    <Feather
+                      name="sliders"
+                      size={20}
+                      color={activeTab === 'controls' ? colors.primary : colors.muted}
+                    />
+                  ),
+                },
+                {
+                  key: 'overlays',
+                  label: 'Overlays',
                   icon: (
                     <Feather
                       name="layers"
                       size={20}
-                      color={activeTab === 'components' ? colors.primary : colors.muted}
-                    />
-                  ),
-                },
-              ],
-            },
-            {
-              title: 'Blocks',
-              items: [
-                {
-                  key: 'auth',
-                  label: 'Authentication',
-                  icon: (
-                    <Feather
-                      name="lock"
-                      size={20}
-                      color={activeTab === 'auth' ? colors.primary : colors.muted}
+                      color={activeTab === 'overlays' ? colors.primary : colors.muted}
                     />
                   ),
                 },
@@ -568,6 +582,22 @@ function AppContent() {
                       name="edit-3"
                       size={20}
                       color={activeTab === 'forms' ? colors.primary : colors.muted}
+                    />
+                  ),
+                },
+              ],
+            },
+            {
+              title: 'Blocks',
+              items: [
+                {
+                  key: 'auth',
+                  label: 'Auth',
+                  icon: (
+                    <Feather
+                      name="lock"
+                      size={20}
+                      color={activeTab === 'auth' ? colors.primary : colors.muted}
                     />
                   ),
                 },
@@ -668,6 +698,16 @@ function AppContent() {
 }
 
 // ─── Section Component ──────────────────────────────────────
+function SectionGroup({ label }: { label: string }) {
+  return (
+    <View className="mb-4 mt-6">
+      <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        {label}
+      </Text>
+    </View>
+  );
+}
+
 function Section({
   title,
   subtitle,
@@ -688,8 +728,8 @@ function Section({
   );
 }
 
-// ─── Components Tab ─────────────────────────────────────────
-function ComponentsTab({
+// ─── Primitives Tab ──────────────────────────────────────────
+function PrimitivesTab({
   themeMode,
   onThemeModeChange,
 }: {
@@ -697,19 +737,7 @@ function ComponentsTab({
   onThemeModeChange: (mode: ThemeMode) => void;
 }) {
   const [progress, setProgress] = useState(45);
-  const [radioVal, setRadioVal] = useState('option-1');
-  const [massUnit, setMassUnit] = useState('kg');
-  const [heightUnit, setHeightUnit] = useState('cm');
-  const [selectVal, setSelectVal] = useState<SelectOption | undefined>(undefined);
-  const { toast } = useToast();
   const colors = useIconColors();
-  const insets = useSafeAreaInsets();
-  const contentInsets = {
-    top: insets.top,
-    bottom: Platform.select({ ios: insets.bottom, android: insets.bottom + 24 }),
-    left: 12,
-    right: 12,
-  };
 
   React.useEffect(() => {
     const timer = setInterval(() => setProgress((p) => (p + 10) % 110), 1000);
@@ -718,8 +746,7 @@ function ComponentsTab({
 
   return (
     <View>
-      {/* Typography */}
-      <Section title="Typography" subtitle="Bold geometric type with custom weight mapping">
+      <Section title="Typography" subtitle="Text, badges, and type scale">
         <Text className="text-4xl font-bold text-foreground tracking-tight">
           Build faster,{'\n'}ship beautiful.
         </Text>
@@ -830,80 +857,6 @@ function ComponentsTab({
         </SegmentedControl>
       </Section>
 
-      {/* Selection */}
-      <Section title="Selection" subtitle="SegmentedControl, radios, selects, and toggles">
-        <SegmentedControl value={massUnit} onValueChange={setMassUnit} wrap={false}>
-          <SegmentedControlItem value="kg">
-            <SegmentedControlItemText>kg</SegmentedControlItemText>
-          </SegmentedControlItem>
-          <SegmentedControlItem value="lbs">
-            <SegmentedControlItemText>lbs</SegmentedControlItemText>
-          </SegmentedControlItem>
-        </SegmentedControl>
-        <SegmentedControl value={heightUnit} onValueChange={setHeightUnit} wrap={false}>
-          <SegmentedControlItem value="cm">
-            <SegmentedControlItemText>Centimeters</SegmentedControlItemText>
-          </SegmentedControlItem>
-          <SegmentedControlItem value="in">
-            <SegmentedControlItemText>Inches</SegmentedControlItemText>
-          </SegmentedControlItem>
-          <SegmentedControlItem value="ft">
-            <SegmentedControlItemText>Feet</SegmentedControlItemText>
-          </SegmentedControlItem>
-        </SegmentedControl>
-
-        <RadioGroup value={radioVal} onValueChange={setRadioVal}>
-          <View className="flex-row items-center gap-2">
-            <RadioGroupItem value="option-1" />
-            <Label onPress={() => setRadioVal('option-1')}>Free plan</Label>
-          </View>
-          <View className="flex-row items-center gap-2">
-            <RadioGroupItem value="option-2" />
-            <Label onPress={() => setRadioVal('option-2')}>Pro plan</Label>
-          </View>
-        </RadioGroup>
-
-        <Select value={selectVal} onValueChange={(opt) => setSelectVal(opt)}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select a framework" />
-          </SelectTrigger>
-          <SelectContent insets={contentInsets} className="w-full">
-            <SelectItem label="React Native" value="rn">
-              <SelectItemIcon>
-                <Feather name="smartphone" size={16} color={colors.foreground} />
-              </SelectItemIcon>
-            </SelectItem>
-            <SelectItem label="Flutter" value="flutter">
-              <SelectItemIcon>
-                <Feather name="zap" size={16} color={colors.foreground} />
-              </SelectItemIcon>
-            </SelectItem>
-            <SelectItem label="SwiftUI" value="swift">
-              <SelectItemIcon>
-                <Feather name="box" size={16} color={colors.foreground} />
-              </SelectItemIcon>
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        <View className="flex-row flex-wrap gap-4">
-          <Toggle>
-            <ToggleText>Bold</ToggleText>
-          </Toggle>
-          <ToggleGroup type="single">
-            <ToggleGroupItem value="left">
-              <ToggleGroupItemText>L</ToggleGroupItemText>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="center">
-              <ToggleGroupItemText>C</ToggleGroupItemText>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="right">
-              <ToggleGroupItemText>R</ToggleGroupItemText>
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </View>
-      </Section>
-
       {/* Cards */}
       <Section
         title="Cards & Badges"
@@ -976,8 +929,113 @@ function ComponentsTab({
           </Badge>
         </View>
       </Section>
+    </View>
+  );
+}
 
-      {/* Data Row */}
+// ─── Controls Tab ────────────────────────────────────────────
+function ControlsTab() {
+  const [radioVal, setRadioVal] = useState('option-1');
+  const [massUnit, setMassUnit] = useState('kg');
+  const [heightUnit, setHeightUnit] = useState('cm');
+  const [selectVal, setSelectVal] = useState<SelectOption | undefined>(undefined);
+  const colors = useIconColors();
+  const insets = useSafeAreaInsets();
+  const contentInsets = {
+    top: insets.top,
+    bottom: Platform.select({ ios: insets.bottom, android: insets.bottom + 24 }),
+    left: 12,
+    right: 12,
+  };
+
+  return (
+    <View>
+      <Section title="Selection" subtitle="SegmentedControl, radios, selects, and toggles">
+        <SegmentedControl value={massUnit} onValueChange={setMassUnit} wrap={false}>
+          <SegmentedControlItem value="kg">
+            <SegmentedControlItemText>kg</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="lbs">
+            <SegmentedControlItemText>lbs</SegmentedControlItemText>
+          </SegmentedControlItem>
+        </SegmentedControl>
+        <SegmentedControl value={heightUnit} onValueChange={setHeightUnit} wrap={false}>
+          <SegmentedControlItem value="cm">
+            <SegmentedControlItemText>Centimeters</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="in">
+            <SegmentedControlItemText>Inches</SegmentedControlItemText>
+          </SegmentedControlItem>
+          <SegmentedControlItem value="ft">
+            <SegmentedControlItemText>Feet</SegmentedControlItemText>
+          </SegmentedControlItem>
+        </SegmentedControl>
+        <View>
+          <Text className="mb-2 text-sm text-muted-foreground">Pill variant</Text>
+          <SegmentedControl
+            variant="pill"
+            value={massUnit}
+            onValueChange={setMassUnit}
+            wrap={false}
+          >
+            <SegmentedControlItem value="kg">
+              <SegmentedControlItemText>kg</SegmentedControlItemText>
+            </SegmentedControlItem>
+            <SegmentedControlItem value="lbs">
+              <SegmentedControlItemText>lbs</SegmentedControlItemText>
+            </SegmentedControlItem>
+          </SegmentedControl>
+        </View>
+        <RadioGroup value={radioVal} onValueChange={setRadioVal}>
+          <View className="flex-row items-center gap-2">
+            <RadioGroupItem value="option-1" />
+            <Label onPress={() => setRadioVal('option-1')}>Free plan</Label>
+          </View>
+          <View className="flex-row items-center gap-2">
+            <RadioGroupItem value="option-2" />
+            <Label onPress={() => setRadioVal('option-2')}>Pro plan</Label>
+          </View>
+        </RadioGroup>
+        <Select value={selectVal} onValueChange={(opt) => setSelectVal(opt)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select a framework" />
+          </SelectTrigger>
+          <SelectContent insets={contentInsets} className="w-full">
+            <SelectItem label="React Native" value="rn">
+              <SelectItemIcon>
+                <Feather name="smartphone" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
+            <SelectItem label="Flutter" value="flutter">
+              <SelectItemIcon>
+                <Feather name="zap" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
+            <SelectItem label="SwiftUI" value="swift">
+              <SelectItemIcon>
+                <Feather name="box" size={16} color={colors.foreground} />
+              </SelectItemIcon>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        <View className="flex-row flex-wrap gap-4">
+          <Toggle>
+            <ToggleText>Bold</ToggleText>
+          </Toggle>
+          <ToggleGroup type="single">
+            <ToggleGroupItem value="left">
+              <ToggleGroupItemText>L</ToggleGroupItemText>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="center">
+              <ToggleGroupItemText>C</ToggleGroupItemText>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="right">
+              <ToggleGroupItemText>R</ToggleGroupItemText>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </View>
+      </Section>
+
       <Section title="Data Row" subtitle="Reusable left/center/right rows with narrow-width safety">
         <View className="rounded-xl border border-border p-3 gap-2">
           <DataRow className="border-b border-border px-1 pb-3">
@@ -1012,9 +1070,18 @@ function ComponentsTab({
           </View>
         </View>
       </Section>
+    </View>
+  );
+}
 
-      {/* Feedback */}
-      <Section title="Feedback" subtitle="Alerts, toasts, and loading states">
+// ─── Overlays Tab ────────────────────────────────────────────
+function OverlaysTab() {
+  const { toast } = useToast();
+  const colors = useIconColors();
+
+  return (
+    <View>
+      <Section title="Feedback" subtitle="Alerts, toasts, skeleton, and spinners">
         <Alert className="flex-row items-start">
           <Text className="text-foreground font-bold text-lg mr-3">💡</Text>
           <View className="flex-1">
@@ -1378,7 +1445,7 @@ function ComponentsTab({
   );
 }
 
-// ─── Forms Blocks Tab ────────────────────────────────────────
+// ─── Forms Tab ────────────────────────────────────────────────
 function FormsBlocksTab() {
   const [email, setEmail] = useState('');
   const [weight, setWeight] = useState<number | null>(72.4);
@@ -1806,9 +1873,21 @@ function ChatBlocksTab({
   );
 }
 
+// ─── Crashable child for ErrorBoundary demo ───────────────────
+function CrashableChild() {
+  const [shouldCrash, setShouldCrash] = useState(false);
+  if (shouldCrash) throw new Error('Demo error: something went wrong!');
+  return (
+    <Button variant="destructive" onPress={() => setShouldCrash(true)}>
+      <ButtonText>Throw error (ErrorBoundary demo)</ButtonText>
+    </Button>
+  );
+}
+
 // ─── Layout Blocks Tab ──────────────────────────────────────
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [smartInputValue, setSmartInputValue] = useState('');
   const { toast } = useToast();
@@ -1816,6 +1895,7 @@ function LayoutBlocksTab() {
 
   return (
     <View className="gap-6">
+      <SectionGroup label="Actions" />
       <Section title="Action Bar" subtitle="Sticky bottom action row with safe-area support">
         <ActionBar
           sticky={false}
@@ -1905,6 +1985,7 @@ function LayoutBlocksTab() {
         />
       </Section>
 
+      <SectionGroup label="States & Loading" />
       <Section title="Empty State" subtitle="When there's no content to show">
         <View className="h-64 rounded-xl border border-border overflow-hidden">
           <EmptyState
@@ -1927,6 +2008,41 @@ function LayoutBlocksTab() {
         </View>
       </Section>
 
+      <Section
+        title="Content Skeleton"
+        subtitle="Layout placeholder while loading. Use instead of spinner when you need layout preview."
+      >
+        <View className="gap-6">
+          <View>
+            <Text className="mb-2 text-sm text-muted-foreground">Full page preview (list)</Text>
+            <View className="min-h-[320px] rounded-xl border border-border overflow-hidden bg-background">
+              <ContentSkeleton variant="list" rows={5} className="flex-1" />
+            </View>
+          </View>
+          <View>
+            <Text className="mb-2 text-sm text-muted-foreground">Variants</Text>
+            <View className="gap-4">
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">list</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <ContentSkeleton variant="list" rows={2} />
+                </View>
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">card</Text>
+                <ContentSkeleton variant="card" />
+              </View>
+              <View>
+                <Text className="mb-1 text-xs text-muted-foreground">generic</Text>
+                <View className="rounded-xl border border-border overflow-hidden bg-background">
+                  <ContentSkeleton variant="generic" />
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Section>
+
       <Section title="Loading Screen" subtitle="Content is being fetched">
         <Button onPress={() => setShowLoading(!showLoading)}>
           <ButtonText>{showLoading ? 'Hide Loading' : 'Show Loading'}</ButtonText>
@@ -1936,6 +2052,38 @@ function LayoutBlocksTab() {
             <LoadingScreen message="Fetching data..." size="sm" />
           </View>
         )}
+      </Section>
+
+      <SectionGroup label="Utility" />
+      <Section title="Error Boundary" subtitle="Catches React errors and renders ErrorState">
+        <View className="h-48 rounded-xl border border-border overflow-hidden bg-background">
+          <ErrorBoundary>
+            <View className="flex-1 items-center justify-center p-4">
+              <CrashableChild />
+            </View>
+          </ErrorBoundary>
+        </View>
+      </Section>
+
+      <Section title="Pull to Refresh" subtitle="Themed ScrollView + RefreshControl">
+        <View className="h-48 rounded-xl border border-border overflow-hidden">
+          <PullToRefreshScrollView
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await new Promise((r) => setTimeout(r, 1000));
+              setRefreshing(false);
+            }}
+            className="flex-1"
+          >
+            <View className="p-4 gap-2">
+              <Text className="text-foreground">Pull down to refresh</Text>
+              <Text className="text-sm text-muted-foreground">
+                Uses useThemeTokens for RefreshControl colors.
+              </Text>
+            </View>
+          </PullToRefreshScrollView>
+        </View>
       </Section>
     </View>
   );

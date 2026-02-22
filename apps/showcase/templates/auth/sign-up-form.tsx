@@ -1,56 +1,71 @@
+/**
+ * SignUpForm — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Pressable } from '../../components/pressable';
-import { Button, ButtonText } from '../../components/button';
 import {
+  Button,
+  ButtonText,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/card';
-import { Input } from '../../components/input';
-import { Label } from '../../components/label';
-import { Separator } from '../../components/separator';
-import { Text } from '../../components/text';
+  Input,
+  Label,
+  Pressable,
+  Separator,
+  Text,
+} from '@thewhileloop/whileui';
 
-export interface SignInFormProps {
-  /** Called when user submits email/password. Receives form values. */
-  onSubmit?: (data: { email: string; password: string }) => void;
-  /** Called when user taps "Forgot?" link. */
-  onForgotPassword?: () => void;
-  /** Called when user taps "Sign Up" link. */
-  onSignUp?: () => void;
-  /** Called when user taps Google button. */
+export interface SignUpFormProps {
+  onSubmit?: (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }) => void;
+  onSignIn?: () => void;
   onGooglePress?: () => void;
-  /** Called when user taps Apple button. */
   onApplePress?: () => void;
 }
 
-export function SignInForm({
+export function SignUpForm({
   onSubmit,
-  onForgotPassword,
-  onSignUp,
+  onSignIn,
   onGooglePress,
   onApplePress,
-}: SignInFormProps = {}) {
+}: SignUpFormProps = {}) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    onSubmit?.({ email, password });
+    onSubmit?.({ firstName, lastName, email, password });
   };
 
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>Sign in to your account to continue.</CardDescription>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>Enter your details to get started.</CardDescription>
       </CardHeader>
       <CardContent className="gap-4">
+        <View className="flex-row gap-3">
+          <View className="flex-1 gap-2">
+            <Label nativeID="first-name">First name</Label>
+            <Input placeholder="Jane" value={firstName} onChangeText={setFirstName} />
+          </View>
+          <View className="flex-1 gap-2">
+            <Label nativeID="last-name">Last name</Label>
+            <Input placeholder="Doe" value={lastName} onChangeText={setLastName} />
+          </View>
+        </View>
         <View className="gap-2">
-          <Label nativeID="email">Email</Label>
+          <Label nativeID="signup-email">Email</Label>
           <Input
             placeholder="you@email.com"
             keyboardType="email-address"
@@ -59,12 +74,7 @@ export function SignInForm({
           />
         </View>
         <View className="gap-2">
-          <View className="flex-row items-center justify-between">
-            <Label nativeID="password">Password</Label>
-            <Pressable onPress={onForgotPassword} accessibilityRole="button">
-              <Text className="text-sm text-primary font-medium">Forgot?</Text>
-            </Pressable>
-          </View>
+          <Label nativeID="signup-password">Password</Label>
           <Input
             placeholder="••••••••"
             secureTextEntry
@@ -75,7 +85,7 @@ export function SignInForm({
       </CardContent>
       <CardFooter className="flex-col gap-4">
         <Button className="w-full" onPress={handleSubmit}>
-          <ButtonText>Sign In</ButtonText>
+          <ButtonText>Create Account</ButtonText>
         </Button>
 
         <View className="flex-row items-center gap-3 w-full">
@@ -94,12 +104,12 @@ export function SignInForm({
         </View>
 
         <Pressable
-          onPress={onSignUp}
+          onPress={onSignIn}
           className="flex-row justify-center"
           accessibilityRole="button"
         >
           <Text className="text-sm text-center text-muted-foreground">
-            Don't have an account? <Text className="text-primary font-medium">Sign Up</Text>
+            Already have an account? <Text className="text-primary font-medium">Sign In</Text>
           </Text>
         </Pressable>
       </CardFooter>

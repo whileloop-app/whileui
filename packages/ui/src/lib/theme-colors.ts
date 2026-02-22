@@ -91,3 +91,9 @@ export function useIconColors() {
     destructive: c.destructive,
   };
 }
+
+/** Alias for useThemeColors. Returns theme colors resolved to hex for RefreshControl, LinearGradient, charts. */
+export const useThemeTokens = useThemeColors;
+
+/** @deprecated Use useThemeTokens or useThemeColors. */
+export const useResolvedThemeColors = useThemeColors;

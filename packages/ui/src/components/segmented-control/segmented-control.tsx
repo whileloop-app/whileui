@@ -13,6 +13,10 @@ import { tv } from '../../lib/tv';
 const segmentedControlVariants = tv({
   base: 'w-full flex-row items-center rounded-lg bg-muted p-1',
   variants: {
+    variant: {
+      default: 'rounded-lg',
+      pill: 'rounded-full',
+    },
     wrap: {
       true: 'flex-wrap justify-center gap-1',
       false: 'flex-nowrap gap-1',
@@ -23,14 +27,19 @@ const segmentedControlVariants = tv({
     },
   },
   defaultVariants: {
+    variant: 'default',
     wrap: true,
     size: 'default',
   },
 });
 
 const segmentedControlItemVariants = tv({
-  base: 'min-h-10 min-w-0 flex-row items-center justify-center rounded-md px-3 active:opacity-70',
+  base: 'min-h-10 min-w-0 flex-row items-center justify-center px-3 active:opacity-70',
   variants: {
+    variant: {
+      default: 'rounded-md',
+      pill: 'rounded-full',
+    },
     selected: {
       true: 'bg-background shadow-sm',
       false: 'bg-transparent',
@@ -49,6 +58,7 @@ const segmentedControlItemVariants = tv({
     },
   },
   defaultVariants: {
+    variant: 'default',
     selected: false,
     size: 'default',
     disabled: false,
@@ -77,6 +87,7 @@ const segmentedControlItemTextVariants = tv({
 interface SegmentedControlContextValue {
   value: string;
   onValueChange: (next: string) => void;
+  variant: 'default' | 'pill';
   size: 'default' | 'compact';
   wrap: boolean;
   disabled: boolean;
@@ -85,6 +96,7 @@ interface SegmentedControlContextValue {
 const SegmentedControlContext = createContext<SegmentedControlContextValue>({
   value: '',
   onValueChange: () => {},
+  variant: 'default',
   size: 'default',
   wrap: true,
   disabled: false,
@@ -104,6 +116,7 @@ export interface SegmentedControlProps extends ViewProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  variant?: 'default' | 'pill';
   wrap?: boolean | 'auto';
   size?: 'default' | 'compact';
   disabled?: boolean;
@@ -124,6 +137,7 @@ function SegmentedControl({
   value: controlledValue,
   defaultValue = '',
   onValueChange,
+  variant = 'default',
   wrap = 'auto',
   size = 'default',
   disabled = false,
@@ -148,14 +162,14 @@ function SegmentedControl({
   };
 
   const contextValue = useMemo(
-    () => ({ value, onValueChange: handleValueChange, size, wrap: shouldWrap, disabled }),
-    [value, size, shouldWrap, disabled]
+    () => ({ value, onValueChange: handleValueChange, variant, size, wrap: shouldWrap, disabled }),
+    [value, variant, size, shouldWrap, disabled]
   );
 
   return (
     <SegmentedControlContext.Provider value={contextValue}>
       <View
-        className={cn(segmentedControlVariants({ wrap: shouldWrap, size }), className)}
+        className={cn(segmentedControlVariants({ variant, wrap: shouldWrap, size }), className)}
         accessibilityRole="radiogroup"
         {...props}
       >
@@ -172,7 +186,8 @@ function SegmentedControlItem({
   disabled: itemDisabled,
   ...props
 }: SegmentedControlItemProps) {
-  const { value, onValueChange, size, wrap, disabled } = useContext(SegmentedControlContext);
+  const { value, onValueChange, variant, size, wrap, disabled } =
+    useContext(SegmentedControlContext);
   const selected = value === itemValue;
   const finalDisabled = disabled || Boolean(itemDisabled);
 
@@ -181,6 +196,7 @@ function SegmentedControlItem({
       <Pressable
         className={cn(
           segmentedControlItemVariants({
+            variant,
             selected,
             size,
             disabled: finalDisabled,

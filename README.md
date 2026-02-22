@@ -147,6 +147,22 @@ function MyScreen() {
 }
 ```
 
+## Blocks Strategy: Core vs Templates
+
+**Core package** exports:
+
+- **Primitives** — Button, Input, Card, Text, etc.
+- **Generic layout blocks** — EmptyState, ErrorState, LoadingScreen, ContentSkeleton
+- **Layout infrastructure** — FormModalScreen, ConfirmActionSheet, SmartInput, ActionBar
+- **Navigation, Chat, Lists, Commerce, Media, DatePicker** — Blocks that rarely need app-specific customization
+
+**Opinionated blocks** (auth, profile) are **copy-paste templates** in the showcase app:
+
+- **Auth:** `apps/showcase/templates/auth/` — SignInForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, VerifyEmailForm, SocialConnections, UserMenu
+- **Profile:** `apps/showcase/templates/profile/` — ProfileHeader, SettingsSection, SettingsItem, AccountCard
+
+**To use auth or profile blocks:** Copy the template file(s) from `apps/showcase/templates/` into your app. Customize as needed (error handling, loading state, social auth slot, branding). Each template imports primitives from `@thewhileloop/whileui`.
+
 ## Philosophy
 
 - **Copy-Paste Ownership** — Components live in _your_ project. No `node_modules` lock-in.
@@ -159,10 +175,10 @@ function MyScreen() {
 
 - **Full-screen:** `AppShell` + `Header` in `header` + `BottomNav` in `bottomNav` + content in `children`
 - **Layout:** `Stack` (vertical), `Row` (horizontal) — both support `gap`, `align`, `justify`
-- **Auth callbacks:** Auth blocks use objects: `onSubmit({ email, password })`, `onSubmit({ firstName, lastName, email, password })`, etc. Wire to your auth service.
+- **Auth callbacks:** Auth templates use objects: `onSubmit({ email, password })`, `onSubmit({ firstName, lastName, email, password })`, etc. Copy templates from `apps/showcase/templates/auth/`.
 - **PortalHost:** Add `<PortalHost />` at app root for Select, Popover, Tooltip, HoverCard.
 - **Uniwind:** `withUniwindConfig` must wrap metro config. `global.css` at app root, imported in `App.tsx`.
-- **Reference:** Block props in `packages/ui/src/blocks`; flow patterns in README "Flow Patterns" section.
+- **Reference:** Block props in `packages/ui/src/blocks` (core) and `apps/showcase/templates/` (auth, profile); flow patterns in README "Flow Patterns" section.
 
 ## Components
 
@@ -192,7 +208,7 @@ function MyScreen() {
 | **RadioGroup**       | —                                                     | RadioGroup + RadioGroupItem                                                                   |
 | **Select**           | —                                                     | Uses `SelectOption` type `{value, label}`. Includes SelectGroup, SelectLabel, SelectSeparator |
 | **Label**            | —                                                     | Form field label                                                                              |
-| **SegmentedControl** | single select                                         | SegmentedControl, SegmentedControlItem, SegmentedControlItemText with wrapping layout support |
+| **SegmentedControl** | default, pill; single select                          | SegmentedControl, SegmentedControlItem, SegmentedControlItemText with wrapping layout support |
 | **Toggle**           | default, outline                                      | ToggleText sub-component                                                                      |
 | **ToggleGroup**      | single, multiple                                      | Group of toggle items                                                                         |
 
@@ -240,17 +256,19 @@ function MyScreen() {
 
 ## Blocks (Pre-built Screens)
 
-### Auth
+### Auth (Copy from showcase templates)
 
-| Block                  | Description                           |
-| ---------------------- | ------------------------------------- |
-| **SignInForm**         | Email/password sign in with callbacks |
-| **SignUpForm**         | Registration form with callbacks      |
-| **ForgotPasswordForm** | Password reset request                |
-| **ResetPasswordForm**  | Set new password                      |
-| **VerifyEmailForm**    | Email verification code input         |
-| **SocialConnections**  | OAuth provider buttons                |
-| **UserMenu**           | Profile dropdown for auth flows       |
+Copy from `apps/showcase/templates/auth/`:
+
+| Block                  | File                       | Description                           |
+| ---------------------- | -------------------------- | ------------------------------------- |
+| **SignInForm**         | `sign-in-form.tsx`         | Email/password sign in with callbacks |
+| **SignUpForm**         | `sign-up-form.tsx`         | Registration form with callbacks      |
+| **ForgotPasswordForm** | `forgot-password-form.tsx` | Password reset request                |
+| **ResetPasswordForm**  | `reset-password-form.tsx`  | Set new password                      |
+| **VerifyEmailForm**    | `verify-email-form.tsx`    | Email verification code input         |
+| **SocialConnections**  | `social-connections.tsx`   | OAuth provider buttons                |
+| **UserMenu**           | `user-menu.tsx`            | Profile dropdown for auth flows       |
 
 ### Navigation
 
@@ -266,19 +284,22 @@ function MyScreen() {
 
 ### Layout
 
-| Block                  | Description                                                             |
-| ---------------------- | ----------------------------------------------------------------------- |
-| **ActionBar**          | Sticky bottom action row with safe-area padding                         |
-| **ConfirmActionSheet** | Reusable destructive confirmation sheet                                 |
-| **FormModalScreen**    | Modal scaffold for forms with loading states                            |
-| **EmptyState**         | Empty content placeholder                                               |
-| **ErrorState**         | Error display with retry                                                |
-| **LoadingScreen**      | Full-screen loading indicator                                           |
-| **SmartInput**         | Keyboard-aware compose input: left/center/right slots, bar/card variant |
-| **OnboardingScreen**   | Onboarding flow screen                                                  |
-| **SplashScreen**       | Branded splash (fade/scale/slide variants)                              |
-| **MinimalSplash**      | Minimal monochrome splash                                               |
-| **BrandedSplash**      | Splash with brand imagery                                               |
+| Block                       | Description                                                             |
+| --------------------------- | ----------------------------------------------------------------------- |
+| **ActionBar**               | Sticky bottom action row with safe-area padding                         |
+| **ConfirmActionSheet**      | Reusable destructive confirmation sheet                                 |
+| **FormModalScreen**         | Modal scaffold for forms with loading states                            |
+| **ContentSkeleton**         | Page/content placeholder with variants (list, card, generic)            |
+| **ErrorBoundary**           | React ErrorBoundary that renders ErrorState by default                  |
+| **EmptyState**              | Empty content placeholder                                               |
+| **ErrorState**              | Error display with retry                                                |
+| **LoadingScreen**           | Full-screen loading indicator                                           |
+| **PullToRefreshScrollView** | Themed ScrollView with RefreshControl (useThemeTokens for colors)       |
+| **SmartInput**              | Keyboard-aware compose input: left/center/right slots, bar/card variant |
+| **OnboardingScreen**        | Onboarding flow screen                                                  |
+| **SplashScreen**            | Branded splash (fade/scale/slide variants)                              |
+| **MinimalSplash**           | Minimal monochrome splash                                               |
+| **BrandedSplash**           | Splash with brand imagery                                               |
 
 ### Chat
 
@@ -288,14 +309,16 @@ function MyScreen() {
 | **ChatMessageBubble** | Message bubble (user/assistant, big/small text)  |
 | **ChatSuggestions**   | Suggestion chips when empty                      |
 
-### Profile & Settings
+### Profile & Settings (Copy from showcase templates)
 
-| Block               | Description                         |
-| ------------------- | ----------------------------------- |
-| **ProfileHeader**   | Profile header with stats           |
-| **AccountCard**     | Account summary card                |
-| **SettingsSection** | Section header with optional action |
-| **SettingsItem**    | Row for toggles/links/settings      |
+Copy from `apps/showcase/templates/profile/`:
+
+| Block               | File                   | Description                         |
+| ------------------- | ---------------------- | ----------------------------------- |
+| **ProfileHeader**   | `profile-header.tsx`   | Profile header with stats           |
+| **AccountCard**     | `account-card.tsx`     | Account summary card                |
+| **SettingsSection** | `settings-section.tsx` | Section header with optional action |
+| **SettingsItem**    | `settings-item.tsx`    | Row for toggles/links/settings      |
 
 ### Lists
 
@@ -418,11 +441,10 @@ whileui/
 │           │   ├── data-row/
 │           │   ├── dialog/
 │           │   └── ...
-│           ├── blocks/        # Pre-built screens
-│           │   ├── auth/
+│           ├── blocks/        # Pre-built screens (core only)
+│           │   ├── chat/
 │           │   ├── navigation/
 │           │   ├── layout/
-│           │   ├── profile/
 │           │   ├── lists/
 │           │   ├── commerce/
 │           │   ├── splash/
@@ -435,6 +457,9 @@ whileui/
 │           └── index.ts       # Barrel export
 ├── apps/
 │   └── showcase/              # Expo demo app
+│       ├── templates/         # Copy-paste templates (auth, profile)
+│       │   ├── auth/
+│       │   └── profile/
 │       ├── App.tsx            # Component showcase
 │       ├── global.css         # Theme variables (OKLCH) — at app root!
 │       └── metro.config.js    # Uniwind + monorepo config
@@ -459,7 +484,7 @@ Themes are defined in `global.css` using CSS variables with OKLCH colors:
 }
 ```
 
-### Token Contract (Release Baseline)
+### Strict Theme Token Contract
 
 The WhileUI token contract is strict for cross-app reuse. Define these in **every** theme variant (`@variant light`, `@variant dark`, and custom variants):
 
@@ -521,7 +546,7 @@ const iconColors = useIconColors();
 <Spinner color={colors.foreground} />  // Spinner defaults to this when color not passed
 ```
 
-- **useThemeColors** — Returns RN-safe color strings for all semantic tokens. Falls back to `--app-color-*` when `--color-*` is not RN-native (e.g. `oklch(...)`).
+- **useThemeColors** / **useThemeTokens** — Returns RN-safe color strings (hex) for all semantic tokens. Use for RefreshControl, LinearGradient, charts. Falls back to `--app-color-*` when `--color-*` is not RN-native (e.g. `oklch(...)`).
 - **useIconColors** — Subset for icons. Maps `muted` → `mutedForeground` (readable on backgrounds).
 
 Input, Textarea, NumericInput, SmartInput, Spinner, and LoadingScreen default to theme colors when you omit `placeholderTextColor` or `spinnerColor`.
@@ -698,7 +723,7 @@ import {
   SegmentedControlItemText,
 } from '@thewhileloop/whileui';
 
-<SegmentedControl value={unit} onValueChange={setUnit} wrap>
+<SegmentedControl value={unit} onValueChange={setUnit} variant="pill" wrap>
   <SegmentedControlItem value="metric">
     <SegmentedControlItemText>Metric</SegmentedControlItemText>
   </SegmentedControlItem>
@@ -707,6 +732,10 @@ import {
   </SegmentedControlItem>
 </SegmentedControl>;
 ```
+
+| Prop    | Type                  | Default     | Description               |
+| ------- | --------------------- | ----------- | ------------------------- |
+| variant | `'default' \| 'pill'` | `'default'` | Pill = rounded-full items |
 
 ## DataRow
 
@@ -1081,8 +1110,10 @@ import {
 
 ## SignInForm
 
+Copy from `apps/showcase/templates/auth/sign-in-form.tsx`, then:
+
 ```tsx
-import { SignInForm } from '@thewhileloop/whileui';
+import { SignInForm } from './templates/auth'; // or your path
 
 <SignInForm
   onSubmit={({ email, password }) => signIn(email, password)}
@@ -1103,8 +1134,10 @@ import { SignInForm } from '@thewhileloop/whileui';
 
 ## SignUpForm
 
+Copy from `apps/showcase/templates/auth/sign-up-form.tsx`, then:
+
 ```tsx
-import { SignUpForm } from '@thewhileloop/whileui';
+import { SignUpForm } from './templates/auth'; // or your path
 
 <SignUpForm
   onSubmit={({ firstName, lastName, email, password }) =>
@@ -1346,6 +1379,58 @@ import { SplashScreen } from '@thewhileloop/whileui';
 | duration    | `number`                       | `800`     |
 | showLoading | `boolean`                      | `false`   |
 
+## ContentSkeleton
+
+Page/content placeholder with layout presets. Use while loading data instead of a spinner when you want to preview the layout.
+
+```tsx
+import { ContentSkeleton } from '@thewhileloop/whileui';
+
+<ContentSkeleton variant="list" rows={4} />
+<ContentSkeleton variant="card" />
+<ContentSkeleton variant="generic" />
+```
+
+| Prop    | Type                            | Default  | Description                             |
+| ------- | ------------------------------- | -------- | --------------------------------------- |
+| variant | `'list' \| 'card' \| 'generic'` | `'list'` | Layout preset                           |
+| rows    | `number`                        | `4`      | Number of list rows (list variant only) |
+
+## ErrorBoundary
+
+React ErrorBoundary that catches render errors and renders ErrorState by default.
+
+```tsx
+import { ErrorBoundary } from '@thewhileloop/whileui';
+
+<ErrorBoundary onError={(err) => console.error(err)}>
+  <App />
+</ErrorBoundary>;
+```
+
+| Prop     | Type                                       | Description                             |
+| -------- | ------------------------------------------ | --------------------------------------- |
+| fallback | `ReactNode \| (error, reset) => ReactNode` | Custom fallback; defaults to ErrorState |
+| onError  | `(error, errorInfo) => void`               | Called when error is caught             |
+
+## PullToRefreshScrollView
+
+Themed ScrollView with RefreshControl. Uses `useThemeTokens` for spinner color.
+
+```tsx
+import { PullToRefreshScrollView } from '@thewhileloop/whileui';
+
+<PullToRefreshScrollView refreshing={refreshing} onRefresh={fetchData} refreshColor="#22c55e">
+  {content}
+</PullToRefreshScrollView>;
+```
+
+| Prop         | Type         | Description                                |
+| ------------ | ------------ | ------------------------------------------ |
+| refreshing   | `boolean`    | Whether refresh is in progress             |
+| onRefresh    | `() => void` | Called when user pulls to refresh          |
+| refreshColor | `string`     | Optional hex override; defaults to primary |
+
 ## EmptyState
 
 ```tsx
@@ -1361,8 +1446,10 @@ import { EmptyState } from '@thewhileloop/whileui';
 
 ## ProfileHeader
 
+Copy from `apps/showcase/templates/profile/profile-header.tsx`, then:
+
 ```tsx
-import { ProfileHeader } from '@thewhileloop/whileui';
+import { ProfileHeader } from './templates/profile'; // or your path
 
 <ProfileHeader
   name="John Doe"
@@ -1381,8 +1468,10 @@ import { ProfileHeader } from '@thewhileloop/whileui';
 
 ## SettingsSection / SettingsItem
 
+Copy from `apps/showcase/templates/profile/`, then:
+
 ```tsx
-import { SettingsSection, SettingsItem } from '@thewhileloop/whileui';
+import { SettingsSection, SettingsItem } from './templates/profile'; // or your path
 
 <SettingsSection title="Preferences">
   <SettingsItem

@@ -1,10 +1,17 @@
+/**
+ * ProfileHeader — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { View, Pressable, type ViewProps } from 'react-native';
-import { Text } from '../../components/text';
-import { Avatar, AvatarFallback, AvatarImage } from '../../components/avatar';
-import { Button, ButtonText } from '../../components/button';
-import { cn } from '../../lib/cn';
-
-// ─── Types ───────────────────────────────────────────────────
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  ButtonText,
+  Text,
+  cn,
+} from '@thewhileloop/whileui';
 
 export interface ProfileStat {
   label: string;
@@ -32,8 +39,6 @@ export interface ProfileHeaderProps extends ViewProps {
   verified?: boolean;
 }
 
-// ─── Component ───────────────────────────────────────────────
-
 export function ProfileHeader({
   name,
   username,
@@ -50,13 +55,9 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   return (
     <View className={cn('bg-background', className)} {...props}>
-      {/* Cover */}
-      <View className={cn('w-full bg-muted', coverUrl ? 'h-32' : 'h-20')}>
-        {/* Cover image would go here */}
-      </View>
+      <View className={cn('w-full bg-muted', coverUrl ? 'h-32' : 'h-20')} />
 
       <View className={cn('px-4 -mt-10')}>
-        {/* Avatar Row */}
         <View className="flex-row items-end justify-between">
           <Avatar className="h-20 w-20 border-4 border-background">
             {avatarUrl && <AvatarImage src={avatarUrl} />}
@@ -65,7 +66,6 @@ export function ProfileHeader({
             </AvatarFallback>
           </Avatar>
 
-          {/* Actions */}
           <View className="flex-row gap-2 pb-1">
             {secondaryAction && (
               <Button variant="outline" size="sm" onPress={secondaryAction.onPress}>
@@ -80,7 +80,6 @@ export function ProfileHeader({
           </View>
         </View>
 
-        {/* Name */}
         <View className="mt-3 flex-row items-center gap-2">
           <Text className="text-xl font-bold text-foreground">{name}</Text>
           {verified && (
@@ -90,13 +89,9 @@ export function ProfileHeader({
           )}
         </View>
 
-        {/* Username */}
         {username && <Text className="text-muted-foreground">@{username}</Text>}
-
-        {/* Bio */}
         {bio && <Text className="mt-3 text-foreground">{bio}</Text>}
 
-        {/* Stats */}
         {stats && stats.length > 0 && (
           <View className="mt-4 flex-row gap-4">
             {stats.map((stat, index) => (

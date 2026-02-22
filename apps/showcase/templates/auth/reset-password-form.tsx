@@ -1,19 +1,23 @@
+/**
+ * ResetPasswordForm — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, ButtonText } from '../../components/button';
 import {
+  Button,
+  ButtonText,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/card';
-import { Input } from '../../components/input';
-import { Label } from '../../components/label';
+  Input,
+  Label,
+} from '@thewhileloop/whileui';
 
 export interface ResetPasswordFormProps {
-  /** Called when user submits new password. Receives form values. */
   onSubmit?: (data: { password: string; confirmPassword: string }) => void;
 }
 

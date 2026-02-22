@@ -1,20 +1,22 @@
-import { Button, ButtonText } from '../../components/button';
+/**
+ * SocialConnections — Copy-paste template
+ * Copy this file into your app and customize. Uses @thewhileloop/whileui primitives.
+ */
 import {
+  Button,
+  ButtonText,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/card';
-import { Text } from '../../components/text';
+  Text,
+} from '@thewhileloop/whileui';
 
 export interface SocialConnectionsProps {
-  /** Called when user taps Google button. */
   onGooglePress?: () => void;
-  /** Called when user taps Apple button. */
   onApplePress?: () => void;
-  /** Called when user taps GitHub button. */
   onGitHubPress?: () => void;
 }
 
