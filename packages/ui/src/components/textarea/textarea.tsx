@@ -7,7 +7,7 @@ import { useThemeColors } from '../../lib/theme-colors';
 // ─── Variants ────────────────────────────────────────────────
 
 const textareaVariants = tv({
-  base: 'min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50',
+  base: 'min-h-[80px] w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground disabled:opacity-50',
   variants: {
     size: {
       default: 'min-h-[80px]',
@@ -38,7 +38,7 @@ const Textarea = React.forwardRef<React.ComponentRef<typeof TextInput>, Textarea
         className={cn(textareaVariants({ size }), className)}
         multiline
         textAlignVertical="top"
-        placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
+        placeholderTextColor={placeholderTextColor ?? colors.placeholder}
         {...props}
       />
     );

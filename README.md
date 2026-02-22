@@ -224,7 +224,7 @@ function MyScreen() {
 | **Separator**   | horizontal, vertical                              | Themed divider                                                                  |
 | **Progress**    | sm, default, lg                                   | Value-based progress bar with accessibility                                     |
 | **Spinner**     | sm, default, lg                                   | ActivityIndicator wrapper                                                       |
-| **Skeleton**    | —                                                 | Loading placeholder                                                             |
+| **Skeleton**    | pulse, shimmer                                    | Loading placeholder (pulse = opacity fade, shimmer = sweep)                     |
 | **AspectRatio** | —                                                 | Maintain aspect ratio container                                                 |
 
 ### Layout
@@ -288,6 +288,7 @@ Copy from `apps/showcase/templates/auth/`:
 | --------------------------- | ----------------------------------------------------------------------- |
 | **ActionBar**               | Sticky bottom action row with safe-area padding                         |
 | **ConfirmActionSheet**      | Reusable destructive confirmation sheet                                 |
+| **Sheet**                   | Bottom sheet modal with header/content/footer slots                     |
 | **FormModalScreen**         | Modal scaffold for forms with loading states                            |
 | **ContentSkeleton**         | Page/content placeholder with variants (list, card, generic)            |
 | **ErrorBoundary**           | React ErrorBoundary that renders ErrorState by default                  |
@@ -1321,6 +1322,41 @@ import { ConfirmActionSheet } from '@thewhileloop/whileui';
   onConfirm={() => deleteProject()}
 />;
 ```
+
+## Sheet
+
+Bottom sheet modal with slide animation. Slots: `SheetHeader`, `SheetContent`, `SheetFooter`, `SheetClose`.
+
+```tsx
+import {
+  Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetFooter,
+  SheetClose,
+  Button,
+  ButtonText,
+} from '@thewhileloop/whileui';
+
+<Sheet open={open} onOpenChange={setOpen} maxHeight="half">
+  <SheetHeader title="Settings" description="Adjust preferences" />
+  <SheetContent>{/* Scrollable body */}</SheetContent>
+  <SheetFooter>
+    <SheetClose asChild>
+      <Button>
+        <ButtonText>Save</ButtonText>
+      </Button>
+    </SheetClose>
+  </SheetFooter>
+</Sheet>;
+```
+
+| Prop         | Type                         | Default  |
+| ------------ | ---------------------------- | -------- |
+| open         | `boolean`                    | —        |
+| onOpenChange | `(open: boolean) => void`    | —        |
+| maxHeight    | `'half' \| 'full' \| number` | `'full'` |
+| maxWidth     | `number`                     | `360`    |
 
 ## NavigationSidebar
 

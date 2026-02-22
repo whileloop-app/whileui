@@ -113,7 +113,7 @@ export { Separator, type SeparatorProps } from './components/separator';
 export { Progress, progressVariants, type ProgressProps } from './components/progress';
 export { Spinner, spinnerVariants, type SpinnerProps } from './components/spinner';
 export { Textarea, textareaVariants, type TextareaProps } from './components/textarea';
-export { Skeleton, type SkeletonProps } from './components/skeleton';
+export { Skeleton, skeletonVariants, type SkeletonProps } from './components/skeleton';
 export { AspectRatio, type AspectRatioProps } from './components/aspect-ratio';
 export {
   Avatar,

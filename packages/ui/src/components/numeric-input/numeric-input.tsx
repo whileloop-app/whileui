@@ -5,10 +5,10 @@ import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 
 const numericInputVariants = tv({
-  base: 'w-full flex-row items-center rounded-md border bg-background',
+  base: 'w-full flex-row items-center rounded-md border border-border bg-muted',
   variants: {
     variant: {
-      default: 'border-input',
+      default: 'border-border',
       error: 'border-destructive',
     },
     size: {
@@ -79,6 +79,12 @@ function clampValue(value: number, min?: number, max?: number) {
     next = max;
   }
   return next;
+}
+
+/** JS float math is imprecise (72.8 + 0.1 → 72.899...). Round to clean display. */
+function roundToStepPrecision(value: number, step: number): number {
+  const decimals = step >= 1 ? 0 : (step.toString().split('.')[1]?.length ?? 2);
+  return Number(value.toFixed(decimals));
 }
 
 export interface NumericInputProps
@@ -169,7 +175,8 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
     const handleBlur: TextInputProps['onBlur'] = (event) => {
       const parsed = parseNumericText(textValue);
       if (parsed !== null) {
-        const clamped = clampValue(parsed, min, max);
+        const rounded = roundToStepPrecision(parsed, step);
+        const clamped = clampValue(rounded, min, max);
         if (!isControlled) {
           setInternalText(toInputText(clamped));
         }
@@ -185,7 +192,8 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
 
     const nudge = (delta: -1 | 1) => {
       const baseline = currentValue ?? min ?? 0;
-      applyNumericValue(baseline + delta * step);
+      const raw = baseline + delta * step;
+      applyNumericValue(roundToStepPrecision(raw, step));
     };
 
     return (
@@ -205,13 +213,13 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
           onBlur={handleBlur}
           keyboardType="decimal-pad"
           editable={editable}
-          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
+          placeholderTextColor={placeholderTextColor ?? colors.placeholder}
           {...props}
         />
         {suffix ? <View className="shrink-0 pr-3">{suffix}</View> : null}
 
         {showSteppers ? (
-          <View className="ml-1 h-full flex-row border-l border-input">
+          <View className="ml-1 h-full flex-row border-l border-border">
             <Pressable
               className={cn(stepperButtonVariants({ size, disabled: !canDecrease }))}
               onPress={() => nudge(-1)}

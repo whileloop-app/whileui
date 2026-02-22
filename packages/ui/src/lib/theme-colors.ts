@@ -37,6 +37,8 @@ export interface ThemeColors {
   foreground: string;
   muted: string;
   mutedForeground: string;
+  /** For placeholder text (aliases mutedForeground; override via placeholderTextColor when needed) */
+  placeholder: string;
   background: string;
   border: string;
   accent: string;
@@ -66,12 +68,15 @@ export function useThemeColors(): ThemeColors {
     '--color-destructive',
   ]);
 
+  const mutedFgHex = resolveToHex(mutedForeground, '#737373');
+
   return {
     primary: resolveToHex(primary, '#000000'),
     primaryForeground: resolveToHex(primaryForeground, '#ffffff'),
     foreground: resolveToHex(foreground, '#000000'),
     muted: resolveToHex(muted, '#f5f5f5'),
-    mutedForeground: resolveToHex(mutedForeground, '#737373'),
+    mutedForeground: mutedFgHex,
+    placeholder: mutedFgHex,
     background: resolveToHex(background, '#ffffff'),
     border: resolveToHex(border, '#e5e5e5'),
     accent: resolveToHex(accent, '#22c55e'),

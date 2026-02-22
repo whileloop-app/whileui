@@ -71,7 +71,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
           multiline
           submitBehavior={submitBehavior}
           textAlignVertical="top"
-          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
+          placeholderTextColor={placeholderTextColor ?? colors.placeholder}
           editable={editable}
           {...props}
         />

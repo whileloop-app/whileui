@@ -188,6 +188,15 @@ Add to this file when you discover:
 - **Blocks** = copy-paste compositions. No themeability props needed — people edit the block code directly. Use semantic tokens; theme via `global.css`.
 - **Components** = imported dependencies. Must be themeable (semantic classes, `*Variants` for extension).
 
+### Where to put new things
+
+| What                 | Path                                          | Notes                                                                                            |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Component**        | `packages/ui/src/components/<name>/`          | Primitives, controls, display. Export from `index.ts`, re-export in `packages/ui/src/index.ts`   |
+| **Block (core)**     | `packages/ui/src/blocks/<category>/`          | Categories: `layout`, `navigation`, `chat`, `lists`, `commerce`, `media`, `datepicker`, `splash` |
+| **Auth/Profile**     | `apps/showcase/templates/auth/` or `profile/` | Copy-paste templates; NOT in core package. Import primitives from `@thewhileloop/whileui`        |
+| **Shared hook/util** | `packages/ui/src/lib/`                        | Theme helpers, cn, portal, tv, font-context                                                      |
+
 ## Custom Themes (Starter Kits)
 
 Create reusable theme presets that can be switched at runtime:

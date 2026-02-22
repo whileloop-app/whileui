@@ -4,12 +4,11 @@
 
 ### Phase 3: Core Improvements (Non-breaking)
 
-- [ ] **Skeleton shimmer variant** (optional): Add shimmer sweep in addition to pulsing
+- (none)
 
 ### Phase 4: New Primitives (As needed)
 
 - [ ] Chart primitives (BarChart, HorizontalMetricChart) with theme tokens
-- [ ] Generic Sheet/Modal block
 - [ ] SearchBar, DatePicker improvements
 
 ---

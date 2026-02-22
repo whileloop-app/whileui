@@ -165,6 +165,11 @@ import {
   type ChatMessage,
   ConfirmActionSheet,
   ContentSkeleton,
+  Sheet,
+  SheetHeader,
+  SheetContent,
+  SheetFooter,
+  SheetClose,
   EmptyState,
   ErrorBoundary,
   ErrorState,
@@ -208,7 +213,7 @@ type CategoryKey =
   | 'commerce';
 
 const categories: { key: CategoryKey; label: string; icon: string }[] = [
-  { key: 'primitives', label: 'Primitives', icon: 'box' },
+  { key: 'primitives', label: 'All Components', icon: 'box' },
   { key: 'controls', label: 'Controls', icon: 'sliders' },
   { key: 'overlays', label: 'Overlays', icon: 'layers' },
   { key: 'forms', label: 'Forms', icon: 'edit-3' },
@@ -543,7 +548,7 @@ function AppContent() {
               items: [
                 {
                   key: 'primitives',
-                  label: 'Primitives',
+                  label: 'All Components',
                   icon: (
                     <Feather
                       name="box"
@@ -1137,6 +1142,16 @@ function OverlaysTab() {
           <View className="gap-2 flex-1">
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-4 w-1/2" />
+          </View>
+        </View>
+        <View className="flex-row gap-6 mt-4">
+          <View className="flex-1">
+            <Text className="mb-2 text-xs text-muted-foreground">pulse</Text>
+            <Skeleton variant="pulse" className="h-16 w-full rounded-lg" />
+          </View>
+          <View className="flex-1">
+            <Text className="mb-2 text-xs text-muted-foreground">shimmer</Text>
+            <Skeleton variant="shimmer" className="h-16 w-full rounded-lg" />
           </View>
         </View>
       </Section>
@@ -1889,13 +1904,14 @@ function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [smartInputValue, setSmartInputValue] = useState('');
   const { toast } = useToast();
   const colors = useIconColors();
 
   return (
     <View className="gap-6">
-      <SectionGroup label="Actions" />
+      <SectionGroup label="Bars & Overlays" />
       <Section title="Action Bar" subtitle="Sticky bottom action row with safe-area support">
         <ActionBar
           sticky={false}
@@ -1985,7 +2001,38 @@ function LayoutBlocksTab() {
         />
       </Section>
 
-      <SectionGroup label="States & Loading" />
+      <Section title="Sheet" subtitle="Bottom sheet modal with header, scrollable content, footer">
+        <View className="rounded-xl border border-border p-4 bg-card">
+          <Button variant="outline" onPress={() => setSheetOpen(true)} className="w-full">
+            <ButtonText>Open Sheet</ButtonText>
+          </Button>
+        </View>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen} maxHeight="half">
+          <SheetHeader title="Settings" description="Adjust preferences" />
+          <SheetContent>
+            <View className="gap-4">
+              <Text className="text-sm text-muted-foreground">
+                Use SheetContent for scrollable body. SheetFooter for actions.
+              </Text>
+              <View className="h-20 rounded-lg bg-muted items-center justify-center">
+                <Text className="text-xs text-muted-foreground">Custom content</Text>
+              </View>
+            </View>
+          </SheetContent>
+          <SheetFooter>
+            <Button variant="outline" onPress={() => setSheetOpen(false)}>
+              <ButtonText>Cancel</ButtonText>
+            </Button>
+            <SheetClose asChild>
+              <Button onPress={() => triggerHaptic('medium')}>
+                <ButtonText>Save</ButtonText>
+              </Button>
+            </SheetClose>
+          </SheetFooter>
+        </Sheet>
+      </Section>
+
+      <SectionGroup label="Placeholders & Loading" />
       <Section title="Empty State" subtitle="When there's no content to show">
         <View className="h-64 rounded-xl border border-border overflow-hidden">
           <EmptyState
@@ -2054,7 +2101,7 @@ function LayoutBlocksTab() {
         )}
       </Section>
 
-      <SectionGroup label="Utility" />
+      <SectionGroup label="Infrastructure" />
       <Section title="Error Boundary" subtitle="Catches React errors and renders ErrorState">
         <View className="h-48 rounded-xl border border-border overflow-hidden bg-background">
           <ErrorBoundary>

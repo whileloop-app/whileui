@@ -5,10 +5,10 @@ import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 
 const inputVariants = tv({
-  base: 'min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground',
+  base: 'min-h-10 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground',
   variants: {
     variant: {
-      default: 'border-input',
+      default: 'border-border',
       error: 'border-destructive',
     },
   },
@@ -42,7 +42,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
     return (
       <View
         className={cn(
-          'flex-row items-center rounded-md border border-input bg-background',
+          'flex-row items-center rounded-md border border-border bg-muted',
           inputVariants({ variant }),
           !editable && 'opacity-50',
           className
@@ -58,7 +58,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
             inputClassName
           )}
           editable={editable}
-          placeholderTextColor={placeholderTextColor ?? colors.mutedForeground}
+          placeholderTextColor={placeholderTextColor ?? colors.placeholder}
           {...props}
         />
         {suffix && <View className="pr-3">{suffix}</View>}
