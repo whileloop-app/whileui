@@ -3,45 +3,21 @@
   "version": "1.1.0",
   "description": "WhileUI Native — Copy-paste components for React Native. You own the code.",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/whileloop-app/whileui"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "ui",
-    "components",
-    "tailwind",
-    "uniwind"
-  ],
+  "repository": {"type": "git", "url": "https://github.com/whileloop-app/whileui"},
+  "keywords": ["react-native", "expo", "ui", "components", "tailwind", "uniwind"],
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./components/*": {
-      "types": "./dist/components/*/index.d.ts",
-      "import": "./dist/components/*/index.js"
-    },
-    "./blocks/*": {
-      "types": "./dist/blocks/*/index.d.ts",
-      "import": "./dist/blocks/*/index.js"
-    },
+    ".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"},
+    "./components/*": {"types": "./dist/components/*/index.d.ts", "import": "./dist/components/*/index.js"},
+    "./blocks/*": {"types": "./dist/blocks/*/index.d.ts", "import": "./dist/blocks/*/index.js"},
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "README.md"
-  ],
+  "files": ["dist", "README.md"],
   "sideEffects": false,
-  "publishConfig": {
-    "access": "public"
-  },
+  "publishConfig": {"access": "public"},
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "cp ../../README.md README.md",
@@ -66,6 +42,9 @@
     "react-native-screens": ">=4.0.0",
     "tailwindcss": ">=4.0.0",
     "uniwind": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo-image": {"optional": true}
   },
   "dependencies": {
     "clsx": "^2.1.0",
