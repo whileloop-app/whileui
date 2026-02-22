@@ -183,6 +183,12 @@ Add to this file when you discover:
 
 **Keep entries concise. Consolidate similar issues. Delete outdated rules.**
 
+### Core component robustness
+
+- **Text/label line-height:** Avoid `leading-none` — clips ascenders (P, h, l). Use `leading-tight` or `leading-snug` for labels.
+- **Form-like visibility:** Use `border-border bg-muted` (not `border-input bg-background`) for inputs, selects, labeled fields — ensures visibility on light themes.
+- **Small touch targets:** Components under 44px (e.g. Checkbox h-5, Radio h-5, Switch h-7) need `hitSlop` so effective touch area ≥ 44px.
+
 ### Blocks vs components
 
 - **Blocks** = copy-paste compositions. No themeability props needed — people edit the block code directly. Use semantic tokens; theme via `global.css`.
