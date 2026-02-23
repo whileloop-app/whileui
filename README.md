@@ -1613,4 +1613,4 @@ import { DrawerMenu } from '@thewhileloop/whileui';
 
 ## License
 
-MIT — [Source](https://github.com/whileloop-app/whileui)
+MIT — [Source](https://github.com/whileloophq/whileui)

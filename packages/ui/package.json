@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "WhileUI Native — Copy-paste components for React Native. You own the code.",
   "license": "MIT",
-  "repository": {"type": "git", "url": "https://github.com/whileloop-app/whileui"},
+  "repository": {"type": "git", "url": "https://github.com/whileloophq/whileui"},
   "keywords": ["react-native", "expo", "ui", "components", "tailwind", "uniwind"],
   "type": "module",
   "main": "dist/index.js",
