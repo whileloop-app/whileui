@@ -35,7 +35,7 @@ const Textarea = React.forwardRef<React.ComponentRef<typeof TextInput>, Textarea
     return (
       <TextInput
         ref={ref}
-        className={cn(textareaVariants({ size }), className)}
+        className={cn(textareaVariants({ size }), 'outline-none', className)}
         multiline
         textAlignVertical="top"
         placeholderTextColor={placeholderTextColor ?? colors.placeholder}

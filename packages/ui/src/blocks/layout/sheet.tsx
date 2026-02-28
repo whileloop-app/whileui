@@ -1,6 +1,5 @@
 import React, { createContext, useContext } from 'react';
 import {
-  Dimensions,
   Modal,
   Platform,
   Pressable,
@@ -60,8 +59,7 @@ export function Sheet({
 }: SheetProps) {
   const insets = useSafeAreaInsets();
   const onClose = () => onOpenChange(false);
-  const { height: screenHeight } = Dimensions.get('window');
-  const { width: windowWidth } = useWindowDimensions();
+  const { height: screenHeight, width: windowWidth } = useWindowDimensions();
 
   // Full width on phones; cap at maxWidth only on tablets/web (breakpoint 600px)
   const widthStyle =

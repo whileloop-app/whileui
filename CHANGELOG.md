@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.1] - 2026-02-28
+
+### Fixed
+
+- **NumericInput:** Fixed gap/cropping between input and stepper buttons on web (RN TextInput min-width).
+- **Switch:** Fixed thumb touching the edge when "on" by adjusting margin.
+
+### Changed
+
+- **NavigationSidebar:** Refined active state (left border accent), section headers, and hover styling.
+
 ## [1.1.0] - 2026-02-22
 
 ### Added

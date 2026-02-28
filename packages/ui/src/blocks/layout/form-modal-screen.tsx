@@ -1,11 +1,9 @@
 import React from 'react';
-import { View, ScrollView, Pressable, Dimensions, type ViewProps } from 'react-native';
+import { View, ScrollView, Pressable, useWindowDimensions, type ViewProps } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { Spinner } from '../../components/spinner';
 import { cn } from '../../lib/cn';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export interface FormModalScreenProps extends Omit<ViewProps, 'className'> {
   className?: string;
@@ -41,6 +39,8 @@ function FormModalScreen({
   children,
   ...props
 }: FormModalScreenProps) {
+  const { height: screenHeight } = useWindowDimensions();
+
   const content = loading ? (
     <SafeAreaView style={{ flex: 1 }} className="bg-background" edges={['top']}>
       <View style={{ flex: 1 }} className="items-center justify-center">
@@ -94,7 +94,7 @@ function FormModalScreen({
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, minHeight: SCREEN_HEIGHT * 0.4 }}
+        contentContainerStyle={{ padding: 16, minHeight: screenHeight * 0.4 }}
         scrollEnabled={!saving && scrollEnabled}
         keyboardShouldPersistTaps="handled"
       >
@@ -103,9 +103,8 @@ function FormModalScreen({
     </SafeAreaView>
   );
 
-  // Wrap in SafeAreaProvider so layout works inside Modal (which renders outside app tree)
   return (
-    <SafeAreaProvider style={{ flex: 1, minHeight: SCREEN_HEIGHT }}>{content}</SafeAreaProvider>
+    <SafeAreaProvider style={{ flex: 1, minHeight: screenHeight }}>{content}</SafeAreaProvider>
   );
 }
 

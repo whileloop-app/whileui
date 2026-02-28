@@ -6,6 +6,7 @@ Rules for AI agents and contributors editing this codebase. Follow every rule. N
 
 - Use **latest stable versions** of packages. Ask if unsure.
 - Run `bun format && bun typecheck` after changes. Fix errors before completing.
+- Run `bunx react-doctor .` after significant changes to catch performance, security, correctness, and dead code issues. Fix errors (score 75+ = healthy).
 - **Docs are mandatory** — README is the source of truth. Incomplete doc updates = task incomplete. Never leave docs stale.
 - **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
 - Don't bloat the codebase.
@@ -18,29 +19,34 @@ Rules for AI agents and contributors editing this codebase. Follow every rule. N
 
 **Cross-references:** Fix broken links.
 
-### When Adding a Block (all required)
-
-1. Export from `packages/ui/src/blocks/<category>/index.ts` and `packages/ui/src/index.ts`
-2. Add to `README.md` blocks table
-3. Add to README Blocks API section with key props
-4. Add showcase demo in `apps/showcase/App.tsx`
-5. If new flow: add to README Flow Patterns table
-
-**Do not skip steps 2–4.** Missing doc or showcase = incomplete.
-
 ### When Adding a Component (all required)
 
 1. Export from `packages/ui/src/components/<name>/index.ts` and `packages/ui/src/index.ts`
 2. Add to `README.md` components table
 3. Add to README API Reference if notable props
 4. Add showcase demo in `apps/showcase/App.tsx`
+5. Add entry to `apps/site/lib/registry.ts` (components array)
+6. Add live demo in `apps/site/lib/demos.tsx`
+7. Add props data in `apps/site/lib/props-data.ts`
 
-**Do not skip steps 2–4.**
+**Do not skip steps 2–7.** Missing doc, showcase, or site entry = incomplete.
+
+### When Adding a Block (all required)
+
+1. Export from `packages/ui/src/blocks/<category>/index.ts` and `packages/ui/src/index.ts`
+2. Add to `README.md` blocks table
+3. Add to README Blocks API section with key props
+4. Add showcase demo in `apps/showcase/App.tsx`
+5. Add entry to `apps/site/lib/registry.ts` (blocks array, set `webSupport`)
+6. If `webSupport: 'full'`: add live demo in `apps/site/lib/block-demos.tsx`
+7. If new flow: add to README Flow Patterns table
+
+**Do not skip steps 2–6.** Missing doc, showcase, or site entry = incomplete.
 
 ### When Changing Props or Removing
 
-- **Props:** Update README API section and Blocks API
-- **Removing:** Remove from README (all sections), showcase. No orphan references
+- **Props:** Update README API section, Blocks API, `apps/site/lib/props-data.ts`, and demo code
+- **Removing:** Remove from README (all sections), showcase, and site (`registry.ts`, `demos.tsx`/`block-demos.tsx`, `props-data.ts`). No orphan references
 
 ## Uniwind Configuration
 
@@ -192,6 +198,7 @@ Add to this file when you discover:
 - **Text/label line-height:** Avoid `leading-none` — clips ascenders (P, h, l). Use `leading-tight` or `leading-snug` for labels.
 - **Form-like visibility:** Use `border-border bg-muted` (not `border-input bg-background`) for inputs, selects, labeled fields — ensures visibility on light themes.
 - **Small touch targets:** Components under 44px (e.g. Checkbox h-5, Radio h-5, Switch h-7) need `hitSlop` so effective touch area ≥ 44px.
+- **Browser focus outline on inputs:** Always add `outline-none` to `TextInput` className. Without it, browsers render a blue/black outline on focus that doubles up with the component's `border-border`.
 
 ### Blocks vs components
 
@@ -206,6 +213,10 @@ Add to this file when you discover:
 | **Block (core)**     | `packages/ui/src/blocks/<category>/`          | Categories: `layout`, `navigation`, `chat`, `lists`, `commerce`, `media`, `datepicker`, `splash` |
 | **Auth/Profile**     | `apps/showcase/templates/auth/` or `profile/` | Copy-paste templates; NOT in core package. Import primitives from `@thewhileloop/whileui`        |
 | **Shared hook/util** | `packages/ui/src/lib/`                        | Theme helpers, cn, portal, tv, font-context                                                      |
+| **Site registry**    | `apps/site/lib/registry.ts`                   | Metadata for all components and blocks (slug, name, category, description, webSupport)           |
+| **Site demos**       | `apps/site/lib/demos.tsx`                     | Live previews + code snippets for components. Every component must have one                      |
+| **Site block demos** | `apps/site/lib/block-demos.tsx`               | Live previews + code snippets for web-supported blocks                                           |
+| **Site props**       | `apps/site/lib/props-data.ts`                 | API reference data (prop name, type, default, description) per component                         |
 
 ## Custom Themes (Starter Kits)
 

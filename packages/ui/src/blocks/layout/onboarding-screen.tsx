@@ -3,7 +3,7 @@ import {
   View,
   ScrollView,
   Pressable,
-  Dimensions,
+  useWindowDimensions,
   type ViewProps,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
@@ -46,7 +46,7 @@ export function OnboardingScreen({
 }: OnboardingScreenProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
-  const { width } = Dimensions.get('window');
+  const { width } = useWindowDimensions();
 
   const isLastSlide = currentIndex === slides.length - 1;
 

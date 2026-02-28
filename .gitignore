@@ -33,6 +33,11 @@ android/app/build/
 .env.local
 .env.*.local
 
+# Internal (not for public repo)
+DEPLOY.md
+railway.json
+TODO.md
+
 # Editor
 .vscode/
 .idea/

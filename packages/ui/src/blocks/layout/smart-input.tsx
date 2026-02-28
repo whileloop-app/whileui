@@ -62,7 +62,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
         <TextInput
           ref={ref}
           className={cn(
-            'flex-1 min-h-11 max-h-[120px] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground',
+            'flex-1 min-h-11 max-h-[120px] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none',
             variant === 'bar' && 'rounded-xl border border-border bg-muted',
             variant === 'card' && 'rounded-xl bg-transparent',
             !editable && 'opacity-50',

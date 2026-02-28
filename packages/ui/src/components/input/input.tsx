@@ -52,7 +52,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
         <TextInput
           ref={ref}
           className={cn(
-            'flex-1 py-2 text-sm text-foreground placeholder:text-muted-foreground',
+            'flex-1 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none',
             prefix && 'pl-2',
             suffix && 'pr-2',
             inputClassName

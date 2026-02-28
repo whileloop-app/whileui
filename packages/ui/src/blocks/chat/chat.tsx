@@ -138,6 +138,8 @@ export function ChatSuggestions({ suggestions, onSelect, className }: ChatSugges
   );
 }
 
+const EMPTY_SUGGESTIONS: string[] = [];
+
 // ─── Chat ────────────────────────────────────────────────────
 
 export function Chat({
@@ -146,7 +148,7 @@ export function Chat({
   onChangeText,
   onSend,
   placeholder = 'Message...',
-  suggestions = [],
+  suggestions = EMPTY_SUGGESTIONS,
   onSuggestionPress,
   leftSlot,
   rightSlot,

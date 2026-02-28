@@ -32,14 +32,14 @@ function Switch({
     <Pressable
       onPress={handleToggle}
       disabled={disabled}
-      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       accessibilityRole="switch"
       accessibilityState={{ checked: isChecked, disabled }}
     >
       <View
         className={cn(
-          'h-7 w-12 rounded-full p-0.5',
-          isChecked ? 'bg-primary' : 'border border-border bg-muted',
+          'h-9 w-12 flex-row items-center justify-start rounded-full p-0.5 border-2',
+          isChecked ? 'border-primary bg-primary' : 'border-input bg-muted',
           disabled && 'opacity-50',
           className
         )}
@@ -47,8 +47,8 @@ function Switch({
       >
         <View
           className={cn(
-            'h-6 w-6 rounded-full border border-border bg-background shadow-sm',
-            isChecked ? 'ml-5' : 'ml-0'
+            'h-7 w-7 rounded-full border-2 border-border bg-background shadow-sm',
+            isChecked ? 'ml-3' : 'ml-0'
           )}
         />
       </View>

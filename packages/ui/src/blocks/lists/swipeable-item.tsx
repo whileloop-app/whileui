@@ -21,11 +21,13 @@ export interface SwipeableItemProps extends ViewProps {
   swipeThreshold?: number;
 }
 
+const EMPTY_ACTIONS: SwipeAction[] = [];
+
 // ─── Component ───────────────────────────────────────────────
 
 export function SwipeableItem({
-  leftActions = [],
-  rightActions = [],
+  leftActions = EMPTY_ACTIONS,
+  rightActions = EMPTY_ACTIONS,
   onSwipeLeft,
   onSwipeRight,
   swipeThreshold = 80,

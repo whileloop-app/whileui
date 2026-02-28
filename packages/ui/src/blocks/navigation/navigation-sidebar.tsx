@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, ScrollView, View, type ViewProps } from 'react-native';
+import { Platform, Pressable, ScrollView, View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 
@@ -23,6 +23,8 @@ export interface NavigationSidebarProps extends ViewProps {
   onSelect?: (key: string) => void;
   header?: React.ReactNode;
   footer?: React.ReactNode;
+  /** Pass a class for the scrollable area (e.g. for web scrollbar styling) */
+  scrollViewClassName?: string;
 }
 
 export function NavigationSidebar({
@@ -31,19 +33,26 @@ export function NavigationSidebar({
   onSelect,
   header,
   footer,
+  scrollViewClassName,
   className,
   ...props
 }: NavigationSidebarProps) {
   return (
-    <View className={cn('w-72 border-r border-border bg-background', className)} {...props}>
-      {header ? <View className="border-b border-border px-4 py-4">{header}</View> : null}
+    <View
+      className={cn('w-72 flex-1 min-h-0 flex-col border-r border-border bg-background', className)}
+      {...props}
+    >
+      {header ? <View className="shrink-0 border-b border-border px-4 py-4">{header}</View> : null}
 
-      <ScrollView className="flex-1 px-3 py-4">
+      <ScrollView
+        className={cn('min-h-0 flex-1 px-3 py-4', scrollViewClassName)}
+        style={Platform.OS === 'web' ? ({ overflowY: 'scroll' } as any) : undefined}
+      >
         <View className="gap-4">
           {sections.map((section, index) => (
             <View key={index} className="gap-1">
               {section.title ? (
-                <Text className="px-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Text className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                   {section.title}
                 </Text>
               ) : null}
@@ -56,8 +65,9 @@ export function NavigationSidebar({
                     onPress={() => onSelect?.(item.key)}
                     disabled={item.disabled}
                     className={cn(
-                      'min-h-11 flex-row items-center gap-3 rounded-lg px-3 py-2 active:opacity-70',
-                      isActive && 'bg-primary/10',
+                      'min-h-10 flex-row items-center gap-3 rounded-md border-l-2 border-transparent pl-3 pr-3 py-2 active:opacity-70',
+                      isActive && 'border-l-primary bg-primary/5',
+                      !isActive && !item.disabled && 'web:hover:bg-muted/50',
                       item.disabled && 'opacity-50'
                     )}
                     accessibilityRole="button"
@@ -104,7 +114,7 @@ export function NavigationSidebar({
         </View>
       </ScrollView>
 
-      {footer ? <View className="border-t border-border px-4 py-4">{footer}</View> : null}
+      {footer ? <View className="shrink-0 border-t border-border px-4 py-4">{footer}</View> : null}
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { Platform, Pressable, Text, TextInput, View, type TextInputProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
@@ -23,7 +23,7 @@ const numericInputVariants = tv({
 });
 
 const numericInputTextVariants = tv({
-  base: 'flex-1 px-3 py-2 text-foreground',
+  base: 'px-3 py-2 text-foreground',
   variants: {
     size: {
       default: 'text-sm',
@@ -123,6 +123,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       editable = true,
       placeholderTextColor,
       onBlur,
+      style: styleProp,
       ...props
     },
     ref
@@ -205,23 +206,36 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
         )}
       >
         {prefix ? <View className="shrink-0 pl-3">{prefix}</View> : null}
-        <TextInput
-          ref={ref}
-          className={cn(numericInputTextVariants({ size }), inputClassName)}
-          value={textValue}
-          onChangeText={handleTextChange}
-          onBlur={handleBlur}
-          keyboardType="decimal-pad"
-          editable={editable}
-          placeholderTextColor={placeholderTextColor ?? colors.placeholder}
-          {...props}
-        />
+        <View
+          className="min-w-0 flex-1"
+          style={Platform.OS === 'web' ? { minWidth: 0, flex: 1 } : undefined}
+        >
+          <TextInput
+            ref={ref}
+            className={cn(
+              numericInputTextVariants({ size }),
+              'w-full outline-none',
+              inputClassName
+            )}
+            style={Platform.OS === 'web' ? [{ width: '100%', minWidth: 0 }, styleProp] : styleProp}
+            value={textValue}
+            onChangeText={handleTextChange}
+            onBlur={handleBlur}
+            keyboardType="decimal-pad"
+            editable={editable}
+            placeholderTextColor={placeholderTextColor ?? colors.placeholder}
+            {...props}
+          />
+        </View>
         {suffix ? <View className="shrink-0 pr-3">{suffix}</View> : null}
 
         {showSteppers ? (
-          <View className="ml-1 h-full flex-row border-l border-border">
+          <View className="h-full shrink-0 flex-row border-l border-border bg-muted">
             <Pressable
-              className={cn(stepperButtonVariants({ size, disabled: !canDecrease }))}
+              className={cn(
+                stepperButtonVariants({ size, disabled: !canDecrease }),
+                'shrink-0 min-w-11 border-r border-border'
+              )}
               onPress={() => nudge(-1)}
               disabled={!canDecrease}
               hitSlop={4}
@@ -231,7 +245,10 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
               <Text className="text-base font-medium text-foreground">-</Text>
             </Pressable>
             <Pressable
-              className={cn(stepperButtonVariants({ size, disabled: !canIncrease }))}
+              className={cn(
+                stepperButtonVariants({ size, disabled: !canIncrease }),
+                'shrink-0 min-w-11'
+              )}
               onPress={() => nudge(1)}
               disabled={!canIncrease}
               hitSlop={4}
