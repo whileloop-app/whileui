@@ -82,6 +82,7 @@
   "devDependencies": {
     "@types/culori": "^4.0.1",
     "@types/react": "~19.1.0",
+    "expo-image": "^2.0.0",
     "react-native-screens": "^4.23.0",
     "typescript": "^5.7.0"
   }
