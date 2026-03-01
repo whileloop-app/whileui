@@ -3,6 +3,7 @@ import { View, ScrollView, Pressable, KeyboardAvoidingView, Platform } from 'rea
 import { Text } from '../../components/text';
 import { SmartInput } from '../layout/smart-input';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { tv } from '../../lib/tv';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -248,15 +249,20 @@ export function Chat({
 // ─── ChatSendButton ───────────────────────────────────────────
 
 function ChatSendButton({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
+  const interaction = useInteractionTokens();
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={disabled ? 'Send (disabled)' : 'Send message'}
+      style={withInteractivePressableStyle(undefined, interaction, {
+        disabled: Boolean(disabled),
+        pressedVariant: 'strong',
+      })}
       className={cn(
         'h-11 w-11 items-center justify-center rounded-full',
-        disabled ? 'bg-muted opacity-50' : 'bg-primary active:opacity-90'
+        disabled ? 'bg-muted' : 'bg-primary'
       )}
     >
       <Text className="text-lg text-primary-foreground">↑</Text>

@@ -108,6 +108,21 @@
   --shadow-2xl: 0 24px 56px rgba(0, 0, 0, 0.2);
   --shadow-none: 0 0 0 rgba(0, 0, 0, 0);
 
+  /* ─── Interaction + Motion Tokens ─────────────────────────── */
+  /* Global control for press/disabled feedback and motion speed  */
+  --ui-press-opacity: 0.72;
+  --ui-press-opacity-strong: 0.9;
+  --ui-disabled-opacity: 0.5;
+  --ui-disabled-opacity-soft: 0.6;
+  --ui-disabled-opacity-subtle: 0.4;
+  --ui-inactive-opacity: 0.5;
+
+  --ui-motion-fast: 160;
+  --ui-motion-normal: 220;
+  --ui-motion-slow: 300;
+  --ui-drawer-open-duration: 300;
+  --ui-drawer-close-duration: 220;
+
   /* ─── Font ─────────────────────────────────────────────────── */
   /* Nunito — round, warm sans for Warm Autumn Glow                */
   --font-sans: Nunito_400Regular;
@@ -198,22 +213,50 @@
       --color-info: oklch(0.38 0.08 250);
       --color-info-foreground: oklch(0.92 0.04 95);
 
-      /* Hex fallbacks for RN primitives */
+      /* Effect Tokens (optional, but exposed by useThemeColors) */
+      --color-overlay: oklch(0.12 0.02 250 / 0.42);
+      --color-overlay-strong: oklch(0.08 0.01 250 / 0.56);
+      --color-surface-elevated: oklch(0.96 0.03 95);
+      --color-surface-border: oklch(0.97 0.02 95 / 0.65);
+      --color-surface-highlight: oklch(0.99 0.01 95 / 0.48);
+      --color-state-hover: oklch(0.26 0.07 250 / 0.08);
+      --color-state-pressed: oklch(0.26 0.07 250 / 0.14);
+      --color-state-disabled: oklch(0.26 0.07 250 / 0.42);
+
+      /* RN fallbacks for useThemeColors/useThemeTokens */
+      --app-color-background: #eae2b7;
+      --app-color-foreground: #003049;
+      --app-color-card: #efe7c1;
+      --app-color-card-foreground: #003049;
+      --app-color-popover: #efe7c1;
+      --app-color-popover-foreground: #003049;
       --app-color-primary: #003049;
       --app-color-primary-foreground: #eae2b7;
-      --app-color-foreground: #003049;
+      --app-color-secondary: #f2ecd0;
+      --app-color-secondary-foreground: #003049;
       --app-color-muted: #f0ebd8;
       --app-color-muted-foreground: #5c5344;
-      --app-color-background: #eae2b7;
       --app-color-border: #ddd5b8;
+      --app-color-input: #ebe2c4;
+      --app-color-ring: #003049;
       --app-color-accent: #f77f00;
+      --app-color-accent-foreground: #fffdf8;
       --app-color-destructive: #d62828;
+      --app-color-destructive-foreground: #fffaf4;
       --app-color-success: #2d9d6e;
       --app-color-success-foreground: #ffffff;
       --app-color-warning: #fcbf49;
       --app-color-warning-foreground: #2d2926;
       --app-color-info: #003049;
       --app-color-info-foreground: #eae2b7;
+      --app-color-overlay: rgba(18, 26, 36, 0.42);
+      --app-color-overlay-strong: rgba(10, 14, 20, 0.56);
+      --app-color-surface-elevated: #f4eed3;
+      --app-color-surface-border: rgba(255, 255, 255, 0.65);
+      --app-color-surface-highlight: rgba(255, 255, 255, 0.48);
+      --app-color-state-hover: rgba(0, 48, 73, 0.08);
+      --app-color-state-pressed: rgba(0, 48, 73, 0.14);
+      --app-color-state-disabled: rgba(0, 48, 73, 0.42);
     }
 
     /* ─── Dark Mode: Deep Space Blue base, Vanilla Custard text ───── */
@@ -265,22 +308,50 @@
       --color-info: oklch(0.5 0.1 250);
       --color-info-foreground: oklch(0.92 0.04 95);
 
-      /* Hex fallbacks */
+      /* Effect Tokens (optional, but exposed by useThemeColors) */
+      --color-overlay: oklch(0.04 0.01 250 / 0.58);
+      --color-overlay-strong: oklch(0.02 0.01 250 / 0.72);
+      --color-surface-elevated: oklch(0.24 0.06 250);
+      --color-surface-border: oklch(0.91 0.04 95 / 0.18);
+      --color-surface-highlight: oklch(0.91 0.04 95 / 0.16);
+      --color-state-hover: oklch(0.91 0.04 95 / 0.08);
+      --color-state-pressed: oklch(0.91 0.04 95 / 0.15);
+      --color-state-disabled: oklch(0.91 0.04 95 / 0.42);
+
+      /* RN fallbacks for useThemeColors/useThemeTokens */
+      --app-color-background: #003049;
+      --app-color-foreground: #eae2b7;
+      --app-color-card: #0f3d56;
+      --app-color-card-foreground: #eae2b7;
+      --app-color-popover: #12445f;
+      --app-color-popover-foreground: #eae2b7;
       --app-color-primary: #f77f00;
       --app-color-primary-foreground: #003049;
-      --app-color-foreground: #eae2b7;
+      --app-color-secondary: #194d68;
+      --app-color-secondary-foreground: #e0d8b8;
       --app-color-muted: #1a4058;
       --app-color-muted-foreground: #b8b09a;
-      --app-color-background: #003049;
       --app-color-border: #1a4a65;
+      --app-color-input: #1a4058;
+      --app-color-ring: #f77f00;
       --app-color-accent: #fcbf49;
+      --app-color-accent-foreground: #2d2926;
       --app-color-destructive: #d62828;
+      --app-color-destructive-foreground: #fef6f2;
       --app-color-success: #2d9d6e;
       --app-color-success-foreground: #e8f5f0;
       --app-color-warning: #fcbf49;
       --app-color-warning-foreground: #2d2926;
       --app-color-info: #4a7a9a;
       --app-color-info-foreground: #eae2b7;
+      --app-color-overlay: rgba(6, 12, 22, 0.58);
+      --app-color-overlay-strong: rgba(4, 8, 16, 0.72);
+      --app-color-surface-elevated: #0f3d56;
+      --app-color-surface-border: rgba(234, 226, 183, 0.18);
+      --app-color-surface-highlight: rgba(234, 226, 183, 0.16);
+      --app-color-state-hover: rgba(234, 226, 183, 0.08);
+      --app-color-state-pressed: rgba(234, 226, 183, 0.15);
+      --app-color-state-disabled: rgba(234, 226, 183, 0.42);
     }
   }
 }

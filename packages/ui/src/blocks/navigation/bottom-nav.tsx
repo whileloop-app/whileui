@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -25,15 +26,26 @@ export interface BottomNavItemProps extends Omit<PressableProps, 'children'> {
 
 // ─── Components ──────────────────────────────────────────────
 
-function BottomNavItemComponent({ item, isActive, className, ...props }: BottomNavItemProps) {
+function BottomNavItemComponent({
+  item,
+  isActive,
+  className,
+  style: styleProp,
+  ...props
+}: BottomNavItemProps) {
   const { label, icon, badge } = item;
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    pressedVariant: 'default',
+  });
 
   return (
     <Pressable
-      className={cn('flex-1 items-center justify-center py-2 active:opacity-70', className)}
+      className={cn('flex-1 items-center justify-center py-2', className)}
+      style={interactiveStyle}
       {...props}
     >
-      <View className={cn('relative', !isActive && 'opacity-50')}>
+      <View className="relative" style={!isActive ? { opacity: interaction.inactiveOpacity } : undefined}>
         {icon}
         {badge !== undefined && badge > 0 && (
           <View className="absolute -right-2 -top-1 h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1">

@@ -11,6 +11,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Context ───────────────────────────────────────────────────
 
@@ -58,6 +60,8 @@ export function Sheet({
   maxWidth = 360,
 }: SheetProps) {
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
+  const interaction = useInteractionTokens();
   const onClose = () => onOpenChange(false);
   const { height: screenHeight, width: windowWidth } = useWindowDimensions();
 
@@ -83,7 +87,7 @@ export function Sheet({
       statusBarTranslucent={Platform.OS === 'android'}
       presentationStyle="overFullScreen"
     >
-      <View className="flex-1 justify-end bg-black/40">
+      <View className="flex-1 justify-end" style={{ backgroundColor: colors.overlay }}>
         <Pressable className="flex-1" onPress={onClose} />
         <View
           className="rounded-t-xl border border-border bg-background overflow-hidden"
@@ -124,7 +128,10 @@ export function SheetHeader({
       {children ?? (
         <Pressable
           onPress={onClose}
-          className="p-2 -mr-2 -mt-2 -mb-2 rounded-lg active:opacity-70"
+          className="p-2 -mr-2 -mt-2 -mb-2 rounded-lg"
+          style={withInteractivePressableStyle(undefined, interaction, {
+            pressedVariant: 'default',
+          })}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel="Close"

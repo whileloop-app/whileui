@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Pressable, ScrollView, type ViewProps, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -27,8 +28,20 @@ export interface TabBarItemProps extends Omit<PressableProps, 'children'> {
 
 // ─── Components ──────────────────────────────────────────────
 
-function TabBarItemComponent({ item, isActive, variant, className, ...props }: TabBarItemProps) {
+function TabBarItemComponent({
+  item,
+  isActive,
+  variant,
+  className,
+  style: styleProp,
+  ...props
+}: TabBarItemProps) {
   const { label, icon } = item;
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    disabled: Boolean(props.disabled),
+    pressedVariant: 'default',
+  });
 
   const baseStyles = 'flex-row items-center justify-center gap-2 px-4 py-2';
   const variantStyles = {
@@ -44,7 +57,8 @@ function TabBarItemComponent({ item, isActive, variant, className, ...props }: T
 
   return (
     <Pressable
-      className={cn(baseStyles, variantStyles[variant], 'active:opacity-70', className)}
+      className={cn(baseStyles, variantStyles[variant], className)}
+      style={interactiveStyle}
       {...props}
     >
       {icon && (

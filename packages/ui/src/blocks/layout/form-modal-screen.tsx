@@ -4,6 +4,7 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { Spinner } from '../../components/spinner';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 export interface FormModalScreenProps extends Omit<ViewProps, 'className'> {
   className?: string;
@@ -40,6 +41,7 @@ function FormModalScreen({
   ...props
 }: FormModalScreenProps) {
   const { height: screenHeight } = useWindowDimensions();
+  const interaction = useInteractionTokens();
 
   const content = loading ? (
     <SafeAreaView style={{ flex: 1 }} className="bg-background" edges={['top']}>
@@ -62,7 +64,11 @@ function FormModalScreen({
             <Pressable
               onPress={onClose}
               disabled={saving}
-              className="p-2 -m-2 active:opacity-50 min-w-[44px] min-h-[44px] items-center justify-center"
+              className="p-2 -m-2 min-w-[44px] min-h-[44px] items-center justify-center"
+              style={withInteractivePressableStyle(undefined, interaction, {
+                disabled: saving,
+                pressedVariant: 'default',
+              })}
               accessibilityRole="button"
               accessibilityLabel="Close"
             >

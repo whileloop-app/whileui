@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 const segmentedControlVariants = tv({
   base: 'w-full flex-row items-center rounded-lg bg-muted p-1',
@@ -34,7 +35,7 @@ const segmentedControlVariants = tv({
 });
 
 const segmentedControlItemVariants = tv({
-  base: 'min-h-10 min-w-0 flex-row items-center justify-center px-3 active:opacity-70',
+  base: 'min-h-10 min-w-0 flex-row items-center justify-center px-3',
   variants: {
     variant: {
       default: 'rounded-md',
@@ -49,7 +50,7 @@ const segmentedControlItemVariants = tv({
       compact: 'min-h-9 py-1.5',
     },
     disabled: {
-      true: 'opacity-50',
+      true: '',
       false: '',
     },
     wrap: {
@@ -184,12 +185,18 @@ function SegmentedControlItem({
   className,
   children,
   disabled: itemDisabled,
+  style: styleProp,
   ...props
 }: SegmentedControlItemProps) {
   const { value, onValueChange, variant, size, wrap, disabled } =
     useContext(SegmentedControlContext);
   const selected = value === itemValue;
   const finalDisabled = disabled || Boolean(itemDisabled);
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    disabled: finalDisabled,
+    pressedVariant: 'default',
+  });
 
   return (
     <SegmentedControlItemContext.Provider value={{ selected, size }}>
@@ -208,6 +215,7 @@ function SegmentedControlItem({
         accessibilityRole="radio"
         accessibilityState={{ selected, disabled: finalDisabled }}
         disabled={finalDisabled}
+        style={interactiveStyle}
         hitSlop={4}
         {...props}
       >

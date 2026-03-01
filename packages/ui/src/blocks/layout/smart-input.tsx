@@ -3,6 +3,7 @@ import { View, TextInput, KeyboardAvoidingView, Platform, type TextInputProps } 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens } from '../../lib/interaction-tokens';
 
 export interface SmartInputProps extends TextInputProps {
   /** Left slot: emoji, attach, etc. */
@@ -41,6 +42,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
 ) {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
+  const interaction = useInteractionTokens();
   const bottomPadding = safeArea ? Math.max(insets.bottom, 12) : 12;
 
   return (
@@ -65,9 +67,9 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
             'flex-1 min-h-11 max-h-[120px] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none',
             variant === 'bar' && 'rounded-xl border border-border bg-muted',
             variant === 'card' && 'rounded-xl bg-transparent',
-            !editable && 'opacity-50',
             inputClassName
           )}
+          style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
           multiline
           submitBehavior={submitBehavior}
           textAlignVertical="top"

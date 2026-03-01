@@ -27,6 +27,14 @@ export {
   useResolvedThemeColors,
   type ThemeColors,
 } from './lib/theme-colors';
+export {
+  useInteractionTokens,
+  withInteractivePressableStyle,
+  type InteractionTokens,
+  type InteractivePressableOptions,
+  type PressedVariant,
+  type DisabledVariant,
+} from './lib/interaction-tokens';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';

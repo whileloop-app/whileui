@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 export interface SwitchProps extends Omit<ViewProps, 'children'> {
   checked?: boolean;
@@ -20,6 +21,11 @@ function Switch({
 }: SwitchProps) {
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
   const isChecked = controlledChecked ?? internalChecked;
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+    disabled,
+    pressedVariant: 'default',
+  });
 
   const handleToggle = () => {
     if (disabled) return;
@@ -32,6 +38,7 @@ function Switch({
     <Pressable
       onPress={handleToggle}
       disabled={disabled}
+      style={interactiveStyle}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       accessibilityRole="switch"
       accessibilityState={{ checked: isChecked, disabled }}
@@ -40,7 +47,6 @@ function Switch({
         className={cn(
           'h-9 w-12 flex-row items-center justify-start rounded-full p-0.5 border-2',
           isChecked ? 'border-primary bg-primary' : 'border-input bg-muted',
-          disabled && 'opacity-50',
           className
         )}
         {...props}

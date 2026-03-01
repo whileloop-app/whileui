@@ -4,6 +4,7 @@ import { useUniwind } from 'uniwind';
 import { Calendar, type DateData } from 'react-native-calendars';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
 export interface DatePickerInlineProps {
@@ -29,12 +30,13 @@ export function DatePickerInline({
   className,
 }: DatePickerInlineProps) {
   const { theme } = useUniwind();
+  const colors = useThemeColors();
   const calendarTheme = useCalendarTheme(customTheme);
   const arrowColor =
     calendarTheme.arrowColor ??
     calendarTheme.monthTextColor ??
     calendarTheme.dayTextColor ??
-    '#000000';
+    colors.foreground;
   const renderArrow = useCallback(
     (direction: 'left' | 'right') => (
       <Text className="text-base font-medium" style={{ color: arrowColor }}>

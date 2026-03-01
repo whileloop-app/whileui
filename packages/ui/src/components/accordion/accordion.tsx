@@ -7,6 +7,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -111,14 +112,19 @@ function AccordionItem({ value, className, children, ...props }: AccordionItemPr
   );
 }
 
-function AccordionTrigger({ className, children, ...props }: AccordionTriggerProps) {
+function AccordionTrigger({ className, children, style: styleProp, ...props }: AccordionTriggerProps) {
   const { onValueChange } = useContext(AccordionContext);
   const { value, isOpen } = useContext(AccordionItemContext);
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    pressedVariant: 'default',
+  });
 
   return (
     <Pressable
-      className={cn('flex flex-row items-center justify-between py-4 active:opacity-70', className)}
+      className={cn('flex flex-row items-center justify-between py-4', className)}
       onPress={() => onValueChange(value)}
+      style={interactiveStyle}
       {...props}
     >
       {children}
@@ -134,14 +140,15 @@ function AccordionTrigger({ className, children, ...props }: AccordionTriggerPro
 
 function AccordionContent({ className, children, ...props }: AccordionContentProps) {
   const { isOpen } = useContext(AccordionItemContext);
+  const interaction = useInteractionTokens();
   const opacity = useSharedValue(isOpen ? 1 : 0);
 
   React.useEffect(() => {
     opacity.value = withTiming(isOpen ? 1 : 0, {
-      duration: 200,
+      duration: interaction.motionNormal,
       easing: Easing.inOut(Easing.ease),
     });
-  }, [isOpen, opacity]);
+  }, [isOpen, opacity, interaction.motionNormal]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { Text, View, type TextProps, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useInteractionTokens } from '../../lib/interaction-tokens';
 
 const formFieldVariants = tv({
   base: 'w-full',
@@ -78,11 +79,13 @@ const FormField = React.forwardRef<View, FormFieldProps>(
     },
     ref
   ) => {
+    const interaction = useInteractionTokens();
     return (
       <FormFieldContext.Provider value={{ density, invalid, disabled, required }}>
         <View
           ref={ref}
-          className={cn(formFieldVariants({ density }), disabled && 'opacity-60', className)}
+          className={cn(formFieldVariants({ density }), className)}
+          style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
           {...props}
         />
       </FormFieldContext.Provider>
@@ -118,6 +121,7 @@ FormLabel.displayName = 'FormLabel';
 
 const FormControl = React.forwardRef<View, FormControlProps>(({ className, ...props }, ref) => {
   const { density, invalid, disabled } = useContext(FormFieldContext);
+  const interaction = useInteractionTokens();
 
   return (
     <View
@@ -125,9 +129,9 @@ const FormControl = React.forwardRef<View, FormControlProps>(({ className, ...pr
       className={cn(
         formControlVariants({ density, invalid }),
         invalid && 'rounded-md ring-1 ring-destructive/60',
-        disabled && 'opacity-60',
         className
       )}
+      style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
       {...props}
     />
   );

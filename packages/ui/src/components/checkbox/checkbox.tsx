@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 export interface CheckboxProps extends Omit<ViewProps, 'children'> {
   checked?: boolean;
@@ -20,6 +21,11 @@ function Checkbox({
 }: CheckboxProps) {
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
   const isChecked = controlledChecked ?? internalChecked;
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+    disabled,
+    pressedVariant: 'default',
+  });
 
   const handleToggle = () => {
     if (disabled) return;
@@ -32,6 +38,7 @@ function Checkbox({
     <Pressable
       onPress={handleToggle}
       disabled={disabled}
+      style={interactiveStyle}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: isChecked, disabled }}
@@ -40,7 +47,6 @@ function Checkbox({
         className={cn(
           'h-5 w-5 items-center justify-center rounded border',
           isChecked ? 'border-primary bg-primary' : 'border-border bg-muted',
-          disabled && 'opacity-50',
           className
         )}
         {...props}

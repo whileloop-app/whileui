@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, Pressable, ScrollView, View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 export interface NavigationSidebarItem {
   key: string;
@@ -37,6 +38,8 @@ export function NavigationSidebar({
   className,
   ...props
 }: NavigationSidebarProps) {
+  const interaction = useInteractionTokens();
+
   return (
     <View
       className={cn('w-72 flex-1 min-h-0 flex-col border-r border-border bg-background', className)}
@@ -65,11 +68,15 @@ export function NavigationSidebar({
                     onPress={() => onSelect?.(item.key)}
                     disabled={item.disabled}
                     className={cn(
-                      'min-h-10 flex-row items-center gap-3 rounded-md border-l-2 border-transparent pl-3 pr-3 py-2 active:opacity-70',
+                      'min-h-10 flex-row items-center gap-3 rounded-md border-l-2 border-transparent pl-3 pr-3 py-2',
                       isActive && 'border-l-primary bg-primary/5',
                       !isActive && !item.disabled && 'web:hover:bg-muted/50',
-                      item.disabled && 'opacity-50'
+                      item.disabled && ''
                     )}
+                    style={withInteractivePressableStyle(undefined, interaction, {
+                      disabled: Boolean(item.disabled),
+                      pressedVariant: 'default',
+                    })}
                     accessibilityRole="button"
                     accessibilityState={{ selected: isActive, disabled: item.disabled }}
                   >

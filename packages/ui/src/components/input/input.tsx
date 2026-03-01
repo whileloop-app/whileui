@@ -3,6 +3,7 @@ import { View, TextInput, type TextInputProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens } from '../../lib/interaction-tokens';
 
 const inputVariants = tv({
   base: 'min-h-10 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground',
@@ -39,14 +40,15 @@ const Input = React.forwardRef<TextInput, InputProps>(
     ref
   ) => {
     const colors = useThemeColors();
+    const interaction = useInteractionTokens();
     return (
       <View
         className={cn(
           'flex-row items-center rounded-md border border-border bg-muted',
           inputVariants({ variant }),
-          !editable && 'opacity-50',
           className
         )}
+        style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
       >
         {prefix && <View className="pl-3">{prefix}</View>}
         <TextInput

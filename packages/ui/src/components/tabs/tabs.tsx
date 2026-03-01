@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ const tabsTriggerVariants = tv({
   variants: {
     state: {
       active: 'bg-background text-foreground shadow',
-      inactive: 'text-muted-foreground active:opacity-70',
+      inactive: 'text-muted-foreground',
     },
   },
   defaultVariants: {
@@ -89,9 +90,14 @@ function TabsList({ className, ...props }: TabsListProps) {
   );
 }
 
-function TabsTrigger({ value: tabValue, className, ...props }: TabsTriggerProps) {
+function TabsTrigger({ value: tabValue, className, disabled, style: styleProp, ...props }: TabsTriggerProps) {
   const { value, onValueChange } = useContext(TabsContext);
   const isActive = value === tabValue;
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    disabled: Boolean(disabled),
+    pressedVariant: 'default',
+  });
 
   return (
     <Pressable
@@ -100,7 +106,9 @@ function TabsTrigger({ value: tabValue, className, ...props }: TabsTriggerProps)
         'flex-1',
         className
       )}
+      style={interactiveStyle}
       onPress={() => onValueChange(tabValue)}
+      disabled={disabled}
       {...props}
     />
   );

@@ -3,6 +3,7 @@ import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import * as SelectPrimitive from '@rn-primitives/select';
 import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens } from '../../lib/interaction-tokens';
 
 // iOS needs FullWindowOverlay to render above everything
 const FullWindowOverlay = Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fragment;
@@ -78,15 +79,21 @@ const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
 
 const SelectTrigger = React.forwardRef<SelectTriggerRef, SelectTriggerProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, style: styleProp, ...props }, ref) => {
+    const interaction = useInteractionTokens();
+
     return (
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          'border-border bg-muted flex min-h-12 w-full flex-row items-center justify-between gap-2 rounded-lg border px-4 shadow-sm active:opacity-70',
-          props.disabled && 'opacity-50',
+          'border-border bg-muted flex min-h-12 w-full flex-row items-center justify-between gap-2 rounded-lg border px-4 shadow-sm active:bg-state-pressed',
+          props.disabled && '',
           className
         )}
+        style={[
+          styleProp as any,
+          props.disabled ? ({ opacity: interaction.disabledOpacity } as const) : null,
+        ]}
         {...props}
       >
         <>{children}</>
@@ -160,28 +167,36 @@ SelectContent.displayName = 'SelectContent';
 const SelectItem = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Item>,
   SelectItemProps
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      'active:bg-accent group relative flex w-full flex-row items-center gap-2 rounded-lg py-3 pl-3 pr-8',
-      Platform.select({
-        web: 'focus:bg-accent focus:text-accent-foreground cursor-default outline-none',
-      }),
-      props.disabled && 'opacity-50',
-      className
-    )}
-    {...props}
-  >
-    <View className="absolute right-3 flex h-4 w-4 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <View className="border-foreground h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 -mt-0.5" />
-      </SelectPrimitive.ItemIndicator>
-    </View>
-    {children}
-    <SelectPrimitive.ItemText className="text-foreground group-active:text-accent-foreground text-base" />
-  </SelectPrimitive.Item>
-));
+>(({ className, children, style: styleProp, ...props }, ref) => {
+  const interaction = useInteractionTokens();
+
+  return (
+    <SelectPrimitive.Item
+      ref={ref}
+      className={cn(
+        'active:bg-accent group relative flex w-full flex-row items-center gap-2 rounded-lg py-3 pl-3 pr-8',
+        Platform.select({
+          web: 'focus:bg-accent focus:text-accent-foreground cursor-default outline-none',
+        }),
+        props.disabled && '',
+        className
+      )}
+      style={[
+        styleProp as any,
+        props.disabled ? ({ opacity: interaction.disabledOpacity } as const) : null,
+      ]}
+      {...props}
+    >
+      <View className="absolute right-3 flex h-4 w-4 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <View className="border-foreground h-2.5 w-1.5 rotate-45 border-b-2 border-r-2 -mt-0.5" />
+        </SelectPrimitive.ItemIndicator>
+      </View>
+      {children}
+      <SelectPrimitive.ItemText className="text-foreground group-active:text-accent-foreground text-base" />
+    </SelectPrimitive.Item>
+  );
+});
 SelectItem.displayName = 'SelectItem';
 
 function SelectItemIcon({ className, children }: SelectItemIconProps) {

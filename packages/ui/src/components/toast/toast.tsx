@@ -103,9 +103,18 @@ function Toast({ toast: toastData, onDismiss, className, ...props }: ToastProps)
     }
   }, [duration, onDismiss]);
 
-  const textColor = variant === 'default' ? 'text-foreground' : `text-${variant}-foreground`;
-  const descColor =
-    variant === 'default' ? 'text-muted-foreground' : `text-${variant}-foreground/80`;
+  const textColorByVariant = {
+    default: 'text-foreground',
+    destructive: 'text-destructive-foreground',
+    success: 'text-success-foreground',
+  } as const;
+  const descColorByVariant = {
+    default: 'text-muted-foreground',
+    destructive: 'text-destructive-foreground/80',
+    success: 'text-success-foreground/80',
+  } as const;
+  const textColor = textColorByVariant[variant];
+  const descColor = descColorByVariant[variant];
 
   return (
     <Animated.View

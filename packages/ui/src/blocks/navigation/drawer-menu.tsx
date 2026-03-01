@@ -17,11 +17,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 const DRAWER_WIDTH_RATIO = 0.82;
-const OPEN_DURATION = 300;
-const CLOSE_DURATION = 220;
-
 export interface DrawerMenuItem {
   key: string;
   label: string;
@@ -63,6 +62,8 @@ export function DrawerMenu({
   className,
   style,
 }: DrawerMenuProps) {
+  const colors = useThemeColors();
+  const interaction = useInteractionTokens();
   const { width: screenWidth } = useWindowDimensions();
   const rawWidth = screenWidth * DRAWER_WIDTH_RATIO;
   const effectiveMaxWidth = maxWidth ?? (Platform.OS === 'web' ? WEB_DEFAULT_MAX_WIDTH : undefined);
@@ -71,15 +72,15 @@ export function DrawerMenu({
 
   React.useEffect(() => {
     progress.value = withTiming(visible ? 1 : 0, {
-      duration: visible ? OPEN_DURATION : CLOSE_DURATION,
+      duration: visible ? interaction.drawerOpenDuration : interaction.drawerCloseDuration,
       easing: visible
         ? Easing.bezier(0.2, 0.8, 0.2, 1) // Swift, decelerating entrance
         : Easing.bezier(0.4, 0, 1, 1), // Accelerating, sharp exit
     });
-  }, [visible, progress]);
+  }, [visible, progress, interaction.drawerOpenDuration, interaction.drawerCloseDuration]);
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: progress.value * 0.5,
+    opacity: progress.value,
     pointerEvents: progress.value > 0 ? 'auto' : 'none',
   }));
 
@@ -98,7 +99,9 @@ export function DrawerMenu({
   return (
     <Animated.View style={[StyleSheet.absoluteFill, containerStyle]}>
       {/* Backdrop */}
-      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: '#000' }, backdropStyle]}>
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { backgroundColor: colors.overlayStrong }, backdropStyle]}
+      >
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
@@ -111,12 +114,11 @@ export function DrawerMenu({
             bottom: 0,
             left: 0,
             width: drawerWidth,
-            boxShadow: '4px 0px 24px rgba(0, 0, 0, 0.15)',
           },
           drawerStyle,
           style,
         ]}
-        className={cn('bg-background border-r border-border rounded-r-2xl', className)}
+        className={cn('bg-background border-r border-border rounded-r-2xl shadow-lg', className)}
       >
         <View className="flex-1 pt-14 pb-8">
           {/* Header */}
@@ -139,9 +141,12 @@ export function DrawerMenu({
                         key={item.key}
                         onPress={() => handleItemPress(item.key)}
                         className={cn(
-                          'flex-row items-center gap-3 px-4 py-3 mx-1 rounded-xl active:opacity-70 transition-colors',
+                          'flex-row items-center gap-3 px-4 py-3 mx-1 rounded-xl transition-colors',
                           isActive && 'bg-primary/5'
                         )}
+                        style={withInteractivePressableStyle(undefined, interaction, {
+                          pressedVariant: 'default',
+                        })}
                       >
                         {item.icon}
                         <Text

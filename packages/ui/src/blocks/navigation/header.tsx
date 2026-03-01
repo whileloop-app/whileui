@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -34,6 +35,8 @@ export function Header({
   className,
   ...props
 }: HeaderProps) {
+  const interaction = useInteractionTokens();
+
   return (
     <View
       className={cn(
@@ -72,6 +75,7 @@ export function Header({
             key={action.key}
             onPress={action.onPress}
             className="rounded-full p-2 active:bg-accent"
+            style={withInteractivePressableStyle(undefined, interaction, { pressedVariant: 'default' })}
           >
             {action.icon}
           </Pressable>
@@ -88,10 +92,23 @@ export interface HeaderBackButtonProps extends Omit<PressableProps, 'children'> 
   label?: string;
 }
 
-export function HeaderBackButton({ icon, label, className, ...props }: HeaderBackButtonProps) {
+export function HeaderBackButton({
+  icon,
+  label,
+  className,
+  style: styleProp,
+  ...props
+}: HeaderBackButtonProps) {
+  const interaction = useInteractionTokens();
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    disabled: Boolean(props.disabled),
+    pressedVariant: 'default',
+  });
+
   return (
     <Pressable
-      className={cn('flex-row items-center gap-1 rounded-full py-1 active:opacity-70', className)}
+      className={cn('flex-row items-center gap-1 rounded-full py-1', className)}
+      style={interactiveStyle}
       {...props}
     >
       {icon || <Text className="text-xl text-primary">‹</Text>}

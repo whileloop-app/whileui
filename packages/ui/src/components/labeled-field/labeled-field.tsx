@@ -9,6 +9,7 @@ import {
   type FormFieldProps,
 } from '../form-field';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens } from '../../lib/interaction-tokens';
 
 export interface LabeledFieldProps extends Omit<FormFieldProps, 'children'> {
   label?: React.ReactNode;
@@ -38,6 +39,7 @@ function LabeledField({
   ...props
 }: LabeledFieldProps) {
   const isInvalid = invalid ?? Boolean(error);
+  const interaction = useInteractionTokens();
 
   return (
     <FormField required={required} disabled={disabled} invalid={isInvalid} {...props}>
@@ -47,9 +49,10 @@ function LabeledField({
           className={cn(
             'flex-row items-center gap-2 rounded-md border border-border bg-muted px-3',
             isInvalid && 'border-destructive',
-            disabled && 'opacity-60',
+            disabled && '',
             controlWrapperClassName
           )}
+          style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
         >
           {leftSlot ? <View className="shrink-0">{leftSlot}</View> : null}
           <View className="min-h-10 min-w-0 flex-1 justify-center">{children}</View>

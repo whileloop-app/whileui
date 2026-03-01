@@ -9,6 +9,7 @@ import {
   type PressableProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -107,11 +108,13 @@ function DialogTrigger({ className, children, asChild, ...props }: DialogTrigger
 
 function DialogContent({ className, children, ...props }: DialogContentProps) {
   const { open, setOpen } = useContext(DialogContext);
+  const colors = useThemeColors();
 
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
       <Pressable
-        className="flex-1 justify-center items-center bg-black/50 px-4"
+        className="flex-1 justify-center items-center px-4"
+        style={{ backgroundColor: colors.overlayStrong }}
         onPress={() => setOpen(false)}
       >
         <Pressable

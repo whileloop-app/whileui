@@ -6,6 +6,7 @@ import { Calendar, type DateData } from 'react-native-calendars';
 import { Text } from '../../components/text';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
 type MarkedDates = Record<
@@ -103,12 +104,13 @@ export function DateRangePickerModal({
 }: DateRangePickerModalProps) {
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
+  const colors = useThemeColors();
   const calendarTheme = useCalendarTheme(customTheme);
   const arrowColor =
     calendarTheme.arrowColor ??
     calendarTheme.monthTextColor ??
     calendarTheme.dayTextColor ??
-    '#000000';
+    colors.foreground;
   const renderArrow = useCallback(
     (direction: 'left' | 'right') => (
       <Text className="text-base font-medium" style={{ color: arrowColor }}>
@@ -198,7 +200,11 @@ export function DateRangePickerModal({
       ) : null}
 
       <Modal visible={open} transparent animationType="slide">
-        <Pressable className="flex-1 justify-end bg-black/40" onPress={handleBackdropPress}>
+        <Pressable
+          className="flex-1 justify-end"
+          style={{ backgroundColor: colors.overlay }}
+          onPress={handleBackdropPress}
+        >
           <Pressable
             className="rounded-t-xl border border-border bg-background"
             style={{ paddingBottom: Math.max(insets.bottom, 16) }}

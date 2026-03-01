@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useThemeColors } from '../../lib/theme-colors';
 
 // ─── Variants ─────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ export interface SkeletonProps extends ViewProps, VariantProps<typeof skeletonVa
 
 function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
   const progress = useSharedValue(0);
+  const colors = useThemeColors();
 
   useEffect(() => {
     progress.value = withRepeat(
@@ -70,7 +72,7 @@ function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
               top: 0,
               bottom: 0,
               width: shimmerBandWidth,
-              backgroundColor: 'rgba(255,255,255,0.35)',
+              backgroundColor: colors.surfaceHighlight,
             },
           ]}
         />

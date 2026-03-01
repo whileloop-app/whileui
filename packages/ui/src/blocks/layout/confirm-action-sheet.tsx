@@ -3,6 +3,8 @@ import { Modal, Pressable, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 export type ConfirmActionSheetActionVariant = 'default' | 'destructive' | 'cancel';
 
@@ -44,6 +46,8 @@ export function ConfirmActionSheet({
   ...props
 }: ConfirmActionSheetProps) {
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
+  const interaction = useInteractionTokens();
 
   const resolvedActions = useMemo<ConfirmActionSheetAction[]>(() => {
     if (actions && actions.length > 0) {
@@ -77,7 +81,7 @@ export function ConfirmActionSheet({
 
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={handleClose}>
-      <View className="flex-1 justify-end bg-black/40">
+      <View className="flex-1 justify-end" style={{ backgroundColor: colors.overlay }}>
         <Pressable className="flex-1" onPress={handleClose} />
         <View
           className={cn('rounded-t-lg border border-border bg-background px-4 pt-4', className)}
@@ -100,11 +104,15 @@ export function ConfirmActionSheet({
                 <Pressable
                   key={action.key}
                   className={cn(
-                    'min-h-11 items-center justify-center rounded-md border px-4 py-2 active:opacity-70',
+                    'min-h-11 items-center justify-center rounded-md border px-4 py-2',
                     isCancel ? 'border-border bg-muted' : 'border-transparent bg-secondary',
                     isDestructive && 'bg-destructive/10 border-destructive/30',
-                    action.disabled && 'opacity-50'
+                    action.disabled && ''
                   )}
+                  style={withInteractivePressableStyle(undefined, interaction, {
+                    disabled: Boolean(action.disabled),
+                    pressedVariant: 'default',
+                  })}
                   onPress={() => handleActionPress(action)}
                   disabled={action.disabled}
                   accessibilityRole="button"

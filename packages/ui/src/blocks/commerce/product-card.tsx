@@ -2,6 +2,7 @@ import { View, Pressable, Image, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Badge, BadgeText } from '../../components/badge';
 import { cn } from '../../lib/cn';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -32,17 +33,23 @@ export function ProductCard({
   inStock = true,
   variant = 'vertical',
   className,
+  style: styleProp,
   ...props
 }: ProductCardProps) {
   const isHorizontal = variant === 'horizontal';
+  const interaction = useInteractionTokens();
 
   return (
     <Pressable
       className={cn(
-        'overflow-hidden rounded-xl border border-border bg-card active:opacity-90',
+        'overflow-hidden rounded-xl border border-border bg-card',
         isHorizontal ? 'flex-row' : 'flex-col',
         className
       )}
+      style={withInteractivePressableStyle(styleProp, interaction, {
+        disabled: Boolean(props.disabled),
+        pressedVariant: 'strong',
+      })}
       {...props}
     >
       {/* Image */}
@@ -85,7 +92,7 @@ export function ProductCard({
         {/* Rating */}
         {rating !== undefined && (
           <View className="mt-1 flex-row items-center gap-1">
-            <Text className="text-sm text-amber-500">★</Text>
+            <Text className="text-sm text-accent">★</Text>
             <Text className="text-sm text-muted-foreground">
               {rating.toFixed(1)}
               {reviewCount !== undefined && ` (${reviewCount})`}

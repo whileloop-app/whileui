@@ -490,8 +490,10 @@ Themes are defined in `global.css` using CSS variables with OKLCH colors:
 
 The WhileUI token contract is strict for cross-app reuse. Define these in **every** theme variant (`@variant light`, `@variant dark`, and custom variants):
 
-- Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
+- Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `popover`, `popover-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
 - Optional status tokens: `success`, `success-foreground`, `warning`, `warning-foreground`, `info`, `info-foreground`
+- Optional effect tokens: `overlay`, `overlay-strong`, `surface-elevated`, `surface-border`, `surface-highlight`, `state-hover`, `state-pressed`, `state-disabled`
+- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`
 - Optional scale tokens: spacing (`--spacing`, `--spacing-*`), typography (`--text-*`, `--leading-*`, `--tracking-*`), radius (`--radius-*`), elevation (`--shadow-*`)
 
 Minimal contract example:
@@ -504,6 +506,8 @@ Minimal contract example:
       --color-foreground: oklch(0.15 0 0);
       --color-card: oklch(1 0 0);
       --color-card-foreground: oklch(0.15 0 0);
+      --color-popover: oklch(1 0 0);
+      --color-popover-foreground: oklch(0.15 0 0);
       --color-primary: oklch(0.2 0 0);
       --color-primary-foreground: oklch(0.98 0 0);
       --color-secondary: oklch(0.95 0 0);
@@ -538,7 +542,7 @@ Some React Native APIs require native color strings (hex/rgb/hsl/named). Use `us
 import { useThemeColors, useIconColors } from '@thewhileloop/whileui';
 import { Feather } from '@expo/vector-icons';
 
-// Full palette (primary, foreground, muted, background, border, accent, destructive, etc.)
+// Full palette (core semantic colors + status + overlay/effect tokens)
 const colors = useThemeColors();
 
 // Shorthand for icons: foreground, muted, primary, primaryForeground, accent, destructive
@@ -548,10 +552,36 @@ const iconColors = useIconColors();
 <Spinner color={colors.foreground} />  // Spinner defaults to this when color not passed
 ```
 
-- **useThemeColors** / **useThemeTokens** — Returns RN-safe color strings (hex) for all semantic tokens. Use for RefreshControl, LinearGradient, charts. Falls back to `--app-color-*` when `--color-*` is not RN-native (e.g. `oklch(...)`).
+- **useThemeColors** / **useThemeTokens** — Returns RN-safe color strings for semantic tokens (`background`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, status colors) plus effect tokens (`overlay`, `overlayStrong`, `surfaceHighlight`, etc.). Falls back to `--app-color-*` when `--color-*` is missing/non-RN-native.
 - **useIconColors** — Subset for icons. Maps `muted` → `mutedForeground` (readable on backgrounds).
 
 Input, Textarea, NumericInput, SmartInput, Spinner, and LoadingScreen default to theme colors when you omit `placeholderTextColor` or `spinnerColor`.
+
+### Interaction + Motion Tokens
+
+WhileUI components also read optional `--ui-*` tokens for deeper control of press feedback, disabled states, and motion timing:
+
+```css
+@theme {
+  --ui-press-opacity: 0.72;
+  --ui-press-opacity-strong: 0.9;
+  --ui-disabled-opacity: 0.5;
+  --ui-disabled-opacity-soft: 0.6;
+  --ui-disabled-opacity-subtle: 0.4;
+  --ui-inactive-opacity: 0.5;
+  --ui-motion-fast: 160;
+  --ui-motion-normal: 220;
+  --ui-motion-slow: 300;
+  --ui-drawer-open-duration: 300;
+  --ui-drawer-close-duration: 220;
+}
+```
+
+For custom components, use:
+
+```tsx
+import { useInteractionTokens, withInteractivePressableStyle } from '@thewhileloop/whileui';
+```
 
 Optional RN fallback tokens (hex/rgb/hsl/named):
 
@@ -562,23 +592,71 @@ Optional RN fallback tokens (hex/rgb/hsl/named):
       --app-color-primary: #000000;
       --app-color-primary-foreground: #ffffff;
       --app-color-foreground: #000000;
+      --app-color-background: #ffffff;
+      --app-color-card: #ffffff;
+      --app-color-card-foreground: #000000;
+      --app-color-popover: #ffffff;
+      --app-color-popover-foreground: #000000;
+      --app-color-secondary: #f5f5f5;
+      --app-color-secondary-foreground: #171717;
       --app-color-muted: #f5f5f5;
       --app-color-muted-foreground: #737373;
-      --app-color-background: #ffffff;
       --app-color-border: #e5e5e5;
+      --app-color-input: #e5e5e5;
+      --app-color-ring: #94a3b8;
       --app-color-accent: #22c55e;
+      --app-color-accent-foreground: #0a0a0a;
       --app-color-destructive: #dc2626;
+      --app-color-destructive-foreground: #ffffff;
+      --app-color-success: #16a34a;
+      --app-color-success-foreground: #ffffff;
+      --app-color-warning: #f59e0b;
+      --app-color-warning-foreground: #111827;
+      --app-color-info: #3b82f6;
+      --app-color-info-foreground: #ffffff;
+      --app-color-overlay: rgba(0, 0, 0, 0.4);
+      --app-color-overlay-strong: rgba(0, 0, 0, 0.55);
+      --app-color-surface-elevated: #ffffff;
+      --app-color-surface-border: rgba(255, 255, 255, 0.3);
+      --app-color-surface-highlight: rgba(255, 255, 255, 0.3);
+      --app-color-state-hover: rgba(0, 0, 0, 0.05);
+      --app-color-state-pressed: rgba(0, 0, 0, 0.12);
+      --app-color-state-disabled: rgba(0, 0, 0, 0.4);
     }
     @variant dark {
       --app-color-primary: #ffffff;
       --app-color-primary-foreground: #000000;
       --app-color-foreground: #ffffff;
+      --app-color-background: #000000;
+      --app-color-card: #0f0f10;
+      --app-color-card-foreground: #ffffff;
+      --app-color-popover: #121214;
+      --app-color-popover-foreground: #ffffff;
+      --app-color-secondary: #2e2e2e;
+      --app-color-secondary-foreground: #ffffff;
       --app-color-muted: #2e2e2e;
       --app-color-muted-foreground: #999999;
-      --app-color-background: #000000;
       --app-color-border: #3d3d3d;
+      --app-color-input: #3d3d3d;
+      --app-color-ring: #7c889a;
       --app-color-accent: #22c55e;
+      --app-color-accent-foreground: #0a0a0a;
       --app-color-destructive: #dc2626;
+      --app-color-destructive-foreground: #ffffff;
+      --app-color-success: #22c55e;
+      --app-color-success-foreground: #0a0a0a;
+      --app-color-warning: #fbbf24;
+      --app-color-warning-foreground: #111827;
+      --app-color-info: #60a5fa;
+      --app-color-info-foreground: #111827;
+      --app-color-overlay: rgba(0, 0, 0, 0.5);
+      --app-color-overlay-strong: rgba(0, 0, 0, 0.7);
+      --app-color-surface-elevated: #111315;
+      --app-color-surface-border: rgba(255, 255, 255, 0.18);
+      --app-color-surface-highlight: rgba(255, 255, 255, 0.18);
+      --app-color-state-hover: rgba(255, 255, 255, 0.08);
+      --app-color-state-pressed: rgba(255, 255, 255, 0.15);
+      --app-color-state-disabled: rgba(255, 255, 255, 0.4);
     }
   }
 }

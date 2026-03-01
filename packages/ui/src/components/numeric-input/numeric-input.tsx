@@ -3,6 +3,7 @@ import { Platform, Pressable, Text, TextInput, View, type TextInputProps } from 
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 const numericInputVariants = tv({
   base: 'w-full flex-row items-center rounded-md border border-border bg-muted',
@@ -36,14 +37,14 @@ const numericInputTextVariants = tv({
 });
 
 const stepperButtonVariants = tv({
-  base: 'h-full w-11 items-center justify-center active:opacity-70',
+  base: 'h-full w-11 items-center justify-center',
   variants: {
     size: {
       default: 'px-3',
       compact: 'px-2',
     },
     disabled: {
-      true: 'opacity-40',
+      true: '',
       false: '',
     },
   },
@@ -129,6 +130,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
     ref
   ) => {
     const colors = useThemeColors();
+    const interaction = useInteractionTokens();
     const [internalText, setInternalText] = useState(() => toInputText(defaultValue));
     const isControlled = value !== undefined;
     const textValue = isControlled ? toInputText(value) : internalText;
@@ -190,6 +192,16 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       editable && (min === undefined || currentValue === null || currentValue > min);
     const canIncrease =
       editable && (max === undefined || currentValue === null || currentValue < max);
+    const stepDownStyle = withInteractivePressableStyle(undefined, interaction, {
+      disabled: !canDecrease,
+      disabledVariant: 'subtle',
+      pressedVariant: 'default',
+    });
+    const stepUpStyle = withInteractivePressableStyle(undefined, interaction, {
+      disabled: !canIncrease,
+      disabledVariant: 'subtle',
+      pressedVariant: 'default',
+    });
 
     const nudge = (delta: -1 | 1) => {
       const baseline = currentValue ?? min ?? 0;
@@ -201,9 +213,9 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       <View
         className={cn(
           numericInputVariants({ variant, size }),
-          !editable && 'opacity-50',
           className
         )}
+        style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
       >
         {prefix ? <View className="shrink-0 pl-3">{prefix}</View> : null}
         <View
@@ -236,6 +248,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
                 stepperButtonVariants({ size, disabled: !canDecrease }),
                 'shrink-0 min-w-11 border-r border-border'
               )}
+              style={stepDownStyle}
               onPress={() => nudge(-1)}
               disabled={!canDecrease}
               hitSlop={4}
@@ -249,6 +262,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
                 stepperButtonVariants({ size, disabled: !canIncrease }),
                 'shrink-0 min-w-11'
               )}
+              style={stepUpStyle}
               onPress={() => nudge(1)}
               disabled={!canIncrease}
               hitSlop={4}

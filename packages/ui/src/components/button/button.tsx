@@ -10,6 +10,7 @@ import {
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useResolveFontFamily } from '../../lib/font-context';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -96,12 +97,22 @@ export interface ButtonIconProps extends ViewProps {
 // ─── Components ──────────────────────────────────────────────
 
 const Button = React.forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', disabled, children, ...props }, ref) => {
+  (
+    { className, variant = 'default', size = 'default', disabled, children, style: styleProp, ...props },
+    ref
+  ) => {
+    const interaction = useInteractionTokens();
+    const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+      disabled: Boolean(disabled),
+      pressedVariant: variant === 'link' ? 'none' : 'strong',
+    });
+
     return (
       <ButtonContext.Provider value={{ variant, size }}>
         <Pressable
           ref={ref as any}
-          className={cn(buttonVariants({ variant, size }), disabled && 'opacity-50', className)}
+          className={cn(buttonVariants({ variant, size }), className)}
+          style={interactiveStyle}
           disabled={disabled}
           {...props}
         >
