@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, type ViewProps, type TextProps } from 'react-native';
+import { View, type StyleProp, type ViewProps, type ViewStyle, type TextProps } from 'react-native';
 import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // ─── Card ────────────────────────────────────────────────────
 
@@ -26,12 +27,47 @@ const cardVariants = tv({
   },
 });
 
-export interface CardProps extends ViewProps, VariantProps<typeof cardVariants> {}
+export interface CardProps
+  extends ViewProps, VariantProps<typeof cardVariants>, FrostedSurfaceProps {}
 
 const Card = React.forwardRef<View, CardProps>(
-  ({ className, padding, unstyled, ...props }, ref) => {
+  (
+    {
+      className,
+      padding,
+      unstyled,
+      frosted = false,
+      blurIntensity,
+      blurTintToken,
+      style,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const frostedSurface = useFrostedSurface({
+      frosted,
+      blurIntensity,
+      blurTintToken,
+      defaultTintToken: 'card',
+      defaultBlurPreset: 'subtle',
+    });
+    const cardStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
+
     return (
-      <View ref={ref} className={cn(cardVariants({ padding, unstyled }), className)} {...props} />
+      <View
+        ref={ref}
+        className={cn(
+          cardVariants({ padding, unstyled }),
+          frosted && 'relative overflow-hidden bg-transparent',
+          className
+        )}
+        style={cardStyle}
+        {...props}
+      >
+        {frostedSurface.overlay}
+        {children}
+      </View>
     );
   }
 );

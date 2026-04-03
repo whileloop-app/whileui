@@ -83,14 +83,20 @@ export function useInteractionTokens(): InteractionTokens {
 
 type PressableStyle = PressableProps['style'];
 
-function resolveDisabledOpacity(tokens: InteractionTokens, variant: DisabledVariant): number | undefined {
+function resolveDisabledOpacity(
+  tokens: InteractionTokens,
+  variant: DisabledVariant
+): number | undefined {
   if (variant === 'none') return undefined;
   if (variant === 'soft') return tokens.disabledOpacitySoft;
   if (variant === 'subtle') return tokens.disabledOpacitySubtle;
   return tokens.disabledOpacity;
 }
 
-function resolvePressedOpacity(tokens: InteractionTokens, variant: PressedVariant): number | undefined {
+function resolvePressedOpacity(
+  tokens: InteractionTokens,
+  variant: PressedVariant
+): number | undefined {
   if (variant === 'none') return undefined;
   if (variant === 'strong') return tokens.pressOpacityStrong;
   return tokens.pressOpacity;
@@ -110,12 +116,11 @@ export function withInteractivePressableStyle(
 
     const disabledOpacity = resolveDisabledOpacity(tokens, disabledVariant);
     const pressedOpacity = resolvePressedOpacity(tokens, pressedVariant);
-    const feedbackOpacity = disabled
-      ? disabledOpacity
-      : state.pressed
-        ? pressedOpacity
-        : undefined;
+    const feedbackOpacity = disabled ? disabledOpacity : state.pressed ? pressedOpacity : undefined;
 
-    return [baseStyle, feedbackOpacity !== undefined ? ({ opacity: feedbackOpacity } as ViewStyle) : null];
+    return [
+      baseStyle,
+      feedbackOpacity !== undefined ? ({ opacity: feedbackOpacity } as ViewStyle) : null,
+    ];
   };
 }

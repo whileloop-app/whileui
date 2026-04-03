@@ -4,12 +4,15 @@ import {
   Modal,
   Pressable,
   Text,
+  type StyleProp,
   type ViewProps,
+  type ViewStyle,
   type TextProps,
   type PressableProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -37,7 +40,7 @@ export interface DialogTriggerProps extends PressableProps {
   asChild?: boolean;
 }
 
-export interface DialogContentProps extends ViewProps {
+export interface DialogContentProps extends ViewProps, FrostedSurfaceProps {
   className?: string;
 }
 
@@ -106,9 +109,25 @@ function DialogTrigger({ className, children, asChild, ...props }: DialogTrigger
   );
 }
 
-function DialogContent({ className, children, ...props }: DialogContentProps) {
+function DialogContent({
+  className,
+  children,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
+  style,
+  ...props
+}: DialogContentProps) {
   const { open, setOpen } = useContext(DialogContext);
   const colors = useThemeColors();
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'surfaceTranslucent',
+    defaultBlurPreset: 'medium',
+  });
+  const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
 
   return (
     <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
@@ -119,12 +138,15 @@ function DialogContent({ className, children, ...props }: DialogContentProps) {
       >
         <Pressable
           className={cn(
-            'w-full max-w-lg rounded-lg border border-border bg-background p-6 shadow-lg',
+            'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
+            frosted ? 'bg-transparent' : 'bg-background',
             className
           )}
+          style={contentStyle}
           onPress={(e) => e.stopPropagation()}
           {...props}
         >
+          {frostedSurface.overlay}
           {children}
         </Pressable>
       </Pressable>

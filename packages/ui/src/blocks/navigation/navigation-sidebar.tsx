@@ -3,6 +3,7 @@ import { Platform, Pressable, ScrollView, View, type ViewProps } from 'react-nat
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 export interface NavigationSidebarItem {
   key: string;
@@ -39,6 +40,7 @@ export function NavigationSidebar({
   ...props
 }: NavigationSidebarProps) {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   return (
     <View
@@ -55,7 +57,10 @@ export function NavigationSidebar({
           {sections.map((section, index) => (
             <View key={index} className="gap-1">
               {section.title ? (
-                <Text className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Text
+                  className="px-3 pb-1.5 font-semibold uppercase tracking-wider text-muted-foreground"
+                  style={{ fontSize: visual.navSectionTitleFontSize }}
+                >
                   {section.title}
                 </Text>
               ) : null}
@@ -69,8 +74,8 @@ export function NavigationSidebar({
                     disabled={item.disabled}
                     className={cn(
                       'min-h-10 flex-row items-center gap-3 rounded-md border-l-2 border-transparent pl-3 pr-3 py-2',
-                      isActive && 'border-l-primary bg-primary/5',
-                      !isActive && !item.disabled && 'web:hover:bg-muted/50',
+                      isActive && 'border-l-primary bg-primary-soft-subtle',
+                      !isActive && !item.disabled && 'web:hover:bg-muted-soft',
                       item.disabled && ''
                     )}
                     style={withInteractivePressableStyle(undefined, interaction, {
@@ -105,9 +110,10 @@ export function NavigationSidebar({
                       >
                         <Text
                           className={cn(
-                            'text-[11px] font-medium',
+                            'font-medium',
                             isActive ? 'text-primary-foreground' : 'text-muted-foreground'
                           )}
+                          style={{ fontSize: visual.navItemBadgeFontSize }}
                         >
                           {item.badge}
                         </Text>

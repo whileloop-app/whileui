@@ -2,6 +2,7 @@ import React from 'react';
 import { View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Card } from '../../components/card';
+import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 
@@ -26,6 +27,30 @@ export interface MetricCardProps extends ViewProps, VariantProps<typeof metricCa
   progress?: number;
   segments?: { value: number; color: string }[];
   icon?: React.ReactNode;
+  /** Show a skeleton placeholder instead of content. */
+  loading?: boolean;
+}
+
+function MetricCardSkeleton({
+  className,
+  variant,
+}: {
+  className?: string;
+  variant?: 'default' | 'outlined';
+}) {
+  return (
+    <Card className={cn(metricCardVariants({ variant }), className)}>
+      <View className="flex-row items-start justify-between mb-2">
+        <Skeleton className="h-3 w-1/3 rounded-md" />
+        <Skeleton className="h-5 w-5 rounded-sm" />
+      </View>
+      <Skeleton className="h-6 w-1/2 rounded-md mb-1" />
+      <Skeleton className="h-3 w-2/5 rounded-md" />
+      <View className="mt-3">
+        <Skeleton className="h-2 w-full rounded-full" />
+      </View>
+    </Card>
+  );
 }
 
 function MetricCard({
@@ -37,8 +62,13 @@ function MetricCard({
   segments,
   icon,
   variant,
+  loading = false,
   ...props
 }: MetricCardProps) {
+  if (loading) {
+    return <MetricCardSkeleton className={className} variant={variant ?? 'default'} />;
+  }
+
   return (
     <Card className={cn(metricCardVariants({ variant }), className)} {...props}>
       <View className="flex-row items-start justify-between mb-2">

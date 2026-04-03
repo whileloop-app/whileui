@@ -266,6 +266,10 @@ Uniwind.setTheme('light');
 Uniwind.setTheme('dark');
 ```
 
+### Frosted / translucent surfaces
+
+Apps that want a frosted or translucent look for floating panels (modals, sheets, toolbars) can override surface tokens in their theme with semi-transparent values, e.g. `--color-surface-elevated: oklch(0.98 0.01 95 / 0.4)`. Optional tokens: `surface-translucent`, `surface-translucent-border`. No "glass" in core names. See README Theming > Frosted / Translucent Theme.
+
 ### Required Theme Variables
 
 All themes must define these variables for components to work:

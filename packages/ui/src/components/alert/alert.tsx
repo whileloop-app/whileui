@@ -8,10 +8,10 @@ const alertVariants = tv({
   variants: {
     variant: {
       default: 'border-border bg-background',
-      destructive: 'border-destructive/50 bg-destructive/10',
-      success: 'border-success/50 bg-success/10',
-      warning: 'border-warning/50 bg-warning/10',
-      info: 'border-info/50 bg-info/10',
+      destructive: 'border-destructive-soft-border bg-destructive-soft',
+      success: 'border-success-soft-border bg-success-soft',
+      warning: 'border-warning-soft-border bg-warning-soft',
+      info: 'border-info-soft-border bg-info-soft',
     },
   },
   defaultVariants: {

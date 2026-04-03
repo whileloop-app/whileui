@@ -110,8 +110,8 @@ function Toast({ toast: toastData, onDismiss, className, ...props }: ToastProps)
   } as const;
   const descColorByVariant = {
     default: 'text-muted-foreground',
-    destructive: 'text-destructive-foreground/80',
-    success: 'text-success-foreground/80',
+    destructive: 'text-destructive-foreground-muted',
+    success: 'text-success-foreground-muted',
   } as const;
   const textColor = textColorByVariant[variant];
   const descColor = descColorByVariant[variant];

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Pressable, type PressableProps } from 'react-native';
 import { Text } from '../../components/text';
+import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -15,6 +16,38 @@ export interface ListItemProps extends Omit<PressableProps, 'children'> {
   action?: React.ReactNode;
   showBorder?: boolean;
   compact?: boolean;
+  /** Show a skeleton placeholder instead of content. */
+  loading?: boolean;
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────
+
+function ListItemSkeleton({
+  showBorder = true,
+  compact = false,
+  className,
+}: {
+  showBorder?: boolean;
+  compact?: boolean;
+  className?: string;
+}) {
+  return (
+    <View
+      className={cn(
+        'flex-row items-center bg-card px-4',
+        compact ? 'py-2' : 'py-3',
+        showBorder && 'border-b border-border',
+        className
+      )}
+    >
+      <Skeleton className="mr-3 h-8 w-8 rounded-lg" />
+      <View className="flex-1 gap-1.5">
+        <Skeleton className="h-4 w-2/3 rounded-md" />
+        <Skeleton className="h-3 w-1/3 rounded-md" />
+      </View>
+      <Skeleton className="h-4 w-4 rounded-sm" />
+    </View>
+  );
 }
 
 // ─── Component ───────────────────────────────────────────────
@@ -29,9 +62,14 @@ export function ListItem({
   action,
   showBorder = true,
   compact = false,
+  loading = false,
   className,
   ...props
 }: ListItemProps) {
+  if (loading) {
+    return <ListItemSkeleton showBorder={showBorder} compact={compact} className={className} />;
+  }
+
   return (
     <Pressable
       className={cn(

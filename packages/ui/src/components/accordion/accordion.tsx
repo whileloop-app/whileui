@@ -112,7 +112,12 @@ function AccordionItem({ value, className, children, ...props }: AccordionItemPr
   );
 }
 
-function AccordionTrigger({ className, children, style: styleProp, ...props }: AccordionTriggerProps) {
+function AccordionTrigger({
+  className,
+  children,
+  style: styleProp,
+  ...props
+}: AccordionTriggerProps) {
   const { onValueChange } = useContext(AccordionContext);
   const { value, isOpen } = useContext(AccordionItemContext);
   const interaction = useInteractionTokens();

@@ -75,7 +75,9 @@ export function Header({
             key={action.key}
             onPress={action.onPress}
             className="rounded-full p-2 active:bg-accent"
-            style={withInteractivePressableStyle(undefined, interaction, { pressedVariant: 'default' })}
+            style={withInteractivePressableStyle(undefined, interaction, {
+              pressedVariant: 'default',
+            })}
           >
             {action.icon}
           </Pressable>

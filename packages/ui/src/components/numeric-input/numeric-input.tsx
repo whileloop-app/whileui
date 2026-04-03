@@ -211,10 +211,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
 
     return (
       <View
-        className={cn(
-          numericInputVariants({ variant, size }),
-          className
-        )}
+        className={cn(numericInputVariants({ variant, size }), className)}
         style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
       >
         {prefix ? <View className="shrink-0 pl-3">{prefix}</View> : null}

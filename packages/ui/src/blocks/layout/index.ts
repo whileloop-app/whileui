@@ -10,9 +10,11 @@ export { ContentSkeleton, type ContentSkeletonProps } from './content-skeleton';
 export {
   PageSkeleton,
   type PageSkeletonProps,
+  type PageSkeletonHeaderPlaceholder,
   type PageSkeletonVariant,
   type PageSkeletonPadding,
 } from './page-skeleton';
+export { ScreenSkeleton, type ScreenSkeletonProps } from './screen-skeleton';
 export { ErrorBoundary, type ErrorBoundaryProps } from './error-boundary';
 export { EmptyState, type EmptyStateProps } from './empty-state';
 export { ErrorState, type ErrorStateProps } from './error-state';

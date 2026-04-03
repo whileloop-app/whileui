@@ -10,6 +10,10 @@ export interface AppShellProps extends ViewProps {
   footer?: React.ReactNode;
   bottomNav?: React.ReactNode;
   safeArea?: boolean;
+  /** Keep shell mounted while swapping content with skeleton. */
+  loading?: boolean;
+  /** Optional custom loading placeholder for the content area. */
+  skeleton?: React.ReactNode;
 }
 
 // ─── Component ───────────────────────────────────────────────
@@ -19,6 +23,8 @@ export function AppShell({
   footer,
   bottomNav,
   safeArea = true,
+  loading = false,
+  skeleton,
   children,
   className,
   ...props
@@ -28,7 +34,7 @@ export function AppShell({
   return (
     <Container className={cn('flex-1 bg-background', className)} {...props}>
       {header}
-      <View className="flex-1">{children}</View>
+      <View className="flex-1">{loading ? (skeleton ?? null) : children}</View>
       {footer}
       {bottomNav}
     </Container>

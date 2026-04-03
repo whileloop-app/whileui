@@ -32,6 +32,10 @@
       "types": "./dist/blocks/*/index.d.ts",
       "import": "./dist/blocks/*/index.js"
     },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -58,6 +62,7 @@
     "@rn-primitives/slot": ">=1.0.0",
     "@rn-primitives/tooltip": ">=1.0.0",
     "expo": ">=52.0.0",
+    "expo-blur": ">=15.0.0",
     "expo-image": ">=2.0.0",
     "react": ">=19.0.0",
     "react-native": ">=0.81.0",
@@ -68,6 +73,9 @@
     "uniwind": ">=1.0.0"
   },
   "peerDependenciesMeta": {
+    "expo-blur": {
+      "optional": true
+    },
     "expo-image": {
       "optional": true
     }

@@ -3,6 +3,7 @@ import { View, Pressable, type ViewProps, type PressableProps } from 'react-nati
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -35,6 +36,7 @@ function BottomNavItemComponent({
 }: BottomNavItemProps) {
   const { label, icon, badge } = item;
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     pressedVariant: 'default',
   });
@@ -45,11 +47,17 @@ function BottomNavItemComponent({
       style={interactiveStyle}
       {...props}
     >
-      <View className="relative" style={!isActive ? { opacity: interaction.inactiveOpacity } : undefined}>
+      <View
+        className="relative"
+        style={!isActive ? { opacity: interaction.inactiveOpacity } : undefined}
+      >
         {icon}
         {badge !== undefined && badge > 0 && (
           <View className="absolute -right-2 -top-1 h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1">
-            <Text className="text-[10px] font-bold text-destructive-foreground">
+            <Text
+              className="font-bold text-destructive-foreground"
+              style={{ fontSize: visual.bottomNavBadgeFontSize }}
+            >
               {badge > 99 ? '99+' : badge}
             </Text>
           </View>

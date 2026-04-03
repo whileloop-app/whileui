@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 export interface SmartInputProps extends TextInputProps {
   /** Left slot: emoji, attach, etc. */
@@ -43,6 +44,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const bottomPadding = safeArea ? Math.max(insets.bottom, 12) : 12;
 
   return (
@@ -63,13 +65,16 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
         {centerSlot && <View className="shrink-0">{centerSlot}</View>}
         <TextInput
           ref={ref}
+          style={[
+            { maxHeight: visual.smartInputMaxHeight },
+            !editable ? { opacity: interaction.disabledOpacity } : null,
+          ]}
           className={cn(
-            'flex-1 min-h-11 max-h-[120px] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none',
+            'flex-1 min-h-11 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none',
             variant === 'bar' && 'rounded-xl border border-border bg-muted',
             variant === 'card' && 'rounded-xl bg-transparent',
             inputClassName
           )}
-          style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
           multiline
           submitBehavior={submitBehavior}
           textAlignVertical="top"

@@ -3,6 +3,7 @@ import {
   View,
   Pressable,
   Platform,
+  Modal,
   useWindowDimensions,
   StyleSheet,
   type ViewStyle,
@@ -15,12 +16,18 @@ import Animated, {
   Easing,
   interpolate,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import {
+  useFrostedSurface,
+  useFrostedBackdrop,
+  type FrostedSurfaceProps,
+} from '../../lib/frosted-surface';
 
-const DRAWER_WIDTH_RATIO = 0.82;
 export interface DrawerMenuItem {
   key: string;
   label: string;
@@ -34,7 +41,7 @@ export interface DrawerMenuSection {
   items: DrawerMenuItem[];
 }
 
-export interface DrawerMenuProps {
+export interface DrawerMenuProps extends FrostedSurfaceProps {
   visible: boolean;
   onClose: () => void;
   sections: DrawerMenuSection[];
@@ -48,8 +55,6 @@ export interface DrawerMenuProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const WEB_DEFAULT_MAX_WIDTH = 360;
-
 export function DrawerMenu({
   visible,
   onClose,
@@ -61,23 +66,74 @@ export function DrawerMenu({
   maxWidth,
   className,
   style,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
 }: DrawerMenuProps) {
+  const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'surfaceTranslucent',
+    defaultBlurPreset: 'medium',
+  });
+  const frostedBackdrop = useFrostedBackdrop({
+    frosted,
+    blurIntensity:
+      typeof blurIntensity === 'number' && Number.isFinite(blurIntensity)
+        ? blurIntensity * visual.frostedBackdropBlurScale
+        : undefined,
+    tintColor: colors.overlay,
+  });
   const { width: screenWidth } = useWindowDimensions();
-  const rawWidth = screenWidth * DRAWER_WIDTH_RATIO;
-  const effectiveMaxWidth = maxWidth ?? (Platform.OS === 'web' ? WEB_DEFAULT_MAX_WIDTH : undefined);
+  const rawWidth = screenWidth * visual.drawerWidthRatio;
+  const effectiveMaxWidth =
+    maxWidth ?? (Platform.OS === 'web' ? visual.drawerMaxWidthWeb : undefined);
   const drawerWidth = effectiveMaxWidth != null ? Math.min(rawWidth, effectiveMaxWidth) : rawWidth;
+  const frostedInset = frosted ? visual.drawerFrostedInset : 0;
+  const cornerRadius = frosted ? visual.drawerFrostedRadius : 0;
+  const useFloatingFrostedDrawer = frosted && frostedInset > 0;
+  const contentTopPadding = insets.top + visual.drawerContentTopPadding;
   const progress = useSharedValue(0);
+  const [mounted, setMounted] = React.useState(visible);
+  const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
+    if (visible) setMounted(true);
+  }, [visible]);
+
+  React.useEffect(() => {
+    if (!mounted) return;
+
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
     progress.value = withTiming(visible ? 1 : 0, {
       duration: visible ? interaction.drawerOpenDuration : interaction.drawerCloseDuration,
       easing: visible
         ? Easing.bezier(0.2, 0.8, 0.2, 1) // Swift, decelerating entrance
         : Easing.bezier(0.4, 0, 1, 1), // Accelerating, sharp exit
     });
-  }, [visible, progress, interaction.drawerOpenDuration, interaction.drawerCloseDuration]);
+
+    if (!visible) {
+      closeTimerRef.current = setTimeout(() => {
+        setMounted(false);
+      }, interaction.drawerCloseDuration);
+    }
+
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, [mounted, visible, progress, interaction.drawerOpenDuration, interaction.drawerCloseDuration]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: progress.value,
@@ -96,12 +152,19 @@ export function DrawerMenu({
     onSelect?.(key);
   };
 
-  return (
+  if (!mounted) return null;
+
+  const drawerTree = (
     <Animated.View style={[StyleSheet.absoluteFill, containerStyle]}>
       {/* Backdrop */}
       <Animated.View
-        style={[StyleSheet.absoluteFill, { backgroundColor: colors.overlayStrong }, backdropStyle]}
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: frosted ? 'transparent' : colors.overlayStrong },
+          backdropStyle,
+        ]}
       >
+        {frostedBackdrop}
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
       </Animated.View>
 
@@ -110,17 +173,29 @@ export function DrawerMenu({
         style={[
           {
             position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            width: drawerWidth,
+            top: frostedInset,
+            bottom: frostedInset,
+            left: frostedInset,
+            width: Math.max(drawerWidth - frostedInset, 0),
+            borderTopRightRadius: cornerRadius,
+            borderBottomRightRadius: cornerRadius,
+            borderTopLeftRadius: useFloatingFrostedDrawer ? cornerRadius : 0,
+            borderBottomLeftRadius: useFloatingFrostedDrawer ? cornerRadius : 0,
           },
           drawerStyle,
+          frostedSurface.surfaceStyle,
           style,
         ]}
-        className={cn('bg-background border-r border-border rounded-r-2xl shadow-lg', className)}
+        className={cn(
+          frosted
+            ? 'border border-border shadow-xl relative overflow-hidden'
+            : 'border-r border-border rounded-r-2xl shadow-lg relative overflow-hidden',
+          frosted ? 'bg-transparent' : 'bg-background',
+          className
+        )}
       >
-        <View className="flex-1 pt-14 pb-8">
+        {frostedSurface.overlay}
+        <View className="flex-1 pb-8" style={{ paddingTop: contentTopPadding }}>
           {/* Header */}
           {header && <View className="px-5 pb-4 mb-2 border-b border-border">{header}</View>}
 
@@ -129,7 +204,10 @@ export function DrawerMenu({
             {sections.map((section, sectionIndex) => (
               <View key={sectionIndex} className="mb-4">
                 {section.title && (
-                  <Text className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-3 mb-2">
+                  <Text
+                    className="font-medium text-muted-foreground uppercase tracking-wide px-3 mb-2"
+                    style={{ fontSize: visual.navSectionTitleFontSize }}
+                  >
                     {section.title}
                   </Text>
                 )}
@@ -142,7 +220,7 @@ export function DrawerMenu({
                         onPress={() => handleItemPress(item.key)}
                         className={cn(
                           'flex-row items-center gap-3 px-4 py-3 mx-1 rounded-xl transition-colors',
-                          isActive && 'bg-primary/5'
+                          isActive && 'bg-primary-soft-subtle'
                         )}
                         style={withInteractivePressableStyle(undefined, interaction, {
                           pressedVariant: 'default',
@@ -151,19 +229,26 @@ export function DrawerMenu({
                         {item.icon}
                         <Text
                           className={cn(
-                            'flex-1 text-[15px] font-semibold tracking-tight',
+                            'flex-1 font-semibold tracking-tight',
                             item.destructive
                               ? 'text-destructive'
                               : isActive
                                 ? 'text-primary'
                                 : 'text-foreground'
                           )}
+                          style={{ fontSize: visual.drawerItemFontSize }}
                         >
                           {item.label}
                         </Text>
                         {item.badge !== undefined && (
-                          <View className="bg-primary px-2 py-0.5 rounded-full min-w-[20px] items-center">
-                            <Text className="text-xs font-semibold text-primary-foreground">
+                          <View
+                            className="bg-primary px-2 py-0.5 rounded-full items-center"
+                            style={{ minWidth: visual.drawerBadgeMinWidth }}
+                          >
+                            <Text
+                              className="font-semibold text-primary-foreground"
+                              style={{ fontSize: visual.navItemBadgeFontSize }}
+                            >
                               {item.badge}
                             </Text>
                           </View>
@@ -181,5 +266,20 @@ export function DrawerMenu({
         </View>
       </Animated.View>
     </Animated.View>
+  );
+
+  if (Platform.OS !== 'android') return drawerTree;
+
+  return (
+    <Modal
+      visible={mounted}
+      transparent
+      animationType="none"
+      onRequestClose={onClose}
+      statusBarTranslucent
+      presentationStyle="overFullScreen"
+    >
+      {drawerTree}
+    </Modal>
   );
 }

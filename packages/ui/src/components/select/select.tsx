@@ -4,6 +4,7 @@ import * as SelectPrimitive from '@rn-primitives/select';
 import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // iOS needs FullWindowOverlay to render above everything
 const FullWindowOverlay = Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fragment;
@@ -34,9 +35,8 @@ export interface SelectValueProps {
   placeholder?: string;
 }
 
-export interface SelectContentProps extends React.ComponentPropsWithoutRef<
-  typeof SelectPrimitive.Content
-> {
+export interface SelectContentProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>, FrostedSurfaceProps {
   className?: string;
   portalHost?: string;
   insets?: { top?: number; bottom?: number; left?: number; right?: number };
@@ -122,46 +122,73 @@ function SelectValue({
 const SelectContent = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Content>,
   SelectContentProps
->(({ className, children, portalHost, position = 'popper', insets, ...props }, ref) => {
-  return (
-    <SelectPrimitive.Portal hostName={portalHost}>
-      <FullWindowOverlay>
-        <SelectPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
-          <SelectPrimitive.Content
-            ref={ref}
-            position={position}
-            insets={insets}
-            className={cn(
-              'bg-popover border-border relative z-50 min-w-32 rounded-xl border shadow-lg',
-              Platform.select({
-                web: cn(
-                  'max-h-96 overflow-y-auto overflow-x-hidden',
-                  props.side === 'bottom' && 'translate-y-1',
-                  props.side === 'top' && '-translate-y-1'
-                ),
-                native: 'p-1',
-              }),
-              className
-            )}
-            {...props}
-          >
-            <SelectPrimitive.Viewport
+>(
+  (
+    {
+      className,
+      children,
+      portalHost,
+      position = 'popper',
+      insets,
+      style: styleProp,
+      frosted = false,
+      blurIntensity,
+      blurTintToken,
+      ...props
+    },
+    ref
+  ) => {
+    const frostedSurface = useFrostedSurface({
+      frosted,
+      blurIntensity,
+      blurTintToken,
+      defaultTintToken: 'popover',
+      defaultBlurPreset: 'subtle',
+    });
+
+    return (
+      <SelectPrimitive.Portal hostName={portalHost}>
+        <FullWindowOverlay>
+          <SelectPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
+            <SelectPrimitive.Content
+              ref={ref}
+              position={position}
+              insets={insets}
+              style={StyleSheet.flatten([styleProp as any, frostedSurface.surfaceStyle]) as any}
               className={cn(
-                'p-1',
-                position === 'popper' &&
-                  Platform.select({
-                    web: 'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
-                  })
+                'border-border relative z-50 min-w-32 rounded-xl border shadow-lg overflow-hidden',
+                frosted ? 'bg-transparent' : 'bg-popover',
+                Platform.select({
+                  web: cn(
+                    'max-h-96 overflow-y-auto overflow-x-hidden',
+                    props.side === 'bottom' && 'translate-y-1',
+                    props.side === 'top' && '-translate-y-1'
+                  ),
+                  native: 'p-1',
+                }),
+                className
               )}
+              {...props}
             >
-              {children}
-            </SelectPrimitive.Viewport>
-          </SelectPrimitive.Content>
-        </SelectPrimitive.Overlay>
-      </FullWindowOverlay>
-    </SelectPrimitive.Portal>
-  );
-});
+              {frostedSurface.overlay}
+              <SelectPrimitive.Viewport
+                className={cn(
+                  'p-1',
+                  position === 'popper' &&
+                    Platform.select({
+                      web: 'h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)',
+                    })
+                )}
+              >
+                {children}
+              </SelectPrimitive.Viewport>
+            </SelectPrimitive.Content>
+          </SelectPrimitive.Overlay>
+        </FullWindowOverlay>
+      </SelectPrimitive.Portal>
+    );
+  }
+);
 SelectContent.displayName = 'SelectContent';
 
 const SelectItem = React.forwardRef<

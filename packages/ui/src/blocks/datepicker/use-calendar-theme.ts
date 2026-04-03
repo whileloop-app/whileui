@@ -36,7 +36,8 @@ export interface CalendarTheme {
 
 function buildCalendarTheme(c: ThemeColors, fontFamily?: string): CalendarTheme {
   return {
-    calendarBackground: c.background,
+    backgroundColor: c.surfaceTranslucent,
+    calendarBackground: c.surfaceTranslucent,
     textSectionTitleColor: c.mutedForeground,
     selectedDayBackgroundColor: c.primary,
     selectedDayTextColor: c.primaryForeground,

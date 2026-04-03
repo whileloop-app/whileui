@@ -5,6 +5,7 @@ import { Text } from '../../components/text';
 import { Spinner } from '../../components/spinner';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 export interface FormModalScreenProps extends Omit<ViewProps, 'className'> {
   className?: string;
@@ -42,6 +43,7 @@ function FormModalScreen({
 }: FormModalScreenProps) {
   const { height: screenHeight } = useWindowDimensions();
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   const content = loading ? (
     <SafeAreaView style={{ flex: 1 }} className="bg-background" edges={['top']}>
@@ -64,11 +66,24 @@ function FormModalScreen({
             <Pressable
               onPress={onClose}
               disabled={saving}
-              className="p-2 -m-2 min-w-[44px] min-h-[44px] items-center justify-center"
-              style={withInteractivePressableStyle(undefined, interaction, {
-                disabled: saving,
-                pressedVariant: 'default',
-              })}
+              className="p-2 -m-2 items-center justify-center"
+              style={(state) => {
+                const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+                  disabled: saving,
+                  pressedVariant: 'default',
+                });
+                const resolved =
+                  typeof interactiveStyle === 'function'
+                    ? interactiveStyle(state)
+                    : interactiveStyle;
+                return [
+                  {
+                    minWidth: visual.touchTargetMinSize,
+                    minHeight: visual.touchTargetMinSize,
+                  },
+                  resolved,
+                ];
+              }}
               accessibilityRole="button"
               accessibilityLabel="Close"
             >
@@ -100,7 +115,10 @@ function FormModalScreen({
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 16, minHeight: screenHeight * 0.4 }}
+        contentContainerStyle={{
+          padding: 16,
+          minHeight: screenHeight * visual.formModalContentMinHeightRatio,
+        }}
         scrollEnabled={!saving && scrollEnabled}
         keyboardShouldPersistTaps="handled"
       >

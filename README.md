@@ -116,6 +116,37 @@ export default function App() {
 
 > **Note:** If you use Select, Popover, Tooltip, or HoverCard, add `<PortalHost />` at the root of your app (as the last child).
 
+### Vite + React Native Web + WhileUI setup
+
+Use the WhileUI Vite compatibility helper when your app includes portal-based primitives.
+
+1. Install Vite + RN web basics:
+
+```bash
+bun add react-dom react-native-web
+bun add -d vite @vitejs/plugin-react
+```
+
+2. `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { withWhileUIViteCompat } from '@thewhileloop/whileui/vite';
+
+export default defineConfig(withWhileUIViteCompat({ plugins: [react()] }));
+```
+
+3. Keep `PortalHost` at app root when using Select/Popover/Tooltip/HoverCard.
+
+Troubleshooting:
+
+| Symptom                                                  | Likely cause                                              | Fix                                                                                                 |
+| -------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `Unexpected token <` from `@rn-primitives/*/dist/*.mjs`  | rn-primitives ships raw JSX in dist for some packages     | Use `withWhileUIViteCompat(...)` in `vite.config.ts`                                                |
+| `className` rejected on RN primitives in consumer TS app | RN `className` augmentation not loaded from package entry | Import components from `@thewhileloop/whileui` (or side-effect import the package entry before use) |
+| Theme token resolves differently on native/web           | Missing `--app-color-*` fallback for non-RN-native values | Add `--app-color-*` fallbacks in `global.css` for any `oklch(...)` token used by native APIs        |
+
 ## Usage
 
 ```tsx
@@ -152,7 +183,7 @@ function MyScreen() {
 **Core package** exports:
 
 - **Primitives** — Button, Input, Card, Text, etc.
-- **Generic layout blocks** — EmptyState, ErrorState, LoadingScreen, ContentSkeleton, PageSkeleton
+- **Generic layout blocks** — EmptyState, ErrorState, LoadingScreen, ContentSkeleton, PageSkeleton, ScreenSkeleton
 - **Layout infrastructure** — FormModalScreen, ConfirmActionSheet, SmartInput, ActionBar
 - **Navigation, Chat, Lists, Commerce, Media, DatePicker** — Blocks that rarely need app-specific customization
 
@@ -174,6 +205,7 @@ function MyScreen() {
 ## Quick Reference (AI / Code Generation)
 
 - **Full-screen:** `AppShell` + `Header` in `header` + `BottomNav` in `bottomNav` + content in `children`
+- **No-jump loading:** keep `AppShell` mounted, set `loading` + `skeleton` (e.g., `PageSkeleton`/`ScreenSkeleton`)
 - **Layout:** `Stack` (vertical), `Row` (horizontal) — both support `gap`, `align`, `justify`
 - **Auth callbacks:** Auth templates use objects: `onSubmit({ email, password })`, `onSubmit({ firstName, lastName, email, password })`, etc. Copy templates from `apps/showcase/templates/auth/`.
 - **PortalHost:** Add `<PortalHost />` at app root for Select, Popover, Tooltip, HoverCard.
@@ -200,6 +232,7 @@ function MyScreen() {
 | **Button**           | default, destructive, outline, secondary, ghost, link | 4 sizes, ButtonText & ButtonIcon sub-components                                               |
 | **Input**            | default, error                                        | TextInput wrapper with themed styling                                                         |
 | **NumericInput**     | default, error                                        | Numeric input with prefix/suffix slots, optional steppers, and compact size                   |
+| **OTPInput**         | default, error; default, compact                      | Verification code input with auto-focus, paste, secure mask, loading skeleton, error shake    |
 | **FormField**        | default, compact                                      | Compound API: FormField, FormLabel, FormControl, FormHint, FormMessage                        |
 | **LabeledField**     | default, compact                                      | Field wrapper with label/helper/error plus left/right slots                                   |
 | **Textarea**         | —                                                     | Multi-line text input                                                                         |
@@ -292,6 +325,7 @@ Copy from `apps/showcase/templates/auth/`:
 | **FormModalScreen**         | Modal scaffold for forms with loading states                            |
 | **ContentSkeleton**         | Page/content placeholder with variants (list, card, generic)            |
 | **PageSkeleton**            | Variant-based page layouts (dashboard, list, settings, card, generic)   |
+| **ScreenSkeleton**          | Header slot/placeholder + PageSkeleton content in one block             |
 | **ErrorBoundary**           | React ErrorBoundary that renders ErrorState by default                  |
 | **EmptyState**              | Empty content placeholder                                               |
 | **ErrorState**              | Error display with retry                                                |
@@ -333,12 +367,17 @@ Copy from `apps/showcase/templates/profile/`:
 
 ### Commerce
 
-| Block               | Description                        |
-| ------------------- | ---------------------------------- |
-| **ProductCard**     | Product card with badge/media      |
-| **PricingCard**     | Pricing tiers with feature list    |
-| **CheckoutSummary** | Cart summary with line items       |
-| **MetricCard**      | Stats/progress card for dashboards |
+| Block                | Description                                   |
+| -------------------- | --------------------------------------------- |
+| **ProductCard**      | Product card with badge/media                 |
+| **PricingCard**      | Pricing tiers with feature list               |
+| **CheckoutSummary**  | Cart summary with line items                  |
+| **MetricCard**       | Stats/progress card for dashboards            |
+| **SubscriptionCard** | Current plan card with manage/upgrade actions |
+| **FeatureGate**      | Locked feature state with upgrade CTA         |
+| **UsageBar**         | Quota meter with warning/exceeded states      |
+| **PlanToggle**       | Monthly vs annual plan switcher               |
+| **UpgradeBanner**    | Inline upgrade banner with action/dismiss     |
 
 ### Media
 
@@ -415,6 +454,22 @@ import { AppShell, Header, BottomNav, ScrollView } from '@thewhileloop/whileui';
 | E-commerce | ProductCard list → CheckoutSummary + ActionBar                                     |
 | Chat       | Chat + ChatSuggestions + SmartInput (attach, send). Extensible for images/tags     |
 | App shell  | AppShell + Header + BottomNav + content                                            |
+| Loading    | AppShell (`loading`) + PageSkeleton/ScreenSkeleton (keep header mounted)           |
+
+### Component-Level Loading
+
+Many blocks accept a `loading` prop that renders a skeleton placeholder matching the component's own shape. No separate skeleton component needed — the block knows its own layout.
+
+```tsx
+<ProductCard loading title="" price="" />
+<ListItem loading title="" />
+<NotificationItem loading title="" message="" time="" />
+<MetricCard loading label="" value="" />
+<SubscriptionCard loading planName="" price="" />
+<PricingCard loading name="" price="" features={[]} />
+```
+
+Blocks with `loading` support: ProductCard, ListItem, NotificationItem, MetricCard, SubscriptionCard, PricingCard, AppShell, Chat, FormModalScreen, CheckoutSummary.
 
 Block props: see TypeScript interfaces in `packages/ui/src/blocks`.
 
@@ -492,8 +547,8 @@ The WhileUI token contract is strict for cross-app reuse. Define these in **ever
 
 - Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `popover`, `popover-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
 - Optional status tokens: `success`, `success-foreground`, `warning`, `warning-foreground`, `info`, `info-foreground`
-- Optional effect tokens: `overlay`, `overlay-strong`, `surface-elevated`, `surface-border`, `surface-highlight`, `state-hover`, `state-pressed`, `state-disabled`
-- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`
+- Optional effect tokens: `overlay`, `overlay-strong`, `surface-elevated`, `surface-border`, `surface-highlight`, `surface-translucent`, `surface-translucent-border`, `state-hover`, `state-pressed`, `state-disabled`
+- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`, `--ui-blur-intensity-subtle`, `--ui-blur-intensity-medium`, `--ui-blur-intensity-strong`, `--ui-blur-saturation-pct`, `--ui-frosted-highlight-height`, `--ui-frosted-backdrop-blur-intensity`, `--ui-frosted-backdrop-blur-scale`, `--ui-frosted-android-experimental-blur`, `--ui-drawer-frosted-inset`, `--ui-drawer-frosted-radius`, `--ui-drawer-content-top-padding`
 - Optional scale tokens: spacing (`--spacing`, `--spacing-*`), typography (`--text-*`, `--leading-*`, `--tracking-*`), radius (`--radius-*`), elevation (`--shadow-*`)
 
 Minimal contract example:
@@ -534,9 +589,60 @@ import { Uniwind } from 'uniwind';
 Uniwind.setTheme('dark'); // or 'light' or 'system'
 ```
 
+### Frosted / Translucent Theme
+
+Some apps want a frosted or translucent look for floating panels (modals, sheets, toolbars). WhileUI stays neutral — no "glass" in core token names. Apps that want this effect opt in by overriding surface tokens in their theme.
+
+**Option A — Override in existing light/dark:** In your `@variant light` and `@variant dark` blocks, set surface tokens to semi-transparent values:
+
+```css
+@variant light {
+  /* ... other tokens ... */
+  --color-surface-elevated: oklch(0.98 0.01 95 / 0.4);
+  --color-surface-border: oklch(1 0 0 / 0.25);
+  --color-surface-highlight: oklch(1 0 0 / 0.4);
+}
+```
+
+**Option B — Separate frosted theme:** Register `extraThemes: ['frosted']` and define `:root.frosted` with the same structure as your base theme, but with translucent surface values. Then `Uniwind.setTheme('frosted')` when desired.
+
+**Optional:** Add `expo-blur` and register its `BlurView` once at app startup for full frosted blur. For tint-only (no blur), translucent surface tokens are sufficient.
+
+```tsx
+import { BlurView } from 'expo-blur';
+import { registerFrostedBlurView } from '@thewhileloop/whileui';
+
+registerFrostedBlurView(BlurView);
+```
+
+Optional generic tokens: `surface-translucent`, `surface-translucent-border` — use them if you need a distinct token from `surface-elevated` for overlay panels.
+
+Built-in overlays and cards support opt-in frosted mode via:
+
+- `frosted?: boolean`
+- `blurIntensity?: number`
+- `blurTintToken?: 'surfaceElevated' | 'surfaceTranslucent' | 'card' | 'popover'`
+
+Default blur presets map to CSS visual tokens:
+
+- subtle: `--ui-blur-intensity-subtle` (default `18`)
+- medium: `--ui-blur-intensity-medium` (default `22`)
+- strong: `--ui-blur-intensity-strong` (default `28`)
+
+Additional frosted tuning tokens:
+
+- `--ui-blur-saturation-pct` (web fallback saturation multiplier)
+- `--ui-frosted-highlight-height` (top highlight strip height in px, set `0` to disable hard top sheen)
+- `--ui-frosted-backdrop-blur-intensity` (default backdrop blur amount)
+- `--ui-frosted-backdrop-blur-scale` (ratio used when component blur is overridden)
+- `--ui-frosted-android-experimental-blur` (`1` enables `expo-blur` Android experimental path)
+- `--ui-drawer-frosted-inset` (floating inset for frosted drawer shells)
+- `--ui-drawer-frosted-radius` (drawer corner radius in px)
+- `--ui-drawer-content-top-padding` (drawer content top spacing baseline)
+
 ### Theme Colors for RN Primitives
 
-Some React Native APIs require native color strings (hex/rgb/hsl/named). Use `useThemeColors` or `useIconColors` to read from your `global.css` theme. If your theme uses `oklch(...)`, add `--app-color-*` hex fallbacks — `useThemeColors` will use them when `--color-*` is not RN-native.
+Some React Native APIs require native color strings (hex/rgb/hsl/rgba/named). Use `useThemeColors` or `useIconColors` to read from your `global.css` theme. If your theme uses `oklch(...)`, add `--app-color-*` fallbacks — `useThemeColors` will use them when `--color-*` is not RN-native.
 
 ```tsx
 import { useThemeColors, useIconColors } from '@thewhileloop/whileui';
@@ -552,7 +658,7 @@ const iconColors = useIconColors();
 <Spinner color={colors.foreground} />  // Spinner defaults to this when color not passed
 ```
 
-- **useThemeColors** / **useThemeTokens** — Returns RN-safe color strings for semantic tokens (`background`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, status colors) plus effect tokens (`overlay`, `overlayStrong`, `surfaceHighlight`, etc.). Falls back to `--app-color-*` when `--color-*` is missing/non-RN-native.
+- **useThemeColors** / **useThemeTokens** — Returns RN-safe color strings (hex/rgb/rgba) for semantic tokens (`background`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, status colors) plus effect tokens (`overlay`, `overlayStrong`, `surfaceElevated`, `surfaceTranslucent`, `surfaceTranslucentBorder`, etc.). Falls back to `--app-color-*` when `--color-*` is missing/non-RN-native.
 - **useIconColors** — Subset for icons. Maps `muted` → `mutedForeground` (readable on backgrounds).
 
 Input, Textarea, NumericInput, SmartInput, Spinner, and LoadingScreen default to theme colors when you omit `placeholderTextColor` or `spinnerColor`.
@@ -574,6 +680,17 @@ WhileUI components also read optional `--ui-*` tokens for deeper control of pres
   --ui-motion-slow: 300;
   --ui-drawer-open-duration: 300;
   --ui-drawer-close-duration: 220;
+  --ui-blur-intensity-subtle: 18;
+  --ui-blur-intensity-medium: 22;
+  --ui-blur-intensity-strong: 28;
+  --ui-blur-saturation-pct: 185;
+  --ui-frosted-highlight-height: 0;
+  --ui-frosted-backdrop-blur-intensity: 14;
+  --ui-frosted-backdrop-blur-scale: 0.55;
+  --ui-frosted-android-experimental-blur: 1;
+  --ui-drawer-frosted-inset: 0;
+  --ui-drawer-frosted-radius: 28;
+  --ui-drawer-content-top-padding: 0;
 }
 ```
 
@@ -617,6 +734,8 @@ Optional RN fallback tokens (hex/rgb/hsl/named):
       --app-color-overlay: rgba(0, 0, 0, 0.4);
       --app-color-overlay-strong: rgba(0, 0, 0, 0.55);
       --app-color-surface-elevated: #ffffff;
+      --app-color-surface-translucent: rgba(255, 255, 255, 0.5);
+      --app-color-surface-translucent-border: rgba(255, 255, 255, 0.18);
       --app-color-surface-border: rgba(255, 255, 255, 0.3);
       --app-color-surface-highlight: rgba(255, 255, 255, 0.3);
       --app-color-state-hover: rgba(0, 0, 0, 0.05);
@@ -652,6 +771,8 @@ Optional RN fallback tokens (hex/rgb/hsl/named):
       --app-color-overlay: rgba(0, 0, 0, 0.5);
       --app-color-overlay-strong: rgba(0, 0, 0, 0.7);
       --app-color-surface-elevated: #111315;
+      --app-color-surface-translucent: rgba(17, 19, 21, 0.45);
+      --app-color-surface-translucent-border: rgba(255, 255, 255, 0.18);
       --app-color-surface-border: rgba(255, 255, 255, 0.18);
       --app-color-surface-highlight: rgba(255, 255, 255, 0.18);
       --app-color-state-hover: rgba(255, 255, 255, 0.08);
@@ -751,6 +872,31 @@ import { NumericInput } from '@thewhileloop/whileui';
 | placeholderTextColor | `string`                          | —           | Hex for placeholder               |
 | prefix / suffix      | `ReactNode`                       | —           | Left/right slots                  |
 | showSteppers         | `boolean`                         | `false`     | Show decrement/increment controls |
+
+## OTPInput
+
+```tsx
+import { OTPInput } from '@thewhileloop/whileui';
+
+<OTPInput
+  value={otp}
+  onValueChange={setOtp}
+  onComplete={(code) => verify(code)}
+  length={6}
+  variant="default"
+/>;
+```
+
+| Prop          | Type                      | Default     | Description                       |
+| ------------- | ------------------------- | ----------- | --------------------------------- |
+| length        | `number`                  | `6`         | Number of digit cells             |
+| value         | `string`                  | —           | Controlled value                  |
+| onValueChange | `(value: string) => void` | —           | Called on each digit change       |
+| onComplete    | `(code: string) => void`  | —           | Called when all digits are filled |
+| variant       | `'default' \| 'error'`    | `'default'` | Error variant triggers shake      |
+| size          | `'default' \| 'compact'`  | `'default'` | Cell size                         |
+| secure        | `boolean`                 | `false`     | Mask digits with dots             |
+| autoFocus     | `boolean`                 | `false`     | Focus first cell on mount         |
 
 ## FormField
 
@@ -874,10 +1020,13 @@ import {
 </Card>;
 ```
 
-| Prop     | Type                                  | Default     | Description                         |
-| -------- | ------------------------------------- | ----------- | ----------------------------------- |
-| padding  | `'none' \| 'sm' \| 'default' \| 'lg'` | `'default'` | Card interior padding               |
-| unstyled | `boolean`                             | `false`     | Remove built-in card surface styles |
+| Prop          | Type                                                               | Default      | Description                         |
+| ------------- | ------------------------------------------------------------------ | ------------ | ----------------------------------- |
+| padding       | `'none' \| 'sm' \| 'default' \| 'lg'`                              | `'default'`  | Card interior padding               |
+| unstyled      | `boolean`                                                          | `false`      | Remove built-in card surface styles |
+| frosted       | `boolean`                                                          | `false`      | Enables frosted tint + blur layer   |
+| blurIntensity | `number`                                                           | token preset | Override blur amount directly       |
+| blurTintToken | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'card'`     | Tint token used for frosted mode    |
 
 ## Badge
 
@@ -945,6 +1094,14 @@ import {
 </Dialog>;
 ```
 
+`DialogContent` supports frosted props:
+
+| Prop          | Type                                                               | Default                | Description                      |
+| ------------- | ------------------------------------------------------------------ | ---------------------- | -------------------------------- |
+| frosted       | `boolean`                                                          | `false`                | Enables frosted tint + blur      |
+| blurIntensity | `number`                                                           | medium preset          | Override blur amount             |
+| blurTintToken | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'surfaceTranslucent'` | Tint token used for frosted mode |
+
 ## AlertDialog
 
 ```tsx
@@ -978,6 +1135,8 @@ import {
   </AlertDialogContent>
 </AlertDialog>;
 ```
+
+`AlertDialogContent` supports the same frosted props as `DialogContent`.
 
 ## Checkbox
 
@@ -1032,12 +1191,20 @@ import {
   <SelectTrigger>
     <SelectValue placeholder="Select..." />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent frosted blurIntensity={24} blurTintToken="surfaceTranslucent">
     <SelectItem label="Option 1" value="1" />
     <SelectItem label="Option 2" value="2" />
   </SelectContent>
 </Select>;
 ```
+
+`SelectContent` supports optional frosted props:
+
+| Prop          | Type                                                               | Default       |
+| ------------- | ------------------------------------------------------------------ | ------------- |
+| frosted       | `boolean`                                                          | `false`       |
+| blurIntensity | `number`                                                           | subtle preset |
+| blurTintToken | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'popover'`   |
 
 ## Tabs
 
@@ -1153,6 +1320,14 @@ import { Popover, PopoverTrigger, PopoverContent } from '@thewhileloop/whileui';
 </Popover>;
 ```
 
+`PopoverContent` supports frosted props:
+
+| Prop          | Type                                                               | Default       |
+| ------------- | ------------------------------------------------------------------ | ------------- |
+| frosted       | `boolean`                                                          | `false`       |
+| blurIntensity | `number`                                                           | subtle preset |
+| blurTintToken | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'popover'`   |
+
 ## DropdownMenu
 
 ```tsx
@@ -1183,6 +1358,20 @@ import {
   </DropdownMenuContent>
 </DropdownMenu>;
 ```
+
+`DropdownMenuContent`, `ContextMenuContent`, and `MenubarContent` support the same frosted props as `PopoverContent` (default blur preset: medium).
+
+## HoverCard
+
+`HoverCardContent` supports the same frosted props as `PopoverContent` (default blur preset: subtle).
+
+## ContextMenu
+
+`ContextMenuContent` supports the same frosted props as `PopoverContent` (default blur preset: medium).
+
+## Menubar
+
+`MenubarContent` supports the same frosted props as `PopoverContent` (default blur preset: medium).
 
 ---
 
@@ -1250,6 +1439,32 @@ import { BottomNav } from '@thewhileloop/whileui';
   onSelect={(key) => {}}
 />;
 ```
+
+## AppShell
+
+Layout shell for full-screen pages. Keep shell chrome mounted and swap only content via `loading` + `skeleton`.
+
+```tsx
+import { AppShell, PageSkeleton } from '@thewhileloop/whileui';
+
+<AppShell
+  header={<Header title="Settings" />}
+  bottomNav={<BottomNav items={[...]} activeKey="settings" onSelect={setTab} />}
+  loading={loading}
+  skeleton={<PageSkeleton variant="settings" headerPlaceholder />}
+>
+  <ScrollView className="flex-1 p-4">{/* Content */}</ScrollView>
+</AppShell>;
+```
+
+| Prop        | Type        | Default | Description                                         |
+| ----------- | ----------- | ------- | --------------------------------------------------- |
+| `header`    | `ReactNode` | —       | Header slot                                         |
+| `footer`    | `ReactNode` | —       | Footer slot                                         |
+| `bottomNav` | `ReactNode` | —       | Bottom navigation slot                              |
+| `safeArea`  | `boolean`   | `true`  | Wrap in SafeAreaView                                |
+| `loading`   | `boolean`   | `false` | Show `skeleton` in content area, keep shell mounted |
+| `skeleton`  | `ReactNode` | —       | Content placeholder rendered when `loading=true`    |
 
 ## ActionBar
 
@@ -1377,14 +1592,17 @@ const [range, setRange] = useState<DateRange | null>(null);
 />;
 ```
 
-| Prop                    | Type                                   | Description                     |
-| ----------------------- | -------------------------------------- | ------------------------------- |
-| `value`                 | `string \| null` / `DateRange \| null` | Selected date(s) YYYY-MM-DD     |
-| `onValueChange`         | `(date) => void`                       | Change handler                  |
-| `open` / `onOpenChange` | —                                      | Modal state (modal variants)    |
-| `trigger`               | `ReactNode`                            | Custom trigger (modal variants) |
-| `minDate` / `maxDate`   | `string`                               | YYYY-MM-DD bounds               |
-| `theme`                 | `CalendarTheme`                        | Override calendar colors        |
+| Prop                    | Type                                                               | Description                            |
+| ----------------------- | ------------------------------------------------------------------ | -------------------------------------- |
+| `value`                 | `string \| null` / `DateRange \| null`                             | Selected date(s) YYYY-MM-DD            |
+| `onValueChange`         | `(date) => void`                                                   | Change handler                         |
+| `open` / `onOpenChange` | —                                                                  | Modal state (modal variants)           |
+| `trigger`               | `ReactNode`                                                        | Custom trigger (modal variants)        |
+| `minDate` / `maxDate`   | `string`                                                           | YYYY-MM-DD bounds                      |
+| `theme`                 | `CalendarTheme`                                                    | Override calendar colors               |
+| `frosted`               | `boolean`                                                          | Enable frosted surface for modal panel |
+| `blurIntensity`         | `number`                                                           | Override blur amount                   |
+| `blurTintToken`         | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | Tint token for frosted panel           |
 
 ## ConfirmActionSheet
 
@@ -1401,6 +1619,12 @@ import { ConfirmActionSheet } from '@thewhileloop/whileui';
   onConfirm={() => deleteProject()}
 />;
 ```
+
+| Prop            | Type                                                               | Default                |
+| --------------- | ------------------------------------------------------------------ | ---------------------- |
+| `frosted`       | `boolean`                                                          | `false`                |
+| `blurIntensity` | `number`                                                           | medium preset          |
+| `blurTintToken` | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'surfaceTranslucent'` |
 
 ## Sheet
 
@@ -1430,12 +1654,15 @@ import {
 </Sheet>;
 ```
 
-| Prop         | Type                         | Default  |
-| ------------ | ---------------------------- | -------- |
-| open         | `boolean`                    | —        |
-| onOpenChange | `(open: boolean) => void`    | —        |
-| maxHeight    | `'half' \| 'full' \| number` | `'full'` |
-| maxWidth     | `number`                     | `360`    |
+| Prop          | Type                                                               | Default                |
+| ------------- | ------------------------------------------------------------------ | ---------------------- |
+| open          | `boolean`                                                          | —                      |
+| onOpenChange  | `(open: boolean) => void`                                          | —                      |
+| maxHeight     | `'half' \| 'full' \| number`                                       | `'full'`               |
+| maxWidth      | `number`                                                           | `360`                  |
+| frosted       | `boolean`                                                          | `false`                |
+| blurIntensity | `number`                                                           | medium preset          |
+| blurTintToken | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'surfaceTranslucent'` |
 
 ## NavigationSidebar
 
@@ -1523,15 +1750,38 @@ import { PageSkeleton } from '@thewhileloop/whileui';
 <PageSkeleton variant="settings" count={6} />
 <PageSkeleton variant="card" />
 <PageSkeleton variant="generic" />
+<PageSkeleton variant="dashboard" headerPlaceholder />
+<PageSkeleton variant="list" header={<Header title="Loading..." />} />
 <PageSkeleton variant="list" padding="none" className="flex-1" />
 ```
 
-| Prop      | Type                                                         | Default                | Description                             |
-| --------- | ------------------------------------------------------------ | ---------------------- | --------------------------------------- |
-| variant   | `'dashboard' \| 'list' \| 'settings' \| 'card' \| 'generic'` | required               | Layout preset                           |
-| count     | `number`                                                     | 3 (list), 4 (settings) | Rows/items for list or settings variant |
-| padding   | `'none' \| 'sm' \| 'default' \| 'lg'`                        | `'default'`            | Container padding                       |
-| className | `string`                                                     | —                      | Outer container classes                 |
+| Prop                | Type                                                         | Default                | Description                                   |
+| ------------------- | ------------------------------------------------------------ | ---------------------- | --------------------------------------------- |
+| `variant`           | `'dashboard' \| 'list' \| 'settings' \| 'card' \| 'generic'` | required               | Layout preset                                 |
+| `count`             | `number`                                                     | 3 (list), 4 (settings) | Rows/items for list or settings variant       |
+| `padding`           | `'none' \| 'sm' \| 'default' \| 'lg'`                        | `'default'`            | Container padding                             |
+| `header`            | `ReactNode`                                                  | —                      | Optional real header slot above content       |
+| `headerPlaceholder` | `boolean \| 'compact' \| 'default'`                          | `false`                | Skeleton header when real header is not ready |
+| `className`         | `string`                                                     | —                      | Outer container classes                       |
+
+## ScreenSkeleton
+
+Convenience block for loading screens that need both header and content continuity.
+
+```tsx
+import { ScreenSkeleton } from '@thewhileloop/whileui';
+
+<ScreenSkeleton variant="dashboard" headerPlaceholder />
+<ScreenSkeleton variant="list" count={5} header={<Header title="Projects" />} />
+```
+
+| Prop                | Type                                | Default     | Description                           |
+| ------------------- | ----------------------------------- | ----------- | ------------------------------------- |
+| `variant`           | `PageSkeletonVariant`               | `'generic'` | Skeleton content preset               |
+| `count`             | `number`                            | —           | Rows/items for list/settings variants |
+| `padding`           | `PageSkeletonPadding`               | `'default'` | Inner content padding                 |
+| `header`            | `ReactNode`                         | —           | Real header slot                      |
+| `headerPlaceholder` | `boolean \| 'compact' \| 'default'` | `'default'` | Placeholder header                    |
 
 ## ErrorBoundary
 
@@ -1643,6 +1893,7 @@ import { ProductCard } from '@thewhileloop/whileui';
 | Prop    | Type                         | Default      |
 | ------- | ---------------------------- | ------------ |
 | variant | `'vertical' \| 'horizontal'` | `'vertical'` |
+| loading | `boolean`                    | `false`      |
 
 ## PricingCard
 
@@ -1662,6 +1913,90 @@ import { PricingCard } from '@thewhileloop/whileui';
     { label: 'Custom domain', included: false },
   ]}
   onPress={() => {}}
+/>;
+```
+
+## SubscriptionCard
+
+```tsx
+import { SubscriptionCard } from '@thewhileloop/whileui';
+
+<SubscriptionCard
+  planName="Pro"
+  price="$29"
+  period="/month"
+  expiresAt="April 18, 2026"
+  isActive
+  onManage={() => {}}
+  onUpgrade={() => {}}
+/>;
+```
+
+| Prop        | Type         | Description                 |
+| ----------- | ------------ | --------------------------- |
+| `planName`  | `string`     | Current plan label          |
+| `price`     | `string`     | Plan price                  |
+| `period`    | `string`     | Billing period label        |
+| `expiresAt` | `string`     | Renewal/expiry date text    |
+| `isActive`  | `boolean`    | Active/inactive badge state |
+| `onManage`  | `() => void` | Manage action               |
+| `onUpgrade` | `() => void` | Upgrade action              |
+| `loading`   | `boolean`    | Show skeleton placeholder   |
+
+## FeatureGate
+
+```tsx
+import { FeatureGate } from '@thewhileloop/whileui';
+
+<FeatureGate
+  title="Advanced export is locked"
+  description="Upgrade to unlock 4K export."
+  buttonLabel="Upgrade"
+  onUpgrade={() => {}}
+/>;
+```
+
+Use `children` to show dimmed preview content with an overlay CTA.
+
+## UsageBar
+
+```tsx
+import { UsageBar } from '@thewhileloop/whileui';
+
+<UsageBar label="AI generations" used={8} limit={20} />;
+```
+
+| Prop      | Type                                   | Default | Description                    |
+| --------- | -------------------------------------- | ------- | ------------------------------ |
+| `label`   | `string`                               | —       | Usage label                    |
+| `used`    | `number`                               | —       | Used amount                    |
+| `limit`   | `number`                               | —       | Quota limit                    |
+| `variant` | `'default' \| 'warning' \| 'exceeded'` | auto    | Optional explicit visual state |
+
+## PlanToggle
+
+```tsx
+import { PlanToggle } from '@thewhileloop/whileui';
+
+<PlanToggle
+  selected="monthly"
+  monthlyLabel="Monthly"
+  annualLabel="Annual"
+  annualDiscount="Save 20%"
+  onChange={(next) => {}}
+/>;
+```
+
+## UpgradeBanner
+
+```tsx
+import { UpgradeBanner } from '@thewhileloop/whileui';
+
+<UpgradeBanner
+  message="Unlock unlimited exports with Pro."
+  actionLabel="See plans"
+  onAction={() => {}}
+  onDismiss={() => {}}
 />;
 ```
 
@@ -1688,6 +2023,47 @@ import { DrawerMenu } from '@thewhileloop/whileui';
   footer={<Text>v1.0</Text>}
 />;
 ```
+
+| Prop            | Type                                                               | Default                |
+| --------------- | ------------------------------------------------------------------ | ---------------------- |
+| `frosted`       | `boolean`                                                          | `false`                |
+| `blurIntensity` | `number`                                                           | medium preset          |
+| `blurTintToken` | `'surfaceElevated' \| 'surfaceTranslucent' \| 'card' \| 'popover'` | `'surfaceTranslucent'` |
+
+## Roadmap
+
+Tracked work items for future releases.
+
+### New Components
+
+- [ ] **Chip / Tag** — selectable, dismissible, multi-select with `tv()` variants, loading skeleton
+- [ ] **Rating / Stars** — interactive + read-only, half-star precision, swipe gesture, pairs with ProductCard
+- [ ] **Slider** — single + range (two thumbs), step marks, labels, Reanimated gesture, haptic on snap
+- [ ] **Carousel** — Reanimated-powered, auto-play, pagination dots, snap-to-item
+- [ ] **FAB (Floating Action Button)** — expandable action menu, Reanimated spring, auto-hide on scroll
+- [ ] **Combobox** — searchable select with keyboard navigation, empty state, async loading
+- [ ] **Data Table** — sortable headers, skeleton loading rows, row actions, responsive stacking
+- [ ] **Banner** — dismissible info/warning/success/destructive bar with icon + action, auto-dismiss timer
+- [ ] **Pagination** — compact (dots) + expanded (numbers) variants, edge-aware ellipsis, 44px touch targets
+- [ ] **Inline Calendar** — standalone calendar view reusing DatePicker logic, range selection
+
+### Component-Level Loading (`loading` prop)
+
+- [x] ProductCard, ListItem, NotificationItem, MetricCard, SubscriptionCard, PricingCard
+- [x] AppShell, Chat, FormModalScreen, CheckoutSummary (already had `loading`)
+- [ ] Add `loading` to remaining blocks: Header, BottomNav, DrawerMenu, TimelineFeed, SwipeableItem
+
+### Documentation Gaps
+
+- [ ] Add `## API` sections for: Textarea, Toggle, ToggleGroup, Label, Separator, Skeleton, AspectRatio, Collapsible, Text, View, Pressable
+- [ ] Add `## API` sections for blocks: FloatingBottomNav, TabBar, FormModalScreen, ErrorState, LoadingScreen, OnboardingScreen, ListItem, NotificationItem, MetricCard, SmartImage, TimelineFeed
+- [ ] Build `apps/site/` (docs website) with `registry.ts`, `demos.tsx`, `block-demos.tsx`, `props-data.ts`
+
+### Infrastructure
+
+- [ ] Publish to npm (`@thewhileloop/whileui`)
+- [ ] CI: typecheck + format check on PR
+- [ ] Automated visual regression tests (screenshot comparison)
 
 ## License
 

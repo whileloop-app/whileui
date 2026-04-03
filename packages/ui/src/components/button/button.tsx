@@ -30,10 +30,10 @@ const buttonVariants = tv({
   base: 'flex-row items-center justify-center gap-2 rounded-md',
   variants: {
     variant: {
-      default: 'bg-primary active:bg-primary/90',
-      destructive: 'bg-destructive active:bg-destructive/90',
+      default: 'bg-primary active:bg-primary-active',
+      destructive: 'bg-destructive active:bg-destructive-active',
       outline: 'border border-input bg-background active:bg-accent',
-      secondary: 'bg-secondary active:bg-secondary/80',
+      secondary: 'bg-secondary active:bg-secondary-active',
       ghost: 'active:bg-accent',
       link: '',
     },
@@ -98,7 +98,15 @@ export interface ButtonIconProps extends ViewProps {
 
 const Button = React.forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(
   (
-    { className, variant = 'default', size = 'default', disabled, children, style: styleProp, ...props },
+    {
+      className,
+      variant = 'default',
+      size = 'default',
+      disabled,
+      children,
+      style: styleProp,
+      ...props
+    },
     ref
   ) => {
     const interaction = useInteractionTokens();

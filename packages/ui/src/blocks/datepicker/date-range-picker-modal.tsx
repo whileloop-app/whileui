@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Modal, Pressable, View } from 'react-native';
+import { Modal, Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
 import { Calendar, type DateData } from 'react-native-calendars';
@@ -7,6 +7,7 @@ import { Text } from '../../components/text';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
 type MarkedDates = Record<
@@ -25,7 +26,7 @@ export interface DateRange {
   end: string;
 }
 
-export interface DateRangePickerModalProps {
+export interface DateRangePickerModalProps extends FrostedSurfaceProps {
   /** Controlled: selected range */
   value?: DateRange | null;
   /** Controlled: change handler */
@@ -101,10 +102,20 @@ export function DateRangePickerModal({
   title = 'Select date range',
   confirmLabel = 'Done',
   className,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
 }: DateRangePickerModalProps) {
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const colors = useThemeColors();
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'surfaceTranslucent',
+    defaultBlurPreset: 'medium',
+  });
   const calendarTheme = useCalendarTheme(customTheme);
   const arrowColor =
     calendarTheme.arrowColor ??
@@ -206,10 +217,19 @@ export function DateRangePickerModal({
           onPress={handleBackdropPress}
         >
           <Pressable
-            className="rounded-t-xl border border-border bg-background"
-            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+            className={cn(
+              'rounded-t-xl border border-border relative overflow-hidden',
+              frosted ? 'bg-transparent' : 'bg-background'
+            )}
+            style={
+              [
+                { paddingBottom: Math.max(insets.bottom, 16) } as ViewStyle,
+                frostedSurface.surfaceStyle,
+              ] as StyleProp<ViewStyle>
+            }
             onPress={(e) => e.stopPropagation()}
           >
+            {frostedSurface.overlay}
             <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
               <Text className="text-base font-medium text-foreground">{title}</Text>
               <Button size="sm" onPress={handleConfirm}>
@@ -217,18 +237,20 @@ export function DateRangePickerModal({
               </Button>
             </View>
             <View className="p-4">
-              <Calendar
-                key={theme}
-                current={draftStart ?? value?.start ?? undefined}
-                onDayPress={handleDayPress}
-                markedDates={markedDates}
-                markingType="period"
-                minDate={minDate}
-                maxDate={maxDate}
-                theme={calendarTheme as Record<string, unknown>}
-                renderArrow={renderArrow}
-                enableSwipeMonths
-              />
+              <View className="rounded-xl border border-border overflow-hidden">
+                <Calendar
+                  key={theme}
+                  current={draftStart ?? value?.start ?? undefined}
+                  onDayPress={handleDayPress}
+                  markedDates={markedDates}
+                  markingType="period"
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  theme={calendarTheme as Record<string, unknown>}
+                  renderArrow={renderArrow}
+                  enableSwipeMonths
+                />
+              </View>
             </View>
           </Pressable>
         </Pressable>

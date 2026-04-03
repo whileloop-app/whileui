@@ -11,6 +11,7 @@ import Animated, {
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 // ─── Variants ─────────────────────────────────────────────────
 
@@ -36,6 +37,7 @@ export interface SkeletonProps extends ViewProps, VariantProps<typeof skeletonVa
 function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
   const progress = useSharedValue(0);
   const colors = useThemeColors();
+  const visual = useVisualTokens();
 
   useEffect(() => {
     progress.value = withRepeat(
@@ -49,7 +51,7 @@ function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
     opacity: variant === 'pulse' ? interpolate(progress.value, [0, 0.5, 1], [1, 0.35, 1]) : 1,
   }));
 
-  const shimmerBandWidth = 56;
+  const shimmerBandWidth = visual.skeletonShimmerBandWidth;
   const shimmerStyle = useAnimatedStyle(() => {
     if (variant !== 'shimmer') return {};
     return {

@@ -128,7 +128,7 @@ const FormControl = React.forwardRef<View, FormControlProps>(({ className, ...pr
       ref={ref}
       className={cn(
         formControlVariants({ density, invalid }),
-        invalid && 'rounded-md ring-1 ring-destructive/60',
+        invalid && 'rounded-md ring-1 ring-destructive-soft-border',
         className
       )}
       style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
@@ -145,7 +145,11 @@ const FormHint = React.forwardRef<Text, FormHintProps>(({ className, ...props },
   return (
     <Text
       ref={ref}
-      className={cn('text-xs text-muted-foreground', invalid && 'text-destructive/80', className)}
+      className={cn(
+        'text-xs text-muted-foreground',
+        invalid && 'text-destructive-muted',
+        className
+      )}
       {...props}
     />
   );

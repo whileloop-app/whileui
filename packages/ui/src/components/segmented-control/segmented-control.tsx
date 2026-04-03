@@ -3,6 +3,7 @@ import {
   Pressable,
   Text,
   View,
+  type DimensionValue,
   type PressableProps,
   type TextProps,
   type ViewProps,
@@ -10,6 +11,7 @@ import {
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 const segmentedControlVariants = tv({
   base: 'w-full flex-row items-center rounded-lg bg-muted p-1',
@@ -54,7 +56,7 @@ const segmentedControlItemVariants = tv({
       false: '',
     },
     wrap: {
-      true: 'basis-[48%] grow-0',
+      true: 'grow-0',
       false: 'flex-1',
     },
   },
@@ -193,10 +195,14 @@ function SegmentedControlItem({
   const selected = value === itemValue;
   const finalDisabled = disabled || Boolean(itemDisabled);
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     disabled: finalDisabled,
     pressedVariant: 'default',
   });
+  const wrapBasisStyle = wrap
+    ? { flexBasis: `${visual.segmentedWrapBasisRatio * 100}%` as DimensionValue }
+    : undefined;
 
   return (
     <SegmentedControlItemContext.Provider value={{ selected, size }}>
@@ -215,7 +221,11 @@ function SegmentedControlItem({
         accessibilityRole="radio"
         accessibilityState={{ selected, disabled: finalDisabled }}
         disabled={finalDisabled}
-        style={interactiveStyle}
+        style={(state) => {
+          const baseStyle =
+            typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+          return [baseStyle, wrapBasisStyle ?? null];
+        }}
         hitSlop={4}
         {...props}
       >

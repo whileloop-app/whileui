@@ -1,4 +1,5 @@
 import { View, type ViewProps } from 'react-native';
+import { type ReactNode } from 'react';
 import { Skeleton } from '../../components/skeleton';
 import { Stack } from '../../components/stack';
 import { Row } from '../../components/row';
@@ -8,6 +9,7 @@ import { cn } from '../../lib/cn';
 
 export type PageSkeletonVariant = 'dashboard' | 'list' | 'settings' | 'card' | 'generic';
 export type PageSkeletonPadding = 'none' | 'sm' | 'default' | 'lg';
+export type PageSkeletonHeaderPlaceholder = 'compact' | 'default';
 
 export interface PageSkeletonProps extends ViewProps {
   variant: PageSkeletonVariant;
@@ -15,6 +17,10 @@ export interface PageSkeletonProps extends ViewProps {
   count?: number;
   /** Container padding. */
   padding?: PageSkeletonPadding;
+  /** Optional header slot rendered above skeleton content. */
+  header?: ReactNode;
+  /** Optional placeholder header (when no real header is available yet). */
+  headerPlaceholder?: boolean | PageSkeletonHeaderPlaceholder;
 }
 
 const PADDING_CLASS: Record<PageSkeletonPadding, string> = {
@@ -23,6 +29,25 @@ const PADDING_CLASS: Record<PageSkeletonPadding, string> = {
   default: 'p-4',
   lg: 'p-6',
 };
+
+function HeaderPlaceholder({ variant }: { variant: PageSkeletonHeaderPlaceholder }) {
+  const compact = variant === 'compact';
+
+  return (
+    <View className={cn(compact ? 'px-4 pt-3 pb-2' : 'px-4 pt-4 pb-3')}>
+      <Row align="center" justify="between">
+        <Row align="center" gap="sm">
+          <Skeleton className={cn('rounded-full', compact ? 'h-8 w-8' : 'h-10 w-10')} />
+          <Stack gap="xs">
+            <Skeleton className={cn('h-3 rounded-full', compact ? 'w-24' : 'w-28')} />
+            <Skeleton className={cn('h-3 rounded-full', compact ? 'w-16' : 'w-20')} />
+          </Stack>
+        </Row>
+        <Skeleton className={cn('rounded-full', compact ? 'h-8 w-8' : 'h-10 w-10')} />
+      </Row>
+    </View>
+  );
+}
 
 // ─── Variant internals ────────────────────────────────────────
 
@@ -164,38 +189,31 @@ export function PageSkeleton({
   variant,
   count,
   padding = 'default',
+  header,
+  headerPlaceholder = false,
   className,
   ...props
 }: PageSkeletonProps) {
-  if (variant === 'dashboard') {
-    return <DashboardVariant padding={padding} className={className} {...props} />;
-  }
-  if (variant === 'list') {
-    return (
-      <ListVariant
-        variant="list"
-        count={count ?? 3}
-        padding={padding}
-        className={className}
-        {...props}
-      />
-    );
-  }
-  if (variant === 'settings') {
-    return (
-      <SettingsVariant
-        variant="settings"
-        count={count ?? 4}
-        padding={padding}
-        className={className}
-        {...props}
-      />
-    );
-  }
-  if (variant === 'card') {
-    return <CardVariant padding={padding} className={className} {...props} />;
-  }
-  return <GenericVariant padding={padding} className={className} {...props} />;
+  const resolvedHeaderPlaceholder: PageSkeletonHeaderPlaceholder =
+    headerPlaceholder === 'compact' ? 'compact' : 'default';
+
+  return (
+    <View className={cn('w-full', className)} {...props}>
+      {header}
+      {!header && headerPlaceholder && <HeaderPlaceholder variant={resolvedHeaderPlaceholder} />}
+      {variant === 'dashboard' ? (
+        <DashboardVariant padding={padding} />
+      ) : variant === 'list' ? (
+        <ListVariant variant="list" count={count ?? 3} padding={padding} />
+      ) : variant === 'settings' ? (
+        <SettingsVariant variant="settings" count={count ?? 4} padding={padding} />
+      ) : variant === 'card' ? (
+        <CardVariant padding={padding} />
+      ) : (
+        <GenericVariant padding={padding} />
+      )}
+    </View>
+  );
 }
 
 PageSkeleton.displayName = 'PageSkeleton';

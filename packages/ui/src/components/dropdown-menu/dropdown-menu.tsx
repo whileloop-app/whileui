@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { View, Modal, Pressable, Text, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -25,7 +27,7 @@ export interface DropdownMenuTriggerProps extends PressableProps {
   asChild?: boolean;
 }
 
-export interface DropdownMenuContentProps extends ViewProps {
+export interface DropdownMenuContentProps extends ViewProps, FrostedSurfaceProps {
   className?: string;
 }
 
@@ -72,20 +74,39 @@ function DropdownMenuTrigger({ className, children, asChild, ...props }: Dropdow
   );
 }
 
-function DropdownMenuContent({ className, children, ...props }: DropdownMenuContentProps) {
+function DropdownMenuContent({
+  className,
+  children,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
+  style,
+  ...props
+}: DropdownMenuContentProps) {
   const { open, setOpen } = useContext(DropdownMenuContext);
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'popover',
+    defaultBlurPreset: 'medium',
+  });
+  const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
 
   return (
     <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
       <Pressable className="flex-1 justify-end" onPress={() => setOpen(false)}>
         <Pressable
           className={cn(
-            'w-full rounded-t-xl border-t border-x border-border bg-popover p-2 pb-8 shadow-lg',
+            'w-full rounded-t-xl border-t border-x border-border p-2 pb-8 shadow-lg relative overflow-hidden',
+            frosted ? 'bg-transparent' : 'bg-popover',
             className
           )}
+          style={contentStyle}
           onPress={(e) => e.stopPropagation()}
           {...props}
         >
+          {frostedSurface.overlay}
           {children}
         </Pressable>
       </Pressable>

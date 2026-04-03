@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, Modal, StatusBar, Platform, StyleSheet } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Modal,
+  StatusBar,
+  Platform,
+  StyleSheet,
+  ImageBackground,
+} from 'react-native';
 import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUniwind } from 'uniwind';
+import { useCSSVariable, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated from 'react-native-reanimated';
@@ -150,6 +159,7 @@ import {
   MenubarItem,
   MenubarLabel,
   MenubarSeparator,
+  OTPInput,
   // Toast
   ToastProvider,
   ToastContainer,
@@ -162,6 +172,7 @@ import {
   TabBar,
   DrawerMenu,
   // Layout Blocks
+  AppShell,
   ActionBar,
   SmartInput,
   Chat,
@@ -169,6 +180,7 @@ import {
   ConfirmActionSheet,
   ContentSkeleton,
   PageSkeleton,
+  ScreenSkeleton,
   Sheet,
   SheetHeader,
   SheetContent,
@@ -190,6 +202,11 @@ import {
   PricingCard,
   CheckoutSummary,
   MetricCard,
+  SubscriptionCard,
+  FeatureGate,
+  UsageBar,
+  PlanToggle,
+  UpgradeBanner,
   // Media Blocks
   SmartImage,
   // Date Picker Blocks
@@ -245,6 +262,78 @@ const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
       break;
   }
 };
+
+const SHOWCASE_BACKDROP_IMAGE_URI =
+  'https://framerusercontent.com/images/n33pHn65YAjw2oFLhhj3fQ3Vjo.png';
+
+function parseBackdropNumber(value: string | number | undefined, fallback: number): number {
+  if (value === undefined || value === null) return fallback;
+  const parsed = Number.parseFloat(String(value));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function resolveBackdropColor(value: string | number | undefined, fallback: string): string {
+  if (typeof value !== 'string') return fallback;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : fallback;
+}
+
+function DarkBackdrop() {
+  const { theme } = useUniwind();
+  const dark = theme === 'dark';
+  const [baseToken, imageOpacityToken, imageBlurToken, tintToken, veilToken] = useCSSVariable([
+    '--ui-showcase-backdrop-base',
+    '--ui-showcase-backdrop-image-opacity',
+    '--ui-showcase-backdrop-image-blur',
+    '--ui-showcase-backdrop-tint',
+    '--ui-showcase-backdrop-veil',
+  ]);
+  const [showRemoteImage, setShowRemoteImage] = useState(true);
+
+  if (!dark) return null;
+
+  const imageOpacity = Math.max(0, Math.min(1, parseBackdropNumber(imageOpacityToken, 0.46)));
+  const imageBlurRadius = Math.max(0, Math.round(parseBackdropNumber(imageBlurToken, 26)));
+
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: resolveBackdropColor(baseToken, 'rgba(14, 17, 24, 0.9)'),
+          },
+        ]}
+      />
+      {showRemoteImage && imageOpacity > 0 ? (
+        <ImageBackground
+          source={{ uri: SHOWCASE_BACKDROP_IMAGE_URI }}
+          resizeMode="cover"
+          blurRadius={imageBlurRadius}
+          imageStyle={{ opacity: imageOpacity }}
+          style={StyleSheet.absoluteFillObject}
+          onError={() => setShowRemoteImage(false)}
+        />
+      ) : null}
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: resolveBackdropColor(tintToken, 'rgba(126, 136, 152, 0.03)'),
+          },
+        ]}
+      />
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: resolveBackdropColor(veilToken, 'rgba(10, 12, 18, 0.5)'),
+          },
+        ]}
+      />
+    </View>
+  );
+}
 
 const showcaseThemeStore: { mode: ThemeMode | null } = { mode: null };
 
@@ -315,6 +404,7 @@ function AppContent() {
     return (
       <SafeAreaProvider>
         <View style={{ flex: 1 }} className="bg-background">
+          <DarkBackdrop />
           <StatusBar
             barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
             translucent
@@ -373,6 +463,7 @@ function AppContent() {
       <SafeAreaProvider>
         <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
         <View style={{ flex: 1 }} className="bg-background">
+          <DarkBackdrop />
           <StatusBar
             barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
             translucent
@@ -454,6 +545,7 @@ function AppContent() {
     <SafeAreaProvider>
       <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
       <View style={{ flex: 1 }} className="bg-background">
+        <DarkBackdrop />
         <StatusBar
           barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
           translucent
@@ -1088,6 +1180,10 @@ function ControlsTab() {
           </View>
         </View>
       </Section>
+
+      <Section title="OTP Input" subtitle="Verification code entry with auto-focus and paste">
+        <OTPInputDemo />
+      </Section>
     </View>
   );
 }
@@ -1469,6 +1565,86 @@ function OverlaysTab() {
           </MenubarMenu>
         </Menubar>
       </Section>
+    </View>
+  );
+}
+
+function OTPInputDemo() {
+  const [otp, setOtp] = useState('');
+  const [status, setStatus] = useState<'idle' | 'error' | 'success'>('idle');
+
+  return (
+    <View className="gap-4">
+      <OTPInput
+        value={otp}
+        onValueChange={(v) => {
+          setOtp(v);
+          if (status !== 'idle') setStatus('idle');
+        }}
+        onComplete={(code) => {
+          if (code === '123456') {
+            setStatus('success');
+            setTimeout(() => {
+              setOtp('');
+              setStatus('idle');
+            }, 1200);
+          } else {
+            setStatus('error');
+            setTimeout(() => setOtp(''), 600);
+          }
+        }}
+        variant={status === 'error' ? 'error' : 'default'}
+      />
+      <Text
+        className={cn(
+          'text-center text-sm',
+          status === 'error'
+            ? 'text-destructive'
+            : status === 'success'
+              ? 'text-success'
+              : 'text-muted-foreground'
+        )}
+      >
+        {status === 'error'
+          ? 'Invalid code — try 123456'
+          : status === 'success'
+            ? 'Code verified!'
+            : 'Enter code (try 123456)'}
+      </Text>
+      <SecurePinDemo />
+    </View>
+  );
+}
+
+function SecurePinDemo() {
+  const [pin, setPin] = useState('');
+  const [pinOk, setPinOk] = useState(false);
+
+  return (
+    <View className="items-center gap-2">
+      <Text className="text-xs text-muted-foreground">Secure (4-digit PIN — try 0000)</Text>
+      <OTPInput
+        length={4}
+        secure
+        size="compact"
+        value={pin}
+        onValueChange={(v) => {
+          setPin(v);
+          setPinOk(false);
+        }}
+        onComplete={(code) => {
+          if (code === '0000') {
+            setPinOk(true);
+            setTimeout(() => {
+              setPin('');
+              setPinOk(false);
+            }, 1200);
+          } else {
+            setTimeout(() => setPin(''), 400);
+          }
+        }}
+      />
+      {pinOk && <Text className="text-xs text-success">PIN accepted</Text>}
     </View>
   );
 }
@@ -1915,6 +2091,7 @@ function CrashableChild() {
 // ─── Layout Blocks Tab ──────────────────────────────────────
 function LayoutBlocksTab() {
   const [showLoading, setShowLoading] = useState(false);
+  const [shellLoading, setShellLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -2144,6 +2321,60 @@ function LayoutBlocksTab() {
         </View>
       </Section>
 
+      <Section
+        title="Screen Skeleton"
+        subtitle="Header slot or placeholder + page content skeleton for no-layout-jump loading states."
+      >
+        <View className="gap-4">
+          <View className="rounded-xl border border-border overflow-hidden bg-background">
+            <ScreenSkeleton variant="list" count={4} headerPlaceholder />
+          </View>
+          <View className="rounded-xl border border-border overflow-hidden bg-background">
+            <ScreenSkeleton
+              variant="dashboard"
+              header={
+                <View className="px-4 pt-4 pb-2 border-b border-border">
+                  <Text className="text-base font-medium text-foreground">Overview</Text>
+                </View>
+              }
+            />
+          </View>
+        </View>
+      </Section>
+
+      <Section
+        title="AppShell loading swap"
+        subtitle="Keep shell mounted, swap only content with skeleton."
+      >
+        <View className="gap-3">
+          <Button variant="outline" onPress={() => setShellLoading((prev) => !prev)}>
+            <ButtonText>{shellLoading ? 'Show Content' : 'Show Skeleton'}</ButtonText>
+          </Button>
+          <View className="h-80 rounded-xl border border-border overflow-hidden">
+            <AppShell
+              safeArea={false}
+              header={
+                <View className="px-4 py-3 border-b border-border bg-card">
+                  <Text className="font-medium text-foreground">Settings</Text>
+                </View>
+              }
+              loading={shellLoading}
+              skeleton={<PageSkeleton variant="settings" count={5} />}
+            >
+              <ScrollView className="flex-1 p-4">
+                <View className="gap-3">
+                  {['Profile', 'Notifications', 'Privacy', 'Billing'].map((item) => (
+                    <View key={item} className="rounded-lg border border-border bg-card px-3 py-4">
+                      <Text className="text-foreground">{item}</Text>
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </AppShell>
+          </View>
+        </View>
+      </Section>
+
       <Section title="Loading Screen" subtitle="Content is being fetched">
         <Button onPress={() => setShowLoading(!showLoading)}>
           <ButtonText>{showLoading ? 'Hide Loading' : 'Show Loading'}</ButtonText>
@@ -2311,6 +2542,18 @@ function ListsBlocksTab() {
         </View>
       </Section>
 
+      <Section title="Loading States" subtitle="Component-level skeleton placeholders">
+        <View className="rounded-xl overflow-hidden border border-border">
+          <ListItem loading title="" />
+          <ListItem loading title="" />
+          <ListItem loading title="" showBorder={false} />
+        </View>
+        <View className="mt-3 rounded-xl overflow-hidden border border-border">
+          <NotificationItem loading title="" message="" time="" />
+          <NotificationItem loading title="" message="" time="" />
+        </View>
+      </Section>
+
       <Section title="Timeline Feed" subtitle="Vertical feed with connecting lines">
         <TimelineFeed
           items={[
@@ -2336,6 +2579,9 @@ function ListsBlocksTab() {
 
 // ─── Commerce Blocks Tab ────────────────────────────────────
 function CommerceBlocksTab() {
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [showUpgradeBanner, setShowUpgradeBanner] = useState(true);
+
   return (
     <View className="gap-6">
       <Section title="Product Cards" subtitle="Vertical and horizontal layouts">
@@ -2363,11 +2609,36 @@ function CommerceBlocksTab() {
         />
       </Section>
 
+      <Section title="Loading States" subtitle="Component-level skeleton placeholders">
+        <View className="flex-row gap-3">
+          <View className="flex-1">
+            <ProductCard loading title="" price="" />
+          </View>
+          <View className="flex-1">
+            <ProductCard loading title="" price="" />
+          </View>
+        </View>
+        <ProductCard loading variant="horizontal" title="" price="" className="mt-3" />
+        <Row gap="md" className="mt-3">
+          <MetricCard loading label="" value="" className="flex-1" />
+          <MetricCard loading label="" value="" className="flex-1" />
+        </Row>
+        <SubscriptionCard loading planName="" price="" className="mt-3" />
+        <PricingCard loading name="" price="" features={[]} className="mt-3" />
+      </Section>
+
       <Section title="Pricing" subtitle="Subscription plans">
+        <PlanToggle
+          selected={billingCycle}
+          onChange={setBillingCycle}
+          annualDiscount="Save 20%"
+          className="mb-3"
+        />
         <PricingCard
           name="Pro"
           description="For teams and growing products"
-          price="$29"
+          price={billingCycle === 'annual' ? '$24' : '$29'}
+          period={billingCycle === 'annual' ? '/month billed yearly' : '/month'}
           badge="Most Popular"
           highlighted
           features={[
@@ -2379,6 +2650,42 @@ function CommerceBlocksTab() {
           ]}
           onPress={() => {}}
         />
+      </Section>
+
+      <Section title="Subscription Card" subtitle="Current plan summary for settings screens">
+        <SubscriptionCard
+          planName="Pro"
+          price="$29"
+          period="/month"
+          expiresAt="April 18, 2026"
+          onManage={() => {}}
+          onUpgrade={() => {}}
+        />
+      </Section>
+
+      {showUpgradeBanner ? (
+        <Section title="Upgrade Banner" subtitle="Inline upsell with dismiss action">
+          <UpgradeBanner
+            message="Unlock unlimited exports and advanced templates with Pro."
+            actionLabel="See plans"
+            onAction={() => {}}
+            onDismiss={() => setShowUpgradeBanner(false)}
+          />
+        </Section>
+      ) : (
+        <Section title="Upgrade Banner" subtitle="Inline upsell with dismiss action">
+          <Button variant="outline" onPress={() => setShowUpgradeBanner(true)}>
+            <ButtonText>Show banner again</ButtonText>
+          </Button>
+        </Section>
+      )}
+
+      <Section title="Usage Bar" subtitle="Usage meter with warning/exceeded states">
+        <View className="gap-4">
+          <UsageBar label="AI generations today" used={8} limit={20} />
+          <UsageBar label="Background removals" used={18} limit={20} />
+          <UsageBar label="Video exports" used={25} limit={20} />
+        </View>
       </Section>
 
       <Section title="Checkout" subtitle="Order summary">
@@ -2418,6 +2725,20 @@ function CommerceBlocksTab() {
             />
           </Row>
         </Stack>
+      </Section>
+
+      <Section title="Feature Gate" subtitle="Locked feature overlay with upgrade CTA">
+        <FeatureGate
+          title="Advanced style transfer is locked"
+          description="Upgrade to Pro to unlock high-resolution transfer presets."
+          buttonLabel="Upgrade to Pro"
+          onUpgrade={() => {}}
+          icon={<Feather name="lock" size={20} color="#f59e0b" />}
+        >
+          <View className="h-24 items-center justify-center bg-muted">
+            <Text className="text-sm text-muted-foreground">Previewed premium output</Text>
+          </View>
+        </FeatureGate>
       </Section>
 
       <Section title="Smart Image" subtitle="expo-image with skeleton loading and fallback">

@@ -4,15 +4,23 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  type StyleProp,
   useWindowDimensions,
   View,
   type ViewProps,
+  type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import {
+  useFrostedSurface,
+  useFrostedBackdrop,
+  type FrostedSurfaceProps,
+} from '../../lib/frosted-surface';
 
 // ─── Context ───────────────────────────────────────────────────
 
@@ -24,7 +32,7 @@ const SheetContext = createContext<SheetContextValue>({ onClose: () => {} });
 
 // ─── Types ─────────────────────────────────────────────────────
 
-export interface SheetProps {
+export interface SheetProps extends FrostedSurfaceProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
@@ -57,17 +65,37 @@ export function Sheet({
   onOpenChange,
   children,
   maxHeight = 'full',
-  maxWidth = 360,
+  maxWidth: maxWidthProp,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
 }: SheetProps) {
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
-  const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const onClose = () => onOpenChange(false);
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'surfaceTranslucent',
+    defaultBlurPreset: 'medium',
+  });
+  const frostedBackdrop = useFrostedBackdrop({
+    frosted,
+    blurIntensity:
+      typeof blurIntensity === 'number' && Number.isFinite(blurIntensity)
+        ? blurIntensity * visual.frostedBackdropBlurScale
+        : undefined,
+    tintColor: colors.overlay,
+  });
   const { height: screenHeight, width: windowWidth } = useWindowDimensions();
 
-  // Full width on phones; cap at maxWidth only on tablets/web (breakpoint 600px)
+  const maxWidth = maxWidthProp ?? visual.sheetMaxWidth;
+
+  // Full width on phones; cap at maxWidth only on tablets/web (breakpoint)
   const widthStyle =
-    typeof maxWidth === 'number' && windowWidth >= 600
+    typeof maxWidth === 'number' && windowWidth >= visual.sheetTabletBreakpoint
       ? { maxWidth, alignSelf: 'center' as const, width: maxWidth }
       : {};
 
@@ -75,8 +103,21 @@ export function Sheet({
     maxHeight === 'full'
       ? { flex: 1 }
       : maxHeight === 'half'
-        ? { maxHeight: screenHeight * 0.5, minHeight: Math.min(screenHeight * 0.4, 320) }
+        ? {
+            maxHeight: screenHeight * visual.sheetHalfMaxHeightRatio,
+            minHeight: Math.min(
+              screenHeight * visual.sheetHalfMaxHeightRatio,
+              visual.sheetHalfMinHeight
+            ),
+          }
         : { maxHeight };
+
+  const sheetStyle: StyleProp<ViewStyle> = [
+    maxHeightStyle,
+    { paddingBottom: Math.max(insets.bottom, 16) },
+    widthStyle,
+    frostedSurface.surfaceStyle,
+  ];
 
   return (
     <Modal
@@ -87,12 +128,20 @@ export function Sheet({
       statusBarTranslucent={Platform.OS === 'android'}
       presentationStyle="overFullScreen"
     >
-      <View className="flex-1 justify-end" style={{ backgroundColor: colors.overlay }}>
+      <View
+        className="flex-1 justify-end"
+        style={{ backgroundColor: frosted ? 'transparent' : colors.overlay }}
+      >
+        {frostedBackdrop}
         <Pressable className="flex-1" onPress={onClose} />
         <View
-          className="rounded-t-xl border border-border bg-background overflow-hidden"
-          style={[maxHeightStyle, { paddingBottom: Math.max(insets.bottom, 16) }, widthStyle]}
+          className={cn(
+            'rounded-t-xl border border-border overflow-hidden relative',
+            frosted ? 'bg-transparent' : 'bg-background'
+          )}
+          style={sheetStyle}
         >
+          {frostedSurface.overlay}
           <SheetContext.Provider value={{ onClose }}>{children}</SheetContext.Provider>
         </View>
       </View>
@@ -108,6 +157,7 @@ export function SheetHeader({
   ...props
 }: SheetHeaderProps) {
   const { onClose } = useContext(SheetContext);
+  const interaction = useInteractionTokens();
 
   return (
     <View

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { View, Pressable, Animated, PanResponder, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -36,7 +37,8 @@ export function SwipeableItem({
   ...props
 }: SwipeableItemProps) {
   const translateX = useRef(new Animated.Value(0)).current;
-  const actionWidth = 80;
+  const visual = useVisualTokens();
+  const actionWidth = visual.swipeActionWidth;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -99,7 +101,9 @@ export function SwipeableItem({
             style={{ width: actionWidth, backgroundColor: action.color }}
           >
             {action.icon}
-            <Text className="mt-1 text-xs font-medium text-white">{action.label}</Text>
+            <Text className="mt-1 text-xs font-medium text-swipe-action-foreground">
+              {action.label}
+            </Text>
           </Pressable>
         ))}
       </View>
@@ -117,7 +121,9 @@ export function SwipeableItem({
             style={{ width: actionWidth, backgroundColor: action.color }}
           >
             {action.icon}
-            <Text className="mt-1 text-xs font-medium text-white">{action.label}</Text>
+            <Text className="mt-1 text-xs font-medium text-swipe-action-foreground">
+              {action.label}
+            </Text>
           </Pressable>
         ))}
       </View>

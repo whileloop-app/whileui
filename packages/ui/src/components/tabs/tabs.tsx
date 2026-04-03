@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
@@ -46,6 +46,7 @@ export interface TabsListProps extends ViewProps {
 
 export interface TabsTriggerProps extends PressableProps {
   value: string;
+  children?: ReactNode;
   className?: string;
 }
 
@@ -90,7 +91,14 @@ function TabsList({ className, ...props }: TabsListProps) {
   );
 }
 
-function TabsTrigger({ value: tabValue, className, disabled, style: styleProp, ...props }: TabsTriggerProps) {
+function TabsTrigger({
+  value: tabValue,
+  children,
+  className,
+  disabled,
+  style: styleProp,
+  ...props
+}: TabsTriggerProps) {
   const { value, onValueChange } = useContext(TabsContext);
   const isActive = value === tabValue;
   const interaction = useInteractionTokens();
@@ -110,7 +118,9 @@ function TabsTrigger({ value: tabValue, className, disabled, style: styleProp, .
       onPress={() => onValueChange(tabValue)}
       disabled={disabled}
       {...props}
-    />
+    >
+      {children}
+    </Pressable>
   );
 }
 

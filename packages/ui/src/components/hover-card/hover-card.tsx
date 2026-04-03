@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Platform, StyleSheet, type ViewStyle } from 'react-native';
 import * as HoverCardPrimitive from '@rn-primitives/hover-card';
 import { cn } from '../../lib/cn';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -18,9 +19,8 @@ export interface HoverCardTriggerProps extends React.ComponentPropsWithoutRef<
   className?: string;
 }
 
-export interface HoverCardContentProps extends React.ComponentPropsWithoutRef<
-  typeof HoverCardPrimitive.Content
-> {
+export interface HoverCardContentProps
+  extends React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>, FrostedSurfaceProps {
   className?: string;
   portalHost?: string;
 }
@@ -50,24 +50,61 @@ HoverCardTrigger.displayName = 'HoverCardTrigger';
 const HoverCardContent = React.forwardRef<
   React.ComponentRef<typeof HoverCardPrimitive.Content>,
   HoverCardContentProps
->(({ className, align = 'center', sideOffset = 4, portalHost, ...props }, ref) => (
-  <HoverCardPrimitive.Portal hostName={portalHost}>
-    <HoverCardPrimitive.Overlay style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}>
-      <HoverCardPrimitive.Content
-        ref={ref}
-        align={align}
-        sideOffset={sideOffset}
-        className={cn(
-          'z-50 w-64 rounded-lg border border-border bg-popover p-4 shadow-lg',
-          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
-          className
-        )}
-        style={Platform.OS === 'web' ? {} : contentStyles}
-        {...props}
-      />
-    </HoverCardPrimitive.Overlay>
-  </HoverCardPrimitive.Portal>
-));
+>(
+  (
+    {
+      className,
+      align = 'center',
+      sideOffset = 4,
+      portalHost,
+      children,
+      style,
+      frosted = false,
+      blurIntensity,
+      blurTintToken,
+      ...props
+    },
+    ref
+  ) => {
+    const frostedSurface = useFrostedSurface({
+      frosted,
+      blurIntensity,
+      blurTintToken,
+      defaultTintToken: 'popover',
+      defaultBlurPreset: 'subtle',
+    });
+    const resolvedStyle = StyleSheet.flatten([
+      Platform.OS === 'web' ? undefined : contentStyles,
+      frostedSurface.surfaceStyle,
+      style,
+    ]) as ViewStyle;
+
+    return (
+      <HoverCardPrimitive.Portal hostName={portalHost}>
+        <HoverCardPrimitive.Overlay
+          style={Platform.OS !== 'web' ? StyleSheet.absoluteFill : undefined}
+        >
+          <HoverCardPrimitive.Content
+            ref={ref}
+            align={align}
+            sideOffset={sideOffset}
+            className={cn(
+              'z-50 w-64 rounded-lg border border-border p-4 shadow-lg relative overflow-hidden',
+              frosted ? 'bg-transparent' : 'bg-popover',
+              'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+              className
+            )}
+            style={resolvedStyle}
+            {...props}
+          >
+            {frostedSurface.overlay}
+            {children}
+          </HoverCardPrimitive.Content>
+        </HoverCardPrimitive.Overlay>
+      </HoverCardPrimitive.Portal>
+    );
+  }
+);
 HoverCardContent.displayName = 'HoverCardContent';
 
 const contentStyles: ViewStyle = {

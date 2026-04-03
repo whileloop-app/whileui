@@ -1,5 +1,5 @@
 import { useCSSVariable } from 'uniwind';
-import { formatHex, parse } from 'culori';
+import { formatHex, formatRgb, parse } from 'culori';
 
 interface ColorTokenSpec {
   key: keyof Omit<ThemeColors, 'placeholder'>;
@@ -21,8 +21,15 @@ function parseThemeColor(value: string | number | undefined): string | undefined
   try {
     const parsed = parse(s);
     if (parsed) {
+      const alpha = typeof parsed.alpha === 'number' ? parsed.alpha : 1;
+      if (alpha < 1) {
+        const rgba = formatRgb(parsed);
+        if (rgba) return rgba;
+      }
       const hex = formatHex(parsed);
       if (hex) return hex;
+      const rgb = formatRgb(parsed);
+      if (rgb) return rgb;
     }
   } catch {
     return undefined;
@@ -72,6 +79,8 @@ export interface ThemeColors {
   overlay: string;
   overlayStrong: string;
   surfaceElevated: string;
+  surfaceTranslucent: string;
+  surfaceTranslucentBorder: string;
   surfaceBorder: string;
   surfaceHighlight: string;
   stateHover: string;
@@ -251,6 +260,18 @@ const THEME_COLOR_SPECS: readonly ColorTokenSpec[] = [
     fallback: '#ffffff',
   },
   {
+    key: 'surfaceTranslucent',
+    cssVar: '--color-surface-translucent',
+    appVar: '--app-color-surface-translucent',
+    fallback: 'rgba(255, 255, 255, 0.5)',
+  },
+  {
+    key: 'surfaceTranslucentBorder',
+    cssVar: '--color-surface-translucent-border',
+    appVar: '--app-color-surface-translucent-border',
+    fallback: 'rgba(255, 255, 255, 0.18)',
+  },
+  {
     key: 'surfaceBorder',
     cssVar: '--color-surface-border',
     appVar: '--app-color-surface-border',
@@ -320,7 +341,7 @@ export function useIconColors() {
   };
 }
 
-/** Alias for useThemeColors. Returns theme colors resolved to hex for RefreshControl, LinearGradient, charts. */
+/** Alias for useThemeColors. Returns RN-safe color strings (hex/rgb/rgba) for RefreshControl, LinearGradient, charts. */
 export const useThemeTokens = useThemeColors;
 
 /** @deprecated Use useThemeTokens or useThemeColors. */

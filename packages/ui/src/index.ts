@@ -1,3 +1,5 @@
+import './lib/react-native-classname';
+
 // ─── Utilities ───────────────────────────────────────────────
 export { cn } from './lib/cn';
 export { tv, type VariantProps } from './lib/tv';
@@ -35,6 +37,12 @@ export {
   type PressedVariant,
   type DisabledVariant,
 } from './lib/interaction-tokens';
+export { useVisualTokens, type VisualTokens } from './lib/visual-tokens';
+export {
+  registerFrostedBlurView,
+  type FrostedSurfaceProps,
+  type FrostedTintToken,
+} from './lib/frosted-surface';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';
@@ -79,6 +87,7 @@ export {
   numericInputTextVariants,
   type NumericInputProps,
 } from './components/numeric-input';
+export { OTPInput, otpCellVariants, type OTPInputProps } from './components/otp-input';
 export {
   FormField,
   FormLabel,

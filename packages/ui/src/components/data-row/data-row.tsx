@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 import { Text, View, type TextProps, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 const dataRowVariants = tv({
   base: 'w-full flex-row items-center gap-3',
@@ -34,7 +35,7 @@ const dataRowDescriptionVariants = tv({
   variants: {
     size: {
       default: 'text-xs',
-      compact: 'text-[11px]',
+      compact: 'text-xs',
     },
   },
   defaultVariants: {
@@ -118,15 +119,19 @@ const DataRowCenter = React.forwardRef<View, DataRowCenterProps>(({ className, .
 
 DataRowCenter.displayName = 'DataRowCenter';
 
-const DataRowRight = React.forwardRef<View, DataRowRightProps>(({ className, ...props }, ref) => {
-  return (
-    <View
-      ref={ref}
-      className={cn('ml-2 max-w-[45%] shrink-0 items-end justify-center', className)}
-      {...props}
-    />
-  );
-});
+const DataRowRight = React.forwardRef<View, DataRowRightProps>(
+  ({ className, style, ...props }, ref) => {
+    const visual = useVisualTokens();
+    return (
+      <View
+        ref={ref}
+        className={cn('ml-2 shrink-0 items-end justify-center', className)}
+        style={[{ maxWidth: `${visual.dataRowRightMaxWidthRatio * 100}%` }, style]}
+        {...props}
+      />
+    );
+  }
+);
 
 DataRowRight.displayName = 'DataRowRight';
 
@@ -146,13 +151,17 @@ const DataRowLabel = React.forwardRef<Text, DataRowLabelProps>(({ className, ...
 DataRowLabel.displayName = 'DataRowLabel';
 
 const DataRowDescription = React.forwardRef<Text, DataRowDescriptionProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, style, ...props }, ref) => {
     const { size } = useContext(DataRowContext);
+    const visual = useVisualTokens();
 
     return (
       <Text
         ref={ref}
         className={cn(dataRowDescriptionVariants({ size }), className)}
+        style={
+          size === 'compact' ? [{ fontSize: visual.dataRowCompactDescriptionSize }, style] : style
+        }
         numberOfLines={2}
         {...props}
       />

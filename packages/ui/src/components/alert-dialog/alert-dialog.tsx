@@ -4,12 +4,15 @@ import {
   Modal,
   Pressable,
   Text,
+  type StyleProp,
   type ViewProps,
+  type ViewStyle,
   type TextProps,
   type PressableProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -37,7 +40,7 @@ export interface AlertDialogTriggerProps extends PressableProps {
   asChild?: boolean;
 }
 
-export interface AlertDialogContentProps extends ViewProps {
+export interface AlertDialogContentProps extends ViewProps, FrostedSurfaceProps {
   className?: string;
 }
 
@@ -108,9 +111,25 @@ function AlertDialogTrigger({ className, children, asChild, ...props }: AlertDia
   );
 }
 
-function AlertDialogContent({ className, children, ...props }: AlertDialogContentProps) {
+function AlertDialogContent({
+  className,
+  children,
+  frosted = false,
+  blurIntensity,
+  blurTintToken,
+  style,
+  ...props
+}: AlertDialogContentProps) {
   const { open } = useContext(AlertDialogContext);
   const colors = useThemeColors();
+  const frostedSurface = useFrostedSurface({
+    frosted,
+    blurIntensity,
+    blurTintToken,
+    defaultTintToken: 'surfaceTranslucent',
+    defaultBlurPreset: 'medium',
+  });
+  const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
 
   return (
     <Modal visible={open} transparent animationType="fade">
@@ -120,11 +139,14 @@ function AlertDialogContent({ className, children, ...props }: AlertDialogConten
       >
         <View
           className={cn(
-            'w-full max-w-lg rounded-lg border border-border bg-background p-6 shadow-lg',
+            'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
+            frosted ? 'bg-transparent' : 'bg-background',
             className
           )}
+          style={contentStyle}
           {...props}
         >
+          {frostedSurface.overlay}
           {children}
         </View>
       </View>
@@ -167,7 +189,7 @@ function AlertDialogAction({ className, children, asChild, ...props }: AlertDial
   return (
     <Pressable
       className={cn(
-        'inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 active:bg-primary/90',
+        'inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 active:bg-primary-active',
         className
       )}
       onPress={handlePress}

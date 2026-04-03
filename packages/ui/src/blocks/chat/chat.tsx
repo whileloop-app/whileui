@@ -1,9 +1,17 @@
 import React, { useRef, useEffect } from 'react';
-import { View, ScrollView, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  ScrollView,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  useWindowDimensions,
+} from 'react-native';
 import { Text } from '../../components/text';
 import { SmartInput } from '../layout/smart-input';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 import { tv } from '../../lib/tv';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -62,12 +70,12 @@ const contentSizeClasses = {
 } as const;
 
 const chatMessageBubbleVariants = tv({
-  base: 'max-w-[85%] rounded-2xl px-4 py-3',
+  base: 'rounded-2xl px-4 py-3',
   variants: {
     role: {
       user: 'self-end bg-primary',
       assistant: 'self-start bg-muted',
-      system: 'self-center bg-muted/50 max-w-[90%]',
+      system: 'self-center bg-muted-soft',
     },
   },
   defaultVariants: { role: 'assistant' },
@@ -85,6 +93,11 @@ export function ChatMessageBubble({
   const role = message.role === 'system' ? 'system' : message.role;
   const isUser = message.role === 'user';
   const sizeClass = contentSizeClasses[message.contentSize ?? 'default'];
+  const visual = useVisualTokens();
+  const { width: screenWidth } = useWindowDimensions();
+  const ratio =
+    role === 'system' ? visual.chatSystemBubbleMaxWidthRatio : visual.chatBubbleMaxWidthRatio;
+  const maxWidth = screenWidth * ratio;
 
   return (
     <View
@@ -94,6 +107,7 @@ export function ChatMessageBubble({
         isUser ? 'Your message' : message.role === 'system' ? 'System message' : 'Assistant message'
       }
       className={chatMessageBubbleVariants({ role })}
+      style={{ maxWidth }}
     >
       <Text
         className={cn(
@@ -109,7 +123,7 @@ export function ChatMessageBubble({
         <Text
           className={cn(
             'mt-1 text-xs',
-            isUser ? 'text-primary-foreground/70' : 'text-muted-foreground'
+            isUser ? 'text-primary-foreground-muted' : 'text-muted-foreground'
           )}
         >
           {message.secondary}
