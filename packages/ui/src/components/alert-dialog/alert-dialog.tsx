@@ -1,29 +1,79 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useLayoutEffect, useRef, useState } from 'react';
 import {
   View,
   Modal,
   Pressable,
   Text,
+  Alert,
+  Platform,
+  StyleSheet,
   type StyleProp,
   type ViewProps,
   type ViewStyle,
   type TextProps,
   type PressableProps,
+  type PressableStateCallbackType,
 } from 'react-native';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+
+// ─── Native alert copy (for presentation="native") ───────────
+
+export type AlertDialogPresentation = 'modal' | 'native';
+
+type NativeAlertCopy = {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  onConfirm: (() => void) | null;
+  onCancel: (() => void) | null;
+};
+
+function emptyNativeCopy(): NativeAlertCopy {
+  return {
+    title: '',
+    message: '',
+    confirmLabel: 'OK',
+    cancelLabel: 'Cancel',
+    onConfirm: null,
+    onCancel: null,
+  };
+}
+
+function textFromNode(node: React.ReactNode): string {
+  if (node == null || typeof node === 'boolean') return '';
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(textFromNode).filter(Boolean).join(' ');
+  if (React.isValidElement(node)) {
+    return textFromNode((node.props as { children?: React.ReactNode }).children);
+  }
+  return '';
+}
+
+/** Pressable children may be a render function; native alert only supports static labels. */
+function textFromPressableChildren(
+  children: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode)
+): string {
+  if (typeof children === 'function') return '';
+  return textFromNode(children);
+}
 
 // ─── Context ─────────────────────────────────────────────────
 
 interface AlertDialogContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
+  nativeCopyRef: React.MutableRefObject<NativeAlertCopy>;
 }
+
+const fallbackNativeRef: React.MutableRefObject<NativeAlertCopy> = { current: emptyNativeCopy() };
 
 const AlertDialogContext = createContext<AlertDialogContextValue>({
   open: false,
   setOpen: () => {},
+  nativeCopyRef: fallbackNativeRef,
 });
 
 // ─── Types ───────────────────────────────────────────────────
@@ -42,6 +92,8 @@ export interface AlertDialogTriggerProps extends PressableProps {
 
 export interface AlertDialogContentProps extends ViewProps, FrostedSurfaceProps {
   className?: string;
+  /** @default 'modal' */
+  presentation?: AlertDialogPresentation;
 }
 
 export interface AlertDialogHeaderProps extends ViewProps {
@@ -79,6 +131,7 @@ function AlertDialog({
 }: AlertDialogProps) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const open = controlledOpen ?? internalOpen;
+  const nativeCopyRef = useRef<NativeAlertCopy>(emptyNativeCopy());
 
   const setOpen = (value: boolean) => {
     setInternalOpen(value);
@@ -86,7 +139,9 @@ function AlertDialog({
   };
 
   return (
-    <AlertDialogContext.Provider value={{ open, setOpen }}>{children}</AlertDialogContext.Provider>
+    <AlertDialogContext.Provider value={{ open, setOpen, nativeCopyRef }}>
+      {children}
+    </AlertDialogContext.Provider>
   );
 }
 
@@ -111,16 +166,29 @@ function AlertDialogTrigger({ className, children, asChild, ...props }: AlertDia
   );
 }
 
+const nativeHiddenStyle = StyleSheet.create({
+  root: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    opacity: 0,
+    overflow: 'hidden',
+    left: -4096,
+    top: 0,
+  },
+}).root;
+
 function AlertDialogContent({
   className,
   children,
+  presentation = 'modal',
   frosted = false,
   blurIntensity,
   blurTintToken,
   style,
   ...props
 }: AlertDialogContentProps) {
-  const { open } = useContext(AlertDialogContext);
+  const { open, setOpen, nativeCopyRef } = useContext(AlertDialogContext);
   const colors = useThemeColors();
   const frostedSurface = useFrostedSurface({
     frosted,
@@ -131,8 +199,82 @@ function AlertDialogContent({
   });
   const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
 
+  const useNativeAlert =
+    presentation === 'native' && (Platform.OS === 'ios' || Platform.OS === 'android');
+
+  const prevOpenRef = useRef(false);
+  const nativeAlertShownForOpenRef = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!useNativeAlert) return;
+
+    if (!open) {
+      nativeAlertShownForOpenRef.current = false;
+      prevOpenRef.current = false;
+      return;
+    }
+
+    const isNewOpenCycle = !prevOpenRef.current;
+    prevOpenRef.current = true;
+
+    if (!isNewOpenCycle || nativeAlertShownForOpenRef.current) {
+      return;
+    }
+    nativeAlertShownForOpenRef.current = true;
+
+    const snap: NativeAlertCopy = { ...nativeCopyRef.current };
+
+    const buttons = [
+      {
+        text: snap.cancelLabel || 'Cancel',
+        style: 'cancel' as const,
+        onPress: () => {
+          snap.onCancel?.();
+          setOpen(false);
+        },
+      },
+      {
+        text: snap.confirmLabel || 'OK',
+        style: 'destructive' as const,
+        onPress: () => {
+          snap.onConfirm?.();
+          setOpen(false);
+        },
+      },
+    ];
+
+    const options =
+      Platform.OS === 'android'
+        ? {
+            cancelable: true,
+            onDismiss: () => setOpen(false),
+          }
+        : undefined;
+
+    Alert.alert(snap.title || '', snap.message || undefined, buttons, options);
+  }, [open, useNativeAlert, setOpen, nativeCopyRef]);
+
+  if (useNativeAlert) {
+    return (
+      <View
+        pointerEvents="none"
+        style={nativeHiddenStyle}
+        collapsable={false}
+        importantForAccessibility="no-hide-descendants"
+      >
+        {children}
+      </View>
+    );
+  }
+
   return (
-    <Modal visible={open} transparent animationType="fade">
+    <Modal
+      visible={open}
+      transparent
+      animationType="fade"
+      presentationStyle={Platform.OS === 'ios' ? 'overFullScreen' : undefined}
+      statusBarTranslucent={Platform.OS === 'android'}
+    >
       <View
         className="flex-1 justify-center items-center px-4"
         style={{ backgroundColor: colors.overlayStrong }}
@@ -154,6 +296,10 @@ function AlertDialogContent({
   );
 }
 
+function useAlertDialogNativeCopy() {
+  return useContext(AlertDialogContext).nativeCopyRef;
+}
+
 function AlertDialogHeader({ className, ...props }: AlertDialogHeaderProps) {
   return <View className={cn('flex flex-col gap-1.5 pb-4', className)} {...props} />;
 }
@@ -162,18 +308,58 @@ function AlertDialogFooter({ className, ...props }: AlertDialogFooterProps) {
   return <View className={cn('flex flex-row justify-end gap-2 pt-4', className)} {...props} />;
 }
 
-function AlertDialogTitle({ className, ...props }: AlertDialogTitleProps) {
-  return <Text className={cn('text-lg font-semibold text-foreground', className)} {...props} />;
+function AlertDialogTitle({ className, children, ...props }: AlertDialogTitleProps) {
+  const nativeCopyRef = useAlertDialogNativeCopy();
+
+  useLayoutEffect(() => {
+    nativeCopyRef.current.title = textFromNode(children);
+    return () => {
+      nativeCopyRef.current.title = '';
+    };
+  }, [children, nativeCopyRef]);
+
+  return (
+    <Text className={cn('text-lg font-semibold text-foreground', className)} {...props}>
+      {children}
+    </Text>
+  );
 }
 
-function AlertDialogDescription({ className, ...props }: AlertDialogDescriptionProps) {
-  return <Text className={cn('text-sm text-muted-foreground', className)} {...props} />;
+function AlertDialogDescription({ className, children, ...props }: AlertDialogDescriptionProps) {
+  const nativeCopyRef = useAlertDialogNativeCopy();
+
+  useLayoutEffect(() => {
+    nativeCopyRef.current.message = textFromNode(children);
+    return () => {
+      nativeCopyRef.current.message = '';
+    };
+  }, [children, nativeCopyRef]);
+
+  return (
+    <Text className={cn('text-sm text-muted-foreground', className)} {...props}>
+      {children}
+    </Text>
+  );
 }
 
 function AlertDialogAction({ className, children, asChild, ...props }: AlertDialogActionProps) {
-  const { setOpen } = useContext(AlertDialogContext);
+  const { setOpen, nativeCopyRef } = useContext(AlertDialogContext);
+  const onPressRef = useRef(props.onPress);
+  onPressRef.current = props.onPress;
 
-  const handlePress = (e: any) => {
+  useLayoutEffect(() => {
+    nativeCopyRef.current.confirmLabel = textFromPressableChildren(children);
+    nativeCopyRef.current.onConfirm = () => {
+      const h = onPressRef.current;
+      if (h) (h as (e?: unknown) => void)();
+    };
+    return () => {
+      nativeCopyRef.current.confirmLabel = 'OK';
+      nativeCopyRef.current.onConfirm = null;
+    };
+  }, [children, nativeCopyRef]);
+
+  const handlePress = (e: Parameters<NonNullable<PressableProps['onPress']>>[0]) => {
     props.onPress?.(e);
     setOpen(false);
   };
@@ -205,7 +391,22 @@ function AlertDialogAction({ className, children, asChild, ...props }: AlertDial
 }
 
 function AlertDialogCancel({ className, children, ...props }: AlertDialogCancelProps) {
-  const { setOpen } = useContext(AlertDialogContext);
+  const { setOpen, nativeCopyRef } = useContext(AlertDialogContext);
+  const onPressRef = useRef(props.onPress);
+  onPressRef.current = props.onPress;
+
+  useLayoutEffect(() => {
+    nativeCopyRef.current.cancelLabel = textFromPressableChildren(children);
+    nativeCopyRef.current.onCancel = () => {
+      const h = onPressRef.current;
+      if (h) (h as (e?: unknown) => void)();
+    };
+    return () => {
+      nativeCopyRef.current.cancelLabel = 'Cancel';
+      nativeCopyRef.current.onCancel = null;
+    };
+  }, [children, nativeCopyRef]);
+
   return (
     <Pressable
       className={cn(

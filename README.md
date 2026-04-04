@@ -1138,6 +1138,19 @@ import {
 
 `AlertDialogContent` supports the same frosted props as `DialogContent`.
 
+| Prop          | Type                     | Default   | Description                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------- | ------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| presentation  | `'modal' \| 'native'`    | `'modal'` | **Native (iOS/Android):** `'modal'` uses `Modal` (with iOS `overFullScreen` to improve stacking). `'native'` uses `Alert.alert` with copy from `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogCancel`, and `AlertDialogAction` — reliable when another fullscreen `Modal` is already open. **Web:** `'native'` is ignored; the custom `Modal` UI is always used. |
+| frosted       | `boolean`                | `false`   | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
+| blurIntensity | `number`                 | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
+| blurTintToken | `'surfaceElevated' \| …` | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
+
+### React Native: stacked modals
+
+If `AlertDialog` is a **sibling** of another fullscreen `Modal` (e.g. `<><Modal>…</Modal><AlertDialog>…</AlertDialog></>`), iOS often fails to show a second `Modal` on top, or taps feel dead, even though `open` is `true`. Prefer **`presentation="native"`** on `AlertDialogContent` in those flows so the system alert appears above the sheet. Alternatively, render the `AlertDialog` **inside** the visible `Modal` so both layers share one RN modal host.
+
+**Manual QA (iOS + Android):** Open a fullscreen `Modal`, trigger a delete/confirm that uses `presentation="native"`, confirm the system alert is visible, **Cancel** closes without side effects, **Delete** runs the action handler and dismisses.
+
 ## Checkbox
 
 ```tsx

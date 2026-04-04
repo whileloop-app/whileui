@@ -1192,6 +1192,8 @@ function ControlsTab() {
 function OverlaysTab() {
   const { toast } = useToast();
   const colors = useIconColors();
+  const [overlaySheetOpen, setOverlaySheetOpen] = useState(false);
+  const [overlaySiblingDeleteOpen, setOverlaySiblingDeleteOpen] = useState(false);
 
   return (
     <View>
@@ -1306,6 +1308,54 @@ function OverlaysTab() {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <Button variant="outline" onPress={() => setOverlaySheetOpen(true)}>
+            <ButtonText>Sheet + native confirm</ButtonText>
+          </Button>
+
+          <Modal
+            visible={overlaySheetOpen}
+            animationType="slide"
+            presentationStyle="fullScreen"
+            onRequestClose={() => setOverlaySheetOpen(false)}
+          >
+            <SafeAreaView className="flex-1 bg-background p-4" edges={['top', 'bottom']}>
+              <View className="flex-row justify-between items-center mb-6">
+                <Text className="text-lg font-semibold text-foreground">Fullscreen sheet</Text>
+                <Button variant="ghost" onPress={() => setOverlaySheetOpen(false)}>
+                  <ButtonText>Close</ButtonText>
+                </Button>
+              </View>
+              <Text className="text-sm text-muted-foreground mb-4">
+                Sibling AlertDialog uses presentation=&quot;native&quot; so confirm appears above
+                this Modal.
+              </Text>
+              <Button variant="destructive" onPress={() => setOverlaySiblingDeleteOpen(true)}>
+                <ButtonText>Delete item</ButtonText>
+              </Button>
+            </SafeAreaView>
+          </Modal>
+
+          <AlertDialog open={overlaySiblingDeleteOpen} onOpenChange={setOverlaySiblingDeleteOpen}>
+            <AlertDialogContent presentation="native">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete item?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Uses the system alert so it stacks above the sheet Modal.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onPress={() =>
+                    toast({ title: 'Deleted', description: 'Confirmed from native alert.' })
+                  }
+                >
+                  Delete
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
