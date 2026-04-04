@@ -20,7 +20,8 @@ import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-s
 
 // ─── Native alert copy (for presentation="native") ───────────
 
-export type AlertDialogPresentation = 'modal' | 'native';
+/** `overlay` = themed UI as an absolute layer inside the parent (no second RN Modal). Mount inside your sheet `Modal` for app-styled confirms. */
+export type AlertDialogPresentation = 'modal' | 'native' | 'overlay';
 
 type NativeAlertCopy = {
   title: string;
@@ -92,7 +93,11 @@ export interface AlertDialogTriggerProps extends PressableProps {
 
 export interface AlertDialogContentProps extends ViewProps, FrostedSurfaceProps {
   className?: string;
-  /** @default 'modal' */
+  /**
+   * `modal` — RN `Modal` + themed card (default).
+   * `native` — `Alert.alert` on iOS/Android (system chrome); ignored on web.
+   * `overlay` — same themed card as `modal`, but absolute fill inside the parent view (nest inside your `Modal`).
+   */
   presentation?: AlertDialogPresentation;
 }
 
@@ -201,6 +206,7 @@ function AlertDialogContent({
 
   const useNativeAlert =
     presentation === 'native' && (Platform.OS === 'ios' || Platform.OS === 'android');
+  const useOverlay = presentation === 'overlay';
 
   const prevOpenRef = useRef(false);
   const nativeAlertShownForOpenRef = useRef(false);
@@ -273,6 +279,26 @@ function AlertDialogContent({
     };
   }, [open, useNativeAlert, setOpen, nativeCopyRef]);
 
+  const themedBody = (
+    <View
+      className="flex-1 justify-center items-center px-4"
+      style={{ backgroundColor: colors.overlayStrong }}
+    >
+      <View
+        className={cn(
+          'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
+          frosted ? 'bg-transparent' : 'bg-background',
+          className
+        )}
+        style={contentStyle}
+        {...props}
+      >
+        {frostedSurface.overlay}
+        {children}
+      </View>
+    </View>
+  );
+
   if (useNativeAlert) {
     return (
       <View
@@ -286,6 +312,32 @@ function AlertDialogContent({
     );
   }
 
+  if (useOverlay) {
+    if (!open) {
+      return (
+        <View
+          pointerEvents="none"
+          style={nativeHiddenStyle}
+          collapsable={false}
+          importantForAccessibility="no-hide-descendants"
+        >
+          {children}
+        </View>
+      );
+    }
+    return (
+      <View
+        pointerEvents="box-none"
+        style={[
+          StyleSheet.absoluteFillObject,
+          { zIndex: 100, elevation: Platform.OS === 'android' ? 24 : undefined },
+        ]}
+      >
+        {themedBody}
+      </View>
+    );
+  }
+
   return (
     <Modal
       visible={open}
@@ -294,23 +346,7 @@ function AlertDialogContent({
       presentationStyle={Platform.OS === 'ios' ? 'overFullScreen' : undefined}
       statusBarTranslucent={Platform.OS === 'android'}
     >
-      <View
-        className="flex-1 justify-center items-center px-4"
-        style={{ backgroundColor: colors.overlayStrong }}
-      >
-        <View
-          className={cn(
-            'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
-            frosted ? 'bg-transparent' : 'bg-background',
-            className
-          )}
-          style={contentStyle}
-          {...props}
-        >
-          {frostedSurface.overlay}
-          {children}
-        </View>
-      </View>
+      {themedBody}
     </Modal>
   );
 }
