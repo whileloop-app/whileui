@@ -222,36 +222,55 @@ function AlertDialogContent({
     }
     nativeAlertShownForOpenRef.current = true;
 
-    const snap: NativeAlertCopy = { ...nativeCopyRef.current };
+    let cancelled = false;
 
-    const buttons = [
-      {
-        text: snap.cancelLabel || 'Cancel',
-        style: 'cancel' as const,
-        onPress: () => {
-          snap.onCancel?.();
-          setOpen(false);
+    const showNativeAlert = () => {
+      if (cancelled) return;
+      const snap: NativeAlertCopy = { ...nativeCopyRef.current };
+
+      const buttons = [
+        {
+          text: snap.cancelLabel || 'Cancel',
+          style: 'cancel' as const,
+          onPress: () => {
+            snap.onCancel?.();
+            setOpen(false);
+          },
         },
-      },
-      {
-        text: snap.confirmLabel || 'OK',
-        style: 'destructive' as const,
-        onPress: () => {
-          snap.onConfirm?.();
-          setOpen(false);
+        {
+          text: snap.confirmLabel || 'OK',
+          style: 'destructive' as const,
+          onPress: () => {
+            snap.onConfirm?.();
+            setOpen(false);
+          },
         },
-      },
-    ];
+      ];
 
-    const options =
-      Platform.OS === 'android'
-        ? {
-            cancelable: true,
-            onDismiss: () => setOpen(false),
-          }
-        : undefined;
+      const options =
+        Platform.OS === 'android'
+          ? {
+              cancelable: true,
+              onDismiss: () => setOpen(false),
+            }
+          : undefined;
 
-    Alert.alert(snap.title || '', snap.message || undefined, buttons, options);
+      Alert.alert(snap.title || '', snap.message || undefined, buttons, options);
+    };
+
+    // After all layout effects in this commit (Title/Description/Action register copy).
+    // Also avoids presenting UIAlertController in the same turn as an RN fullscreen Modal,
+    // which often yields no visible alert on iOS.
+    queueMicrotask(showNativeAlert);
+
+    return () => {
+      cancelled = true;
+      // Strict Mode (dev) runs this cleanup before the microtask; reset guards so the
+      // remounted effect can schedule Alert.alert again. Safe when open becomes false:
+      // the next effect run also clears these refs.
+      nativeAlertShownForOpenRef.current = false;
+      prevOpenRef.current = false;
+    };
   }, [open, useNativeAlert, setOpen, nativeCopyRef]);
 
   if (useNativeAlert) {
