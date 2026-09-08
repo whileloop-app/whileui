@@ -1,6 +1,21 @@
-# Agent Rules — WhileUI Native
+# Agent Rules — WhileUI
 
 Rules for AI agents and contributors editing this codebase. Follow every rule. No exceptions on docs.
+
+**Read `ROADMAP.md` first.** It states which renderer is primary, what this
+package owns versus delegates, and why. These rules are how; the roadmap is why.
+Where the two disagree, the roadmap wins and these rules are stale — fix them.
+
+## Two tracks
+
+- **DOM (primary).** Web, Capacitor mobile, Tauri desktop. All three are a
+  WebView rendering the same build; there is no per-target UI branching.
+- **React Native (frozen).** Kept for apps a WebView cannot serve. Not deleted,
+  not actively developed. Do not hold the DOM track back for API parity with it.
+
+Rules below marked **[RN]** apply only to the frozen track. Everything else —
+tokens, `tv()` variants, UI standards, touch targets, press feedback — is
+renderer-agnostic and applies to both.
 
 ## Core Rules
 
@@ -10,6 +25,24 @@ Rules for AI agents and contributors editing this codebase. Follow every rule. N
 - **Docs are mandatory** — README is the source of truth. Incomplete doc updates = task incomplete. Never leave docs stale.
 - **Avoid deprecated APIs** — Check for deprecation warnings, use recommended replacements. If a package marks an API deprecated, find the new import path or alternative.
 - Don't bloat the codebase.
+
+### Attribution
+
+This repo is public and MIT. Reading another project to understand how it solves
+something is normal and encouraged. Copying its code is a licensing act.
+
+- **Reimplementing from understanding** — no attribution needed.
+- **Adapting code from an MIT project** (shadcn/ui, Konsta, Radix, and most of
+  this ecosystem) — keep the copyright notice. A `/* Adapted from <project> —
+<url>, MIT */` header on the file is enough, and note it in the PR.
+- **Anything not MIT/Apache/BSD** — do not adapt without checking the licence
+  first.
+
+Describe other projects **accurately and without disparagement**. State what a
+project is optimised for and why our tradeoff differs; do not claim a limitation
+that has not been verified against its source. Absence from someone's docs is
+not evidence of absence in their code. This applies to commit messages and issue
+comments as much as to docs — everything here is public and permanent.
 
 ## Documentation
 
@@ -24,31 +57,32 @@ Rules for AI agents and contributors editing this codebase. Follow every rule. N
 1. Export from `packages/ui/src/components/<name>/index.ts` and `packages/ui/src/index.ts`
 2. Add to `README.md` components table
 3. Add to README API Reference if notable props
-4. Add showcase demo in `apps/showcase/App.tsx`
-5. Add entry to `apps/site/lib/registry.ts` (components array)
-6. Add live demo in `apps/site/lib/demos.tsx`
-7. Add props data in `apps/site/lib/props-data.ts`
+4. Add a demo to the showcase for that track — `apps/site` (DOM) or `apps/showcase` (RN)
 
-**Do not skip steps 2–7.** Missing doc, showcase, or site entry = incomplete.
+**Do not skip steps 2–4.** Missing doc or showcase entry = incomplete.
 
 ### When Adding a Block (all required)
 
 1. Export from `packages/ui/src/blocks/<category>/index.ts` and `packages/ui/src/index.ts`
 2. Add to `README.md` blocks table
 3. Add to README Blocks API section with key props
-4. Add showcase demo in `apps/showcase/App.tsx`
-5. Add entry to `apps/site/lib/registry.ts` (blocks array, set `webSupport`)
-6. If `webSupport: 'full'`: add live demo in `apps/site/lib/block-demos.tsx`
-7. If new flow: add to README Flow Patterns table
+4. Add a demo to the showcase for that track — `apps/site` (DOM) or `apps/showcase` (RN)
+5. If new flow: add to README Flow Patterns table
 
-**Do not skip steps 2–6.** Missing doc, showcase, or site entry = incomplete.
+**Do not skip steps 2–4.** Missing doc or showcase entry = incomplete.
 
 ### When Changing Props or Removing
 
-- **Props:** Update README API section, Blocks API, `apps/site/lib/props-data.ts`, and demo code
-- **Removing:** Remove from README (all sections), showcase, and site (`registry.ts`, `demos.tsx`/`block-demos.tsx`, `props-data.ts`). No orphan references
+- **Props:** Update README API section, Blocks API, and demo code
+- **Removing:** Remove from README (all sections) and the showcase. No orphan references
 
-## Uniwind Configuration
+> **Note.** Earlier revisions of this file also required entries in
+> `apps/site/lib/registry.ts`, `demos.tsx`, `block-demos.tsx` and
+> `props-data.ts`. `apps/site` was removed from the repo and those steps were
+> unfollowable. If a docs site returns, restore the steps here in the same
+> change — do not leave a checklist pointing at paths that do not exist.
+
+## Uniwind Configuration **[RN]**
 
 - `global.css` at **app root** (not `src/`) — Tailwind scans from its location
 - `withUniwindConfig` must be **outermost** wrapper in `metro.config.js`
@@ -87,7 +121,10 @@ Required in both `light` and `dark` (and any custom theme):
 - `success`, `warning`, `info` (status colors)
 - Each token needs `*-foreground` variant for text on that background
 
-### Font Weight Mapping
+### Font Weight Mapping **[RN]**
+
+On the DOM track this is a non-issue: use `font-weight` normally with a variable
+or multi-weight webfont. The rest of this section is the native track only.
 
 React Native requires explicit font-family per weight. When changing fonts, update BOTH `--font-sans` in `@theme` AND the `.font-*` CSS classes in `global.css`.
 
@@ -139,7 +176,7 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - Don't use `asChild` with `View` — it lacks `onPress`/`onLongPress`
 - Prefer wrapping children in Pressable over cloneElement injection
 
-### React Native Limitations
+### React Native Limitations **[RN]**
 
 - SafeAreaView: use `react-native-safe-area-context` (RN's deprecated)
 - **CSS box-shadow**: Not supported. Use `shadow-sm/md/lg` classes (soft shadows) or stacked Views for hard-edge 3D effects (NeoPOP style)
@@ -147,15 +184,28 @@ const ButtonContext = createContext({ variant: 'default', size: 'default' });
 - **Other RN primitives requiring hex**: Spinner defaults to `useThemeColors().foreground`. Input, Textarea, NumericInput, SmartInput default `placeholderTextColor` to `mutedForeground`. Add optional override props when needed.
 - **Custom fonts on Android**: Pass only `fontFamily` in style—never `fontWeight`. Passing both triggers `setTypeface(_, BOLD)` and synthetic bold, distorting B/D/P/R. Use `FontProvider` + `useResolveFontFamily` (Text, ButtonText, Label).
 
-### Web & Responsive (Sites + Apps)
+### Responsive & Multi-Target
 
-WhileUI targets both native apps and web. Components should be web-aware by default where behavior differs:
+Web, Capacitor mobile and Tauri desktop are all a WebView rendering the same
+build. **Never branch the UI on target.** There is no "mobile version" of a
+component — there is a narrow viewport and a wide one.
 
-- **Overlays** (DrawerMenu, modals, sheets): Use sensible web defaults (e.g. max-width ~360px for drawers). Add optional `maxWidth` or `width` props for override.
-- **Platform.OS**: Use for behavior that truly differs (haptics, native APIs). Guard web-incompatible code (`if (Platform.OS === 'web') return`).
-- **useWindowDimensions**: Use for layout breakpoints when width matters (e.g. `width >= 768` for desktop layout).
-- **Override props**: Provide `maxWidth`, `width`, etc. so apps can customize. Library has smart defaults; apps opt in to overrides.
-- **Uniwind `web:` variant**: Use for platform-specific styling in apps; library may use `Platform.OS` for structural behavior.
+- **Breakpoints, not platforms.** Use CSS media queries / Tailwind variants for
+  layout that changes with width (`app-shell` picks `bottom-nav` under `lg`,
+  `navigation-sidebar` at or above it). Do not detect the host to decide layout.
+- **Overlays** (drawers, modals, sheets): sensible defaults with room to
+  override — e.g. drawers cap around 360px. Provide `maxWidth` / `width` props.
+  The library has smart defaults; apps opt in to overrides.
+- **Capability, not renderer.** Anything that differs by host is a _device
+  capability_ (haptics, secure storage, share, filesystem, status bar, keyboard),
+  and belongs behind `platform/` — never inline in a component. A component must
+  not know whether it is inside Capacitor.
+- **Touch and pointer both.** Every interactive element gets a 44px touch target
+  _and_ a hover state. The same build serves a phone and a desktop.
+
+**[RN]** On the frozen native track the old guidance still holds: `Platform.OS`
+for behaviour that truly differs, `useWindowDimensions` for breakpoints, and the
+Uniwind `web:` variant for per-platform styling.
 
 ## UI Standards
 
@@ -199,6 +249,8 @@ Add to this file when you discover:
 - **Form-like visibility:** Use `border-border bg-muted` (not `border-input bg-background`) for inputs, selects, labeled fields — ensures visibility on light themes.
 - **Small touch targets:** Components under 44px (e.g. Checkbox h-5, Radio h-5, Switch h-7) need `hitSlop` so effective touch area ≥ 44px.
 - **Browser focus outline on inputs:** Always add `outline-none` to `TextInput` className. Without it, browsers render a blue/black outline on focus that doubles up with the component's `border-border`.
+- **DOM track fails typecheck with `Cannot find name 'document'` / `KeyboardEvent` has no `.key`:** Symptom: anything under `src/web/` that touches a DOM global. Cause: `packages/ui/tsconfig.json` has no DOM lib and resolves globals from React Native's ambient types. Fix: `src/web/` is compiled by `tsconfig.web.json` (DOM lib, `src/web` roots) and excluded from the main project; `build` and `typecheck` run both. Do **not** add `"DOM"` to the main tsconfig — it collides with RN's `fetch`/`FormData` declarations.
+- **`interface X extends HTMLAttributes<…>` "incorrectly extends":** a prop name collides with a DOM attribute of a different type — `onSelect` (React event handler) is the usual one. `Omit` it explicitly and say why in a comment.
 
 ### Blocks vs components
 
@@ -207,16 +259,17 @@ Add to this file when you discover:
 
 ### Where to put new things
 
-| What                 | Path                                          | Notes                                                                                            |
-| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Component**        | `packages/ui/src/components/<name>/`          | Primitives, controls, display. Export from `index.ts`, re-export in `packages/ui/src/index.ts`   |
-| **Block (core)**     | `packages/ui/src/blocks/<category>/`          | Categories: `layout`, `navigation`, `chat`, `lists`, `commerce`, `media`, `datepicker`, `splash` |
-| **Auth/Profile**     | `apps/showcase/templates/auth/` or `profile/` | Copy-paste templates; NOT in core package. Import primitives from `@thewhileloop/whileui`        |
-| **Shared hook/util** | `packages/ui/src/lib/`                        | Theme helpers, cn, portal, tv, font-context                                                      |
-| **Site registry**    | `apps/site/lib/registry.ts`                   | Metadata for all components and blocks (slug, name, category, description, webSupport)           |
-| **Site demos**       | `apps/site/lib/demos.tsx`                     | Live previews + code snippets for components. Every component must have one                      |
-| **Site block demos** | `apps/site/lib/block-demos.tsx`               | Live previews + code snippets for web-supported blocks                                           |
-| **Site props**       | `apps/site/lib/props-data.ts`                 | API reference data (prop name, type, default, description) per component                         |
+| What                  | Path                                               | Notes                                                                                                                                                                                                                                     |
+| --------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Component (DOM)**   | `packages/ui/src/web/components/<name>.tsx`        | Primary track. Export from `packages/ui/src/web/index.ts`. Demo in `apps/site`                                                                                                                                                            |
+| **Component (RN)**    | `packages/ui/src/components/<name>/`               | Frozen track. Export from `index.ts`, re-export in `packages/ui/src/index.ts`. Demo in `apps/showcase`                                                                                                                                    |
+| **DOM recipe**        | `packages/ui/src/web/lib/recipes.ts`               | Token geometry as CSS `var()`. Mirror of `lib/recipes.ts` — keep the two in step. Pixel tokens are unitless: `calc(var(--x) * 1px)`                                                                                                       |
+| **Block (DOM)**       | `packages/ui/src/web/blocks/<category>/<name>.tsx` | Primary track. Same slots/props as the RN block where one exists. Export from `packages/ui/src/web/index.ts`. Demo in `apps/site` — the showcase's own shell is `AppShell` + `Header` + `DrawerMenu`                                      |
+| **Block (RN)**        | `packages/ui/src/blocks/<category>/`               | Categories: `layout`, `navigation`, `chat`, `lists`, `commerce`, `media`, `datepicker`, `splash`                                                                                                                                          |
+| **Auth/Profile**      | `apps/showcase/templates/auth/` or `profile/`      | Copy-paste templates; NOT in core package. Import primitives from `@thewhileloop/whileui`                                                                                                                                                 |
+| **Shared hook/util**  | `packages/ui/src/lib/`                             | Theme helpers, cn, portal, tv, font-context                                                                                                                                                                                               |
+| **Tokens/contract**   | `packages/ui/src/lib/`                             | `theme-contract`, `visual-token-contract`, `theme-presets`. **Keep these free of any renderer import** — they are the portable core                                                                                                       |
+| **Device capability** | `packages/ui/src/web/platform/`                    | **Hardware back**, storage, keyboard, status bar, deep links, haptics, share, filesystem. One interface, per-host impls. Never inline in a component. See the mandatory-set table in ROADMAP.md — an app must not be able to forget these |
 
 ## Custom Themes (Starter Kits)
 
@@ -269,6 +322,8 @@ Uniwind.setTheme('dark');
 ### Frosted / translucent surfaces
 
 Apps that want a frosted or translucent look for floating panels (modals, sheets, toolbars) can override surface tokens in their theme with semi-transparent values, e.g. `--color-surface-elevated: oklch(0.98 0.01 95 / 0.4)`. Optional tokens: `surface-translucent`, `surface-translucent-border`. No "glass" in core names. See README Theming > Frosted / Translucent Theme.
+
+- **Android translucent surfaces:** Frosted panels usually need denser tint than iOS/web. Tune `--ui-frosted-android-tint-alpha-scale` (default `1.18`) before making Android-only component overrides.
 
 ### Required Theme Variables
 

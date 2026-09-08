@@ -11,6 +11,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -92,6 +94,7 @@ export function SplashScreen({
   className,
   ...props
 }: SplashScreenProps) {
+  const visual = useVisualTokens();
   // Animation values
   const opacity = useSharedValue(0);
   const scale = useSharedValue(variant === 'scale' ? 0.8 : 1);
@@ -153,7 +156,12 @@ export function SplashScreen({
 
         {/* Tagline */}
         {tagline && (
-          <Text className="mt-2 text-base text-muted-foreground text-center px-8">{tagline}</Text>
+          <Text
+            className="mt-2 text-muted-foreground text-center px-8"
+            style={typographyStyle(visual, 'body')}
+          >
+            {tagline}
+          </Text>
         )}
       </AnimatedView>
 
@@ -165,7 +173,11 @@ export function SplashScreen({
             <LoadingDot delay={150} />
             <LoadingDot delay={300} />
           </View>
-          {loadingText && <Text className="mt-3 text-sm text-muted-foreground">{loadingText}</Text>}
+          {loadingText && (
+            <Text className="mt-3 text-muted-foreground" style={typographyStyle(visual, 'label')}>
+              {loadingText}
+            </Text>
+          )}
         </AnimatedView>
       )}
     </View>

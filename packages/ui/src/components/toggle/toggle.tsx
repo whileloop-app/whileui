@@ -2,6 +2,8 @@ import React, { createContext, useContext } from 'react';
 import { Pressable, Text, type PressableProps, type TextProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { controlRecipe, typographyStyle, type TypographyRole } from '../../lib/recipes';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -20,16 +22,16 @@ const ToggleContext = createContext<ToggleContextValue>({
 // ─── Variants ────────────────────────────────────────────────
 
 const toggleVariants = tv({
-  base: 'inline-flex items-center justify-center rounded-md active:bg-accent',
+  base: 'inline-flex items-center justify-center active:bg-accent',
   variants: {
     variant: {
       default: 'bg-transparent',
       outline: 'border border-input bg-transparent',
     },
     size: {
-      default: 'h-10 px-3',
-      sm: 'h-8 px-2',
-      lg: 'h-12 px-4',
+      default: '',
+      sm: '',
+      lg: '',
     },
     pressed: {
       true: 'bg-accent',
@@ -43,17 +45,23 @@ const toggleVariants = tv({
   },
 });
 
+const TOGGLE_TEXT_ROLE: Record<string, TypographyRole> = {
+  default: 'label',
+  sm: 'caption',
+  lg: 'body',
+};
+
 const toggleTextVariants = tv({
-  base: 'text-sm font-medium',
+  base: 'font-medium',
   variants: {
     pressed: {
       true: 'text-accent-foreground',
       false: 'text-muted-foreground',
     },
     size: {
-      default: 'text-sm',
-      sm: 'text-xs',
-      lg: 'text-base',
+      default: '',
+      sm: '',
+      lg: '',
     },
   },
   defaultVariants: {
@@ -88,10 +96,12 @@ function Toggle({
   size = 'default',
   className,
   children,
+  style: styleProp,
   ...props
 }: ToggleProps) {
   const [internalPressed, setInternalPressed] = React.useState(defaultPressed);
   const pressed = controlledPressed ?? internalPressed;
+  const visual = useVisualTokens();
 
   const handlePress = () => {
     const next = !pressed;
@@ -99,10 +109,19 @@ function Toggle({
     onPressedChange?.(next);
   };
 
+  const tokenStyle = {
+    ...controlRecipe(visual, size ?? 'default'),
+    ...(variant === 'outline' ? { borderWidth: visual.borderWidthControl } : null),
+  };
+
   return (
     <ToggleContext.Provider value={{ pressed, variant, size }}>
       <Pressable
         className={cn(toggleVariants({ variant, size, pressed }), className)}
+        style={(state) => [
+          tokenStyle,
+          typeof styleProp === 'function' ? styleProp(state) : styleProp,
+        ]}
         onPress={handlePress}
         accessibilityRole="button"
         accessibilityState={{ selected: pressed }}
@@ -114,9 +133,17 @@ function Toggle({
   );
 }
 
-function ToggleText({ className, ...props }: ToggleTextProps) {
+function ToggleText({ className, style, ...props }: ToggleTextProps) {
   const { pressed, size } = useContext(ToggleContext);
-  return <Text className={cn(toggleTextVariants({ pressed, size }), className)} {...props} />;
+  const visual = useVisualTokens();
+  const typography = typographyStyle(visual, TOGGLE_TEXT_ROLE[size ?? 'default'] ?? 'label');
+  return (
+    <Text
+      className={cn(toggleTextVariants({ pressed, size }), className)}
+      style={[typography, style]}
+      {...props}
+    />
+  );
 }
 
 Toggle.displayName = 'Toggle';

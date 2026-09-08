@@ -30,6 +30,15 @@ export {
   type ThemeColors,
 } from './lib/theme-colors';
 export {
+  THEME_TOKEN_SPECS,
+  THEME_TOKEN_GROUPS,
+  WHILEUI_LIGHT_THEME_COLORS,
+  WHILEUI_DARK_THEME_COLORS,
+  type ThemeTokenGroup,
+  type ThemeTokenKey,
+  type ThemeTokenSpec,
+} from './lib/theme-contract';
+export {
   useInteractionTokens,
   withInteractivePressableStyle,
   type InteractionTokens,
@@ -39,10 +48,45 @@ export {
 } from './lib/interaction-tokens';
 export { useVisualTokens, type VisualTokens } from './lib/visual-tokens';
 export {
+  VISUAL_TOKEN_SPECS,
+  VISUAL_TOKEN_GROUPS,
+  type VisualTokenGroup,
+  type VisualTokenKey,
+  type VisualTokenKind,
+  type VisualTokenSpec,
+} from './lib/visual-token-contract';
+export {
   registerFrostedBlurView,
   type FrostedSurfaceProps,
   type FrostedTintToken,
 } from './lib/frosted-surface';
+export {
+  controlRecipe,
+  fieldRecipe,
+  surfaceRecipe,
+  surfacePadding,
+  surfaceRadius,
+  shadowStyle,
+  typographyStyle,
+  useControlRecipe,
+  useFieldRecipe,
+  useSurfaceRecipe,
+  useShadowStyle,
+  useTypography,
+  type ControlSize,
+  type SurfacePaddingSize,
+  type SurfaceRecipeOptions,
+  type ShadowTier,
+  type TypographyRole,
+} from './lib/recipes';
+export {
+  WHILEUI_PRESET_SOFT,
+  WHILEUI_PRESET_ATELIER,
+  WHILEUI_THEME_PRESETS,
+  themePresetToCssVariables,
+  themePresetToCss,
+  type ThemePreset,
+} from './lib/theme-presets';
 
 // ─── Primitives ──────────────────────────────────────────────
 export { Text, textVariants, type TextProps } from './components/text';

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import { View, Pressable, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -57,20 +58,34 @@ function RadioGroup({
 
 function RadioGroupItem({ value: itemValue, className, ...props }: RadioGroupItemProps) {
   const { value, onValueChange } = useContext(RadioGroupContext);
+  const visual = useVisualTokens();
   const isSelected = value === itemValue;
+  const size = Math.max(18, Math.round(visual.controlHeightSm * 0.55));
+  const dotSize = Math.max(8, Math.round(size * 0.5));
 
   return (
     <Pressable
       className={cn(
-        'h-5 w-5 rounded-full border-2 items-center justify-center',
+        'items-center justify-center',
         isSelected ? 'border-primary' : 'border-border',
         className
       )}
+      style={{
+        width: size,
+        height: size,
+        borderWidth: visual.borderWidthEmphasis,
+        borderRadius: size / 2,
+      }}
       onPress={() => onValueChange(itemValue)}
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       {...props}
     >
-      {isSelected && <View className="h-2.5 w-2.5 rounded-full bg-primary" />}
+      {isSelected && (
+        <View
+          className="bg-primary"
+          style={{ width: dotSize, height: dotSize, borderRadius: dotSize / 2 }}
+        />
+      )}
     </Pressable>
   );
 }

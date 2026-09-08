@@ -4,6 +4,7 @@ import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 export interface NavigationSidebarItem {
   key: string;
@@ -73,15 +74,22 @@ export function NavigationSidebar({
                     onPress={() => onSelect?.(item.key)}
                     disabled={item.disabled}
                     className={cn(
-                      'min-h-10 flex-row items-center gap-3 rounded-md border-l-2 border-transparent pl-3 pr-3 py-2',
+                      'min-h-10 flex-row items-center gap-3 border-transparent pl-3 pr-3 py-2',
                       isActive && 'border-l-primary bg-primary-soft-subtle',
                       !isActive && !item.disabled && 'web:hover:bg-muted-soft',
                       item.disabled && ''
                     )}
-                    style={withInteractivePressableStyle(undefined, interaction, {
-                      disabled: Boolean(item.disabled),
-                      pressedVariant: 'default',
-                    })}
+                    style={withInteractivePressableStyle(
+                      {
+                        borderRadius: visual.radiusMd,
+                        borderLeftWidth: visual.borderWidthEmphasis,
+                      },
+                      interaction,
+                      {
+                        disabled: Boolean(item.disabled),
+                        pressedVariant: 'default',
+                      }
+                    )}
                     accessibilityRole="button"
                     accessibilityState={{ selected: isActive, disabled: item.disabled }}
                   >
@@ -95,7 +103,11 @@ export function NavigationSidebar({
                         {item.label}
                       </Text>
                       {item.description ? (
-                        <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+                        <Text
+                          className="text-muted-foreground"
+                          style={typographyStyle(visual, 'caption')}
+                          numberOfLines={1}
+                        >
                           {item.description}
                         </Text>
                       ) : null}
@@ -104,9 +116,10 @@ export function NavigationSidebar({
                     {item.badge !== undefined ? (
                       <View
                         className={cn(
-                          'min-w-5 rounded-full px-1.5 py-0.5',
+                          'min-w-5 px-1.5 py-0.5',
                           isActive ? 'bg-primary' : 'bg-muted'
                         )}
+                        style={{ borderRadius: visual.badgeRadius }}
                       >
                         <Text
                           className={cn(

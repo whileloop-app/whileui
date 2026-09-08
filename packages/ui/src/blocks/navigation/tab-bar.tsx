@@ -3,6 +3,8 @@ import { View, Pressable, ScrollView, type ViewProps, type PressableProps } from
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -38,16 +40,25 @@ function TabBarItemComponent({
 }: TabBarItemProps) {
   const { label, icon } = item;
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+
+  const showUnderline = variant === 'default' || (variant === 'underline' && isActive);
+  const tokenStyle = {
+    paddingHorizontal: visual.controlPaddingXDefault,
+    paddingVertical: visual.controlPaddingYSm,
+    ...(variant === 'pills' ? { borderRadius: visual.badgeRadius } : null),
+    ...(showUnderline ? { borderBottomWidth: visual.borderWidthEmphasis } : null),
+  };
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     disabled: Boolean(props.disabled),
     pressedVariant: 'default',
   });
 
-  const baseStyles = 'flex-row items-center justify-center gap-2 px-4 py-2';
+  const baseStyles = 'flex-row items-center justify-center gap-2';
   const variantStyles = {
-    default: isActive ? 'border-b-2 border-primary' : 'border-b-2 border-transparent',
-    pills: isActive ? 'bg-primary rounded-full' : 'rounded-full',
-    underline: isActive ? 'border-b-2 border-primary' : '',
+    default: isActive ? 'border-primary' : 'border-transparent',
+    pills: isActive ? 'bg-primary' : '',
+    underline: isActive ? 'border-primary' : '',
   };
   const textStyles = {
     default: isActive ? 'text-primary font-medium' : 'text-muted-foreground font-medium',
@@ -58,7 +69,10 @@ function TabBarItemComponent({
   return (
     <Pressable
       className={cn(baseStyles, variantStyles[variant], className)}
-      style={interactiveStyle}
+      style={(state) => [
+        tokenStyle,
+        typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle,
+      ]}
       {...props}
     >
       {icon && (
@@ -66,7 +80,9 @@ function TabBarItemComponent({
           {icon}
         </View>
       )}
-      <Text className={cn('text-sm', textStyles[variant])}>{label}</Text>
+      <Text className={cn(textStyles[variant])} style={typographyStyle(visual, 'label')}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -78,17 +94,21 @@ export function TabBar({
   variant = 'default',
   scrollable = false,
   className,
+  style,
   ...props
 }: TabBarProps) {
+  const visual = useVisualTokens();
+
   const content = (
     <View
       className={cn(
         'flex-row',
-        variant === 'pills' && 'gap-1 rounded-full bg-muted p-1',
+        variant === 'pills' && 'gap-1 bg-muted p-1',
         variant === 'default' && 'border-b border-border',
         !scrollable && 'justify-around',
         className
       )}
+      style={[variant === 'pills' ? { borderRadius: visual.badgeRadius } : null, style]}
       {...props}
     >
       {items.map((item) => (
@@ -108,7 +128,7 @@ export function TabBar({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal: visual.surfacePaddingSm }}
       >
         {content}
       </ScrollView>

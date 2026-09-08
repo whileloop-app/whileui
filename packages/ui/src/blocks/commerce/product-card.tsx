@@ -4,6 +4,8 @@ import { Badge, BadgeText } from '../../components/badge';
 import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -31,17 +33,25 @@ function ProductCardSkeleton({
   variant?: 'vertical' | 'horizontal';
   className?: string;
 }) {
+  const visual = useVisualTokens();
   const isHorizontal = variant === 'horizontal';
   return (
     <View
       className={cn(
-        'overflow-hidden rounded-xl border border-border bg-card',
+        'overflow-hidden border border-border bg-card',
         isHorizontal ? 'flex-row' : 'flex-col',
         className
       )}
+      style={{
+        borderRadius: surfaceRadius(visual, 'xl'),
+        borderWidth: visual.borderWidthHairline,
+      }}
     >
       <Skeleton className={cn(isHorizontal ? 'h-28 w-28' : 'aspect-square w-full rounded-none')} />
-      <View className={cn('flex-1 p-3 gap-2', isHorizontal && 'justify-center')}>
+      <View
+        className={cn('flex-1 gap-2', isHorizontal && 'justify-center')}
+        style={{ padding: surfacePadding(visual, 'sm') }}
+      >
         <Skeleton className="h-4 w-3/4 rounded-md" />
         {!isHorizontal && <Skeleton className="h-3 w-full rounded-md" />}
         <Skeleton className="h-3 w-1/3 rounded-md" />
@@ -71,22 +81,34 @@ export function ProductCard({
 }: ProductCardProps) {
   const isHorizontal = variant === 'horizontal';
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   if (loading) {
     return <ProductCardSkeleton variant={variant} className={className} />;
   }
 
+  const label = typographyStyle(visual, 'label');
+  const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
+    disabled: Boolean(props.disabled),
+    pressedVariant: 'strong',
+  });
+  const surfaceStyle = {
+    borderRadius: surfaceRadius(visual, 'xl'),
+    borderWidth: visual.borderWidthHairline,
+  };
+
   return (
     <Pressable
       className={cn(
-        'overflow-hidden rounded-xl border border-border bg-card',
+        'overflow-hidden border border-border bg-card',
         isHorizontal ? 'flex-row' : 'flex-col',
         className
       )}
-      style={withInteractivePressableStyle(styleProp, interaction, {
-        disabled: Boolean(props.disabled),
-        pressedVariant: 'strong',
-      })}
+      style={(state) => {
+        const baseStyle =
+          typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+        return [surfaceStyle, baseStyle];
+      }}
       {...props}
     >
       {/* Image */}
@@ -100,7 +122,10 @@ export function ProductCard({
           <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
         ) : (
           <View className="items-center justify-center gap-2">
-            <View className="h-10 w-10 rounded-lg bg-muted-soft items-center justify-center">
+            <View
+              className="h-10 w-10 bg-muted-soft items-center justify-center"
+              style={{ borderRadius: visual.radiusSm }}
+            >
               <Text className="text-muted-foreground text-lg">📦</Text>
             </View>
           </View>
@@ -115,13 +140,16 @@ export function ProductCard({
       </View>
 
       {/* Content */}
-      <View className={cn('flex-1 p-3', isHorizontal && 'justify-center')}>
+      <View
+        className={cn('flex-1', isHorizontal && 'justify-center')}
+        style={{ padding: surfacePadding(visual, 'sm') }}
+      >
         <Text className="font-medium text-foreground" numberOfLines={2}>
           {title}
         </Text>
 
         {description && !isHorizontal && (
-          <Text className="mt-1 text-sm text-muted-foreground" numberOfLines={2}>
+          <Text className="mt-1 text-muted-foreground" style={label} numberOfLines={2}>
             {description}
           </Text>
         )}
@@ -129,8 +157,10 @@ export function ProductCard({
         {/* Rating */}
         {rating !== undefined && (
           <View className="mt-1 flex-row items-center gap-1">
-            <Text className="text-sm text-accent">★</Text>
-            <Text className="text-sm text-muted-foreground">
+            <Text className="text-accent" style={label}>
+              ★
+            </Text>
+            <Text className="text-muted-foreground" style={label}>
               {rating.toFixed(1)}
               {reviewCount !== undefined && ` (${reviewCount})`}
             </Text>
@@ -141,12 +171,18 @@ export function ProductCard({
         <View className="mt-2 flex-row items-center gap-2">
           <Text className="text-lg font-bold text-foreground">{price}</Text>
           {originalPrice && (
-            <Text className="text-sm text-muted-foreground line-through">{originalPrice}</Text>
+            <Text className="text-muted-foreground line-through" style={label}>
+              {originalPrice}
+            </Text>
           )}
         </View>
 
         {/* Stock */}
-        {!inStock && <Text className="mt-1 text-sm text-destructive">Out of stock</Text>}
+        {!inStock && (
+          <Text className="mt-1 text-destructive" style={label}>
+            Out of stock
+          </Text>
+        )}
       </View>
     </Pressable>
   );

@@ -6,6 +6,12 @@ Beautiful, accessible, themeable components built with [Uniwind](https://uniwind
 
 **Requirements:** React 19+, React Native 0.81+, Expo 52+ (if using Expo). Supports React Native Web.
 
+> **Direction:** the DOM is becoming the primary renderer — web, Capacitor
+> mobile and Tauri desktop are one WebView build — and this React Native track
+> is being frozen rather than retired. See [ROADMAP.md](./ROADMAP.md) for what
+> the package owns, what it delegates, and how the two tracks divide.
+> Everything documented below describes the current, shipping native track.
+
 ## Installation
 
 ```bash
@@ -393,6 +399,29 @@ Copy from `apps/showcase/templates/profile/`:
 | **DatePickerInline**     | Inline calendar for forms or dashboards           |
 | **DateRangePickerModal** | Range selection modal with period marking         |
 
+## DOM Track (web, Capacitor, Tauri)
+
+The primary renderer going forward — see [ROADMAP.md](./ROADMAP.md). Same tokens
+and the same `variant`/`size` API as the native components above, rendering
+plain DOM. No `react-native-web`.
+
+```ts
+import { AppShell, Header, DrawerMenu, Button, Card } from '@thewhileloop/whileui/web';
+```
+
+| Ported                                                                                                                                                                                                                                            | Status |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| `Button`, `ButtonText`, `ButtonIcon`                                                                                                                                                                                                              | ✓      |
+| `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`                                                                                                                                                                 | ✓      |
+| `AppShell` — `header`, `footer`, `bottomNav`, `loading` + `skeleton`                                                                                                                                                                              | ✓      |
+| `Header`, `HeaderIconButton`, `HeaderBackButton`                                                                                                                                                                                                  | ✓      |
+| `DrawerMenu` — sections, `activeKey`, `onSelect`, `header`/`footer` slots                                                                                                                                                                         | ✓      |
+| `platform/` — `haptics`, `secureStore`, `hardwareBack`, `keyboard`, `statusBar`, `share`, `deepLinks`. Web fallbacks by default; `installPlatform(createCapacitorPlatform({ App, Haptics, … }))` once at boot. Zero Capacitor deps in the library | ✓      |
+
+Everything else is listed, per category, in the DOM showcase: `cd apps/site && bun run dev` (port 8083). The showcase's own shell is `AppShell` + `Header` + `DrawerMenu`.
+
+**One gotcha.** Visual tokens are emitted unitless (`--ui-radius-md: 14`) because the native track consumes them as numbers. On the DOM every pixel token needs `calc(var(--x) * 1px)`; `packages/ui/src/web/lib/recipes.ts` does this for you.
+
 ## Layout Primitives (Stack, Row, Box)
 
 Use `Stack` for vertical layouts, `Row` for horizontal layouts. Both support `gap`, `align`, and `justify` variants.
@@ -548,7 +577,7 @@ The WhileUI token contract is strict for cross-app reuse. Define these in **ever
 - Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `popover`, `popover-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
 - Optional status tokens: `success`, `success-foreground`, `warning`, `warning-foreground`, `info`, `info-foreground`
 - Optional effect tokens: `overlay`, `overlay-strong`, `surface-elevated`, `surface-border`, `surface-highlight`, `surface-translucent`, `surface-translucent-border`, `state-hover`, `state-pressed`, `state-disabled`
-- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`, `--ui-blur-intensity-subtle`, `--ui-blur-intensity-medium`, `--ui-blur-intensity-strong`, `--ui-blur-saturation-pct`, `--ui-frosted-highlight-height`, `--ui-frosted-backdrop-blur-intensity`, `--ui-frosted-backdrop-blur-scale`, `--ui-frosted-android-experimental-blur`, `--ui-drawer-frosted-inset`, `--ui-drawer-frosted-radius`, `--ui-drawer-content-top-padding`
+- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`, `--ui-blur-intensity-subtle`, `--ui-blur-intensity-medium`, `--ui-blur-intensity-strong`, `--ui-blur-saturation-pct`, `--ui-frosted-highlight-height`, `--ui-frosted-backdrop-blur-intensity`, `--ui-frosted-backdrop-blur-scale`, `--ui-frosted-android-tint-alpha-scale`, `--ui-frosted-android-experimental-blur`, `--ui-drawer-frosted-inset`, `--ui-drawer-frosted-radius`, `--ui-drawer-content-top-padding`
 - Optional scale tokens: spacing (`--spacing`, `--spacing-*`), typography (`--text-*`, `--leading-*`, `--tracking-*`), radius (`--radius-*`), elevation (`--shadow-*`)
 
 Minimal contract example:
@@ -608,6 +637,8 @@ Some apps want a frosted or translucent look for floating panels (modals, sheets
 
 **Optional:** Add `expo-blur` and register its `BlurView` once at app startup for full frosted blur. For tint-only (no blur), translucent surface tokens are sufficient.
 
+**Android note:** frosted panels usually need denser tint than iOS/web. WhileUI now scales frosted tint alpha on Android with `--ui-frosted-android-tint-alpha-scale` (default `1.18`). Set it to `1` to match other platforms exactly, or raise it if your Android surfaces still feel washed out.
+
 ```tsx
 import { BlurView } from 'expo-blur';
 import { registerFrostedBlurView } from '@thewhileloop/whileui';
@@ -635,6 +666,7 @@ Additional frosted tuning tokens:
 - `--ui-frosted-highlight-height` (top highlight strip height in px, set `0` to disable hard top sheen)
 - `--ui-frosted-backdrop-blur-intensity` (default backdrop blur amount)
 - `--ui-frosted-backdrop-blur-scale` (ratio used when component blur is overridden)
+- `--ui-frosted-android-tint-alpha-scale` (Android-only alpha multiplier applied to frosted tint and backdrop layers)
 - `--ui-frosted-android-experimental-blur` (`1` enables `expo-blur` Android experimental path)
 - `--ui-drawer-frosted-inset` (floating inset for frosted drawer shells)
 - `--ui-drawer-frosted-radius` (drawer corner radius in px)
@@ -687,6 +719,7 @@ WhileUI components also read optional `--ui-*` tokens for deeper control of pres
   --ui-frosted-highlight-height: 0;
   --ui-frosted-backdrop-blur-intensity: 14;
   --ui-frosted-backdrop-blur-scale: 0.55;
+  --ui-frosted-android-tint-alpha-scale: 1.22;
   --ui-frosted-android-experimental-blur: 1;
   --ui-drawer-frosted-inset: 0;
   --ui-drawer-frosted-radius: 28;
@@ -1138,12 +1171,12 @@ import {
 
 `AlertDialogContent` supports the same frosted props as `DialogContent`.
 
-| Prop          | Type                     | Default   | Description                                                                                                                                                                                                                                                                                                                                                                 |
-| ------------- | ------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| presentation  | `'modal' \| 'native' \| 'overlay'`    | `'modal'` | **`modal`** — themed card in an RN `Modal` (iOS `overFullScreen`). **`native`** — `Alert.alert` on iOS/Android (system UI); use when a second `Modal` won’t stack; ignored on web. **`overlay`** — same themed card as `modal`, but absolutely positioned **inside the parent view** (no second `Modal`). Nest `<AlertDialog>` under your fullscreen sheet’s root so the confirm matches app styling. **Web:** `'native'` is ignored; `overlay` behaves like `modal`. |
-| frosted       | `boolean`                | `false`   | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
-| blurIntensity | `number`                 | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
-| blurTintToken | `'surfaceElevated' \| …` | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                     |
+| Prop          | Type                               | Default   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ------------- | ---------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| presentation  | `'modal' \| 'native' \| 'overlay'` | `'modal'` | **`modal`** — themed card in an RN `Modal` (iOS `overFullScreen`). **`native`** — `Alert.alert` on iOS/Android (system UI); use when a second `Modal` won’t stack; ignored on web. **`overlay`** — same themed card as `modal`, but absolutely positioned **inside the parent view** (no second `Modal`). Nest `<AlertDialog>` under your fullscreen sheet’s root so the confirm matches app styling. **Web:** `'native'` is ignored; `overlay` behaves like `modal`. |
+| frosted       | `boolean`                          | `false`   | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| blurIntensity | `number`                           | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| blurTintToken | `'surfaceElevated' \| …`           | —         | Same as `DialogContent`                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ### React Native: stacked modals
 

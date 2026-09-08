@@ -4,17 +4,20 @@ import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { shadowStyle, surfacePadding, typographyStyle, type ShadowTier } from '../../lib/recipes';
 
 // ─── Card ────────────────────────────────────────────────────
 
 const cardVariants = tv({
-  base: 'rounded-xl border border-border bg-card',
+  base: 'border border-border bg-card',
   variants: {
     padding: {
-      none: 'p-0',
-      sm: 'p-4',
-      default: 'p-6',
-      lg: 'p-8',
+      none: '',
+      sm: '',
+      default: '',
+      lg: '',
     },
     unstyled: {
       true: 'rounded-none border-0 bg-transparent shadow-none',
@@ -28,7 +31,10 @@ const cardVariants = tv({
 });
 
 export interface CardProps
-  extends ViewProps, VariantProps<typeof cardVariants>, FrostedSurfaceProps {}
+  extends ViewProps, VariantProps<typeof cardVariants>, FrostedSurfaceProps {
+  /** Elevation tier; 'sm' by default, 'none' for flat cards. */
+  shadow?: ShadowTier;
+}
 
 const Card = React.forwardRef<View, CardProps>(
   (
@@ -36,6 +42,7 @@ const Card = React.forwardRef<View, CardProps>(
       className,
       padding,
       unstyled,
+      shadow = 'sm',
       frosted = false,
       blurIntensity,
       blurTintToken,
@@ -45,6 +52,8 @@ const Card = React.forwardRef<View, CardProps>(
     },
     ref
   ) => {
+    const visual = useVisualTokens();
+    const colors = useThemeColors();
     const frostedSurface = useFrostedSurface({
       frosted,
       blurIntensity,
@@ -52,7 +61,17 @@ const Card = React.forwardRef<View, CardProps>(
       defaultTintToken: 'card',
       defaultBlurPreset: 'subtle',
     });
-    const cardStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
+    const effectivePadding = surfacePadding(visual, padding ?? 'default');
+    const cardStyle: StyleProp<ViewStyle> = [
+      {
+        borderRadius: unstyled ? 0 : visual.radiusXl,
+        padding: unstyled ? 0 : effectivePadding,
+        borderWidth: unstyled ? 0 : visual.borderWidthHairline,
+      },
+      unstyled ? null : shadowStyle(visual, colors, shadow),
+      frostedSurface.surfaceStyle,
+      style,
+    ];
 
     return (
       <View
@@ -89,11 +108,13 @@ CardHeader.displayName = 'CardHeader';
 export interface CardTitleProps extends TextProps {}
 
 const CardTitle = React.forwardRef<React.ComponentRef<typeof Text>, CardTitleProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, style, ...props }, ref) => {
+    const visual = useVisualTokens();
     return (
       <Text
         ref={ref}
-        className={cn('text-xl font-semibold text-card-foreground tracking-tight', className)}
+        className={cn('font-semibold text-card-foreground tracking-tight', className)}
+        style={[typographyStyle(visual, 'title'), style]}
         {...props}
       />
     );
@@ -107,8 +128,16 @@ CardTitle.displayName = 'CardTitle';
 export interface CardDescriptionProps extends TextProps {}
 
 const CardDescription = React.forwardRef<React.ComponentRef<typeof Text>, CardDescriptionProps>(
-  ({ className, ...props }, ref) => {
-    return <Text ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />;
+  ({ className, style, ...props }, ref) => {
+    const visual = useVisualTokens();
+    return (
+      <Text
+        ref={ref}
+        className={cn('text-muted-foreground', className)}
+        style={[typographyStyle(visual, 'label'), style]}
+        {...props}
+      />
+    );
   }
 );
 

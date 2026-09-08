@@ -3,6 +3,8 @@ import { View, Pressable, type ViewProps, type PressableProps } from 'react-nati
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -33,18 +35,27 @@ export function Header({
   transparent = false,
   border = true,
   className,
+  style,
   ...props
 }: HeaderProps) {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   return (
     <View
       className={cn(
-        'flex-row items-center px-4 py-3',
+        'flex-row items-center',
         !transparent && 'bg-background',
         border && 'border-b border-border',
         className
       )}
+      style={[
+        {
+          paddingHorizontal: visual.controlPaddingXDefault,
+          paddingVertical: visual.controlPaddingYDefault,
+        },
+        style,
+      ]}
       {...props}
     >
       {/* Left */}
@@ -55,12 +66,20 @@ export function Header({
         {centerContent || (
           <View className="items-center">
             {title && (
-              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+              <Text
+                className="font-semibold text-foreground"
+                style={typographyStyle(visual, 'body')}
+                numberOfLines={1}
+              >
                 {title}
               </Text>
             )}
             {subtitle && (
-              <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+              <Text
+                className="text-muted-foreground"
+                style={typographyStyle(visual, 'caption')}
+                numberOfLines={1}
+              >
                 {subtitle}
               </Text>
             )}
@@ -102,6 +121,7 @@ export function HeaderBackButton({
   ...props
 }: HeaderBackButtonProps) {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     disabled: Boolean(props.disabled),
     pressedVariant: 'default',
@@ -113,8 +133,16 @@ export function HeaderBackButton({
       style={interactiveStyle}
       {...props}
     >
-      {icon || <Text className="text-xl text-primary">‹</Text>}
-      {label && <Text className="text-base text-primary">{label}</Text>}
+      {icon || (
+        <Text className="text-primary" style={typographyStyle(visual, 'title')}>
+          ‹
+        </Text>
+      )}
+      {label && (
+        <Text className="text-primary" style={typographyStyle(visual, 'body')}>
+          {label}
+        </Text>
+      )}
     </Pressable>
   );
 }

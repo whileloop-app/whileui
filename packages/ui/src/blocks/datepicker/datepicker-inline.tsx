@@ -5,6 +5,8 @@ import { Calendar, type DateData } from 'react-native-calendars';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfaceRadius, typographyStyle } from '../../lib/recipes';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
 export interface DatePickerInlineProps {
@@ -31,19 +33,21 @@ export function DatePickerInline({
 }: DatePickerInlineProps) {
   const { theme } = useUniwind();
   const colors = useThemeColors();
+  const visual = useVisualTokens();
   const calendarTheme = useCalendarTheme(customTheme);
   const arrowColor =
     calendarTheme.arrowColor ??
     calendarTheme.monthTextColor ??
     calendarTheme.dayTextColor ??
     colors.foreground;
+  const arrowFontSize = typographyStyle(visual, 'body').fontSize;
   const renderArrow = useCallback(
     (direction: 'left' | 'right') => (
-      <Text className="text-base font-medium" style={{ color: arrowColor }}>
+      <Text className="font-medium" style={{ color: arrowColor, fontSize: arrowFontSize }}>
         {direction === 'left' ? '<' : '>'}
       </Text>
     ),
-    [arrowColor]
+    [arrowColor, arrowFontSize]
   );
 
   const markedDates = useMemo(() => {
@@ -62,7 +66,13 @@ export function DatePickerInline({
   };
 
   return (
-    <View className={cn('overflow-hidden rounded-xl border border-border', className)}>
+    <View
+      className={cn('overflow-hidden border-border', className)}
+      style={{
+        borderRadius: surfaceRadius(visual, 'lg'),
+        borderWidth: visual.borderWidthHairline,
+      }}
+    >
       <Calendar
         key={theme}
         current={value ?? undefined}

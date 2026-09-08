@@ -16,7 +16,7 @@ import { useVisualTokens } from '../../lib/visual-tokens';
 // ─── Variants ─────────────────────────────────────────────────
 
 const skeletonVariants = tv({
-  base: 'rounded-md bg-muted',
+  base: 'bg-muted',
   variants: {
     variant: {
       pulse: '',
@@ -34,10 +34,14 @@ export interface SkeletonProps extends ViewProps, VariantProps<typeof skeletonVa
 
 // ─── Component ───────────────────────────────────────────────
 
-function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
+function Skeleton({ className, variant = 'pulse', style, ...props }: SkeletonProps) {
   const progress = useSharedValue(0);
   const colors = useThemeColors();
   const visual = useVisualTokens();
+
+  // Circular skeletons keep their class-driven radius; everything else gets the token radius.
+  const isCircular = className?.includes('rounded-full') ?? false;
+  const radiusStyle = isCircular ? null : { borderRadius: visual.radiusMd };
 
   useEffect(() => {
     progress.value = withRepeat(
@@ -63,6 +67,7 @@ function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
     return (
       <View
         className={cn(skeletonVariants({ variant }), 'overflow-hidden', className)}
+        style={[radiusStyle, style]}
         {...(props as any)}
       >
         <Animated.View
@@ -84,7 +89,7 @@ function Skeleton({ className, variant = 'pulse', ...props }: SkeletonProps) {
 
   return (
     <Animated.View
-      style={pulseStyle}
+      style={[pulseStyle, radiusStyle, style]}
       className={cn(skeletonVariants({ variant }), className)}
       {...(props as any)}
     />

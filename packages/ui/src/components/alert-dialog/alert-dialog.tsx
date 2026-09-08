@@ -15,8 +15,12 @@ import {
   type PressableStateCallbackType,
 } from 'react-native';
 import { cn } from '../../lib/cn';
+import { composeEventHandlers } from '../../lib/compose-event-handlers';
+import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { shadowStyle, typographyStyle } from '../../lib/recipes';
 
 // ─── Native alert copy (for presentation="native") ───────────
 
@@ -139,7 +143,9 @@ function AlertDialog({
   const nativeCopyRef = useRef<NativeAlertCopy>(emptyNativeCopy());
 
   const setOpen = (value: boolean) => {
-    setInternalOpen(value);
+    if (controlledOpen === undefined) {
+      setInternalOpen(value);
+    }
     onOpenChange?.(value);
   };
 
@@ -150,22 +156,32 @@ function AlertDialog({
   );
 }
 
-function AlertDialogTrigger({ className, children, asChild, ...props }: AlertDialogTriggerProps) {
+function AlertDialogTrigger({
+  className,
+  children,
+  asChild,
+  onPress,
+  ...props
+}: AlertDialogTriggerProps) {
   const { setOpen } = useContext(AlertDialogContext);
 
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        setOpen(true);
-      },
       ...props,
+      className: cn(child.props.className, className),
+      onPress: composeEventHandlers(composeEventHandlers(child.props.onPress, onPress), () =>
+        setOpen(true)
+      ),
     });
   }
 
   return (
-    <Pressable className={cn(className)} onPress={() => setOpen(true)} {...props}>
+    <Pressable
+      {...props}
+      className={cn(className)}
+      onPress={composeEventHandlers(onPress, () => setOpen(true))}
+    >
       {children}
     </Pressable>
   );
@@ -195,6 +211,7 @@ function AlertDialogContent({
 }: AlertDialogContentProps) {
   const { open, setOpen, nativeCopyRef } = useContext(AlertDialogContext);
   const colors = useThemeColors();
+  const visual = useVisualTokens();
   const frostedSurface = useFrostedSurface({
     frosted,
     blurIntensity,
@@ -280,23 +297,34 @@ function AlertDialogContent({
   }, [open, useNativeAlert, setOpen, nativeCopyRef]);
 
   const themedBody = (
-    <View
+    <Pressable
       className="flex-1 justify-center items-center px-4"
       style={{ backgroundColor: colors.overlayStrong }}
+      onPress={() => setOpen(false)}
     >
-      <View
+      <Pressable
         className={cn(
-          'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
+          'w-full border-border relative overflow-hidden',
           frosted ? 'bg-transparent' : 'bg-background',
           className
         )}
-        style={contentStyle}
+        style={[
+          {
+            maxWidth: visual.sheetMaxWidth,
+            borderWidth: visual.borderWidthHairline,
+            borderRadius: visual.radiusXl,
+            padding: visual.surfacePaddingDefault,
+          },
+          shadowStyle(visual, colors, 'lg'),
+          contentStyle,
+        ]}
+        onPress={(event) => event.stopPropagation()}
         {...props}
       >
         {frostedSurface.overlay}
         {children}
-      </View>
-    </View>
+      </Pressable>
+    </Pressable>
   );
 
   if (useNativeAlert) {
@@ -345,6 +373,8 @@ function AlertDialogContent({
       animationType="fade"
       presentationStyle={Platform.OS === 'ios' ? 'overFullScreen' : undefined}
       statusBarTranslucent={Platform.OS === 'android'}
+      navigationBarTranslucent={Platform.OS === 'android'}
+      onRequestClose={() => setOpen(false)}
     >
       {themedBody}
     </Modal>
@@ -363,8 +393,9 @@ function AlertDialogFooter({ className, ...props }: AlertDialogFooterProps) {
   return <View className={cn('flex flex-row justify-end gap-2 pt-4', className)} {...props} />;
 }
 
-function AlertDialogTitle({ className, children, ...props }: AlertDialogTitleProps) {
+function AlertDialogTitle({ className, children, style, ...props }: AlertDialogTitleProps) {
   const nativeCopyRef = useAlertDialogNativeCopy();
+  const visual = useVisualTokens();
 
   useLayoutEffect(() => {
     nativeCopyRef.current.title = textFromNode(children);
@@ -374,14 +405,24 @@ function AlertDialogTitle({ className, children, ...props }: AlertDialogTitlePro
   }, [children, nativeCopyRef]);
 
   return (
-    <Text className={cn('text-lg font-semibold text-foreground', className)} {...props}>
+    <Text
+      className={cn('font-semibold text-foreground', className)}
+      style={[typographyStyle(visual, 'title'), style]}
+      {...props}
+    >
       {children}
     </Text>
   );
 }
 
-function AlertDialogDescription({ className, children, ...props }: AlertDialogDescriptionProps) {
+function AlertDialogDescription({
+  className,
+  children,
+  style,
+  ...props
+}: AlertDialogDescriptionProps) {
   const nativeCopyRef = useAlertDialogNativeCopy();
+  const visual = useVisualTokens();
 
   useLayoutEffect(() => {
     nativeCopyRef.current.message = textFromNode(children);
@@ -391,16 +432,31 @@ function AlertDialogDescription({ className, children, ...props }: AlertDialogDe
   }, [children, nativeCopyRef]);
 
   return (
-    <Text className={cn('text-sm text-muted-foreground', className)} {...props}>
+    <Text
+      className={cn('text-muted-foreground', className)}
+      style={[typographyStyle(visual, 'label'), style]}
+      {...props}
+    >
       {children}
     </Text>
   );
 }
 
-function AlertDialogAction({ className, children, asChild, ...props }: AlertDialogActionProps) {
+function AlertDialogAction({
+  className,
+  children,
+  asChild,
+  onPress,
+  ...props
+}: AlertDialogActionProps) {
   const { setOpen, nativeCopyRef } = useContext(AlertDialogContext);
-  const onPressRef = useRef(props.onPress);
-  onPressRef.current = props.onPress;
+  const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+  const onPressRef = useRef(onPress);
+  onPressRef.current = onPress;
+  const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+    pressedVariant: 'strong',
+  });
 
   useLayoutEffect(() => {
     nativeCopyRef.current.confirmLabel = textFromPressableChildren(children);
@@ -414,30 +470,43 @@ function AlertDialogAction({ className, children, asChild, ...props }: AlertDial
     };
   }, [children, nativeCopyRef]);
 
-  const handlePress = (e: Parameters<NonNullable<PressableProps['onPress']>>[0]) => {
-    props.onPress?.(e);
-    setOpen(false);
-  };
-
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     return React.cloneElement(child, {
-      onPress: handlePress,
       ...props,
+      className: cn(child.props.className, className),
+      onPress: composeEventHandlers(composeEventHandlers(child.props.onPress, onPress), () =>
+        setOpen(false)
+      ),
     });
   }
 
   return (
     <Pressable
-      className={cn(
-        'inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 active:bg-primary-active',
-        className
-      )}
-      onPress={handlePress}
       {...props}
+      className={cn('inline-flex items-center justify-center bg-primary', className)}
+      style={(state) => {
+        const baseStyle =
+          typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+        return [
+          baseStyle,
+          {
+            minHeight: visual.controlHeightDefault,
+            borderRadius: visual.radiusLg,
+            paddingHorizontal: visual.controlPaddingXDefault,
+            paddingVertical: visual.controlPaddingYDefault,
+          },
+        ];
+      }}
+      onPress={composeEventHandlers(onPress, () => setOpen(false))}
     >
       {typeof children === 'string' ? (
-        <Text className="text-sm font-medium text-primary-foreground">{children}</Text>
+        <Text
+          className="font-medium text-primary-foreground"
+          style={typographyStyle(visual, 'label')}
+        >
+          {children}
+        </Text>
       ) : (
         children
       )}
@@ -445,10 +514,15 @@ function AlertDialogAction({ className, children, asChild, ...props }: AlertDial
   );
 }
 
-function AlertDialogCancel({ className, children, ...props }: AlertDialogCancelProps) {
+function AlertDialogCancel({ className, children, onPress, ...props }: AlertDialogCancelProps) {
   const { setOpen, nativeCopyRef } = useContext(AlertDialogContext);
-  const onPressRef = useRef(props.onPress);
-  onPressRef.current = props.onPress;
+  const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+  const onPressRef = useRef(onPress);
+  onPressRef.current = onPress;
+  const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+    pressedVariant: 'default',
+  });
 
   useLayoutEffect(() => {
     nativeCopyRef.current.cancelLabel = textFromPressableChildren(children);
@@ -464,18 +538,31 @@ function AlertDialogCancel({ className, children, ...props }: AlertDialogCancelP
 
   return (
     <Pressable
+      {...props}
       className={cn(
-        'inline-flex items-center justify-center rounded-md border border-border bg-transparent px-4 py-2 active:bg-accent',
+        'inline-flex items-center justify-center border-border bg-transparent',
         className
       )}
-      onPress={(e) => {
-        props.onPress?.(e);
-        setOpen(false);
+      style={(state) => {
+        const baseStyle =
+          typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+        return [
+          baseStyle,
+          {
+            minHeight: visual.controlHeightDefault,
+            borderWidth: visual.borderWidthControl,
+            borderRadius: visual.radiusLg,
+            paddingHorizontal: visual.controlPaddingXDefault,
+            paddingVertical: visual.controlPaddingYDefault,
+          },
+        ];
       }}
-      {...props}
+      onPress={composeEventHandlers(onPress, () => setOpen(false))}
     >
       {typeof children === 'string' ? (
-        <Text className="text-sm font-medium text-foreground">{children}</Text>
+        <Text className="font-medium text-foreground" style={typographyStyle(visual, 'label')}>
+          {children}
+        </Text>
       ) : (
         children
       )}

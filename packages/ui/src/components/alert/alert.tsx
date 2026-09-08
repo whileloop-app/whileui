@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, type ViewProps, type TextProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 const alertVariants = tv({
-  base: 'w-full rounded-lg border p-4',
+  base: 'w-full border',
   variants: {
     variant: {
       default: 'border-border bg-background',
@@ -21,8 +23,23 @@ const alertVariants = tv({
 
 export interface AlertProps extends ViewProps, VariantProps<typeof alertVariants> {}
 
-const Alert = React.forwardRef<View, AlertProps>(({ className, variant, ...props }, ref) => {
-  return <View ref={ref} className={cn(alertVariants({ variant }), className)} {...props} />;
+const Alert = React.forwardRef<View, AlertProps>(({ className, variant, style, ...props }, ref) => {
+  const visual = useVisualTokens();
+  return (
+    <View
+      ref={ref}
+      className={cn(alertVariants({ variant }), className)}
+      style={[
+        {
+          borderRadius: surfaceRadius(visual, 'lg'),
+          borderWidth: visual.borderWidthHairline,
+          padding: surfacePadding(visual, 'sm'),
+        },
+        style,
+      ]}
+      {...props}
+    />
+  );
 });
 
 Alert.displayName = 'Alert';
@@ -31,15 +48,19 @@ Alert.displayName = 'Alert';
 
 export interface AlertTitleProps extends TextProps {}
 
-const AlertTitle = React.forwardRef<Text, AlertTitleProps>(({ className, ...props }, ref) => {
-  return (
-    <Text
-      ref={ref}
-      className={cn('mb-1 text-base font-semibold text-foreground', className)}
-      {...props}
-    />
-  );
-});
+const AlertTitle = React.forwardRef<Text, AlertTitleProps>(
+  ({ className, style, ...props }, ref) => {
+    const visual = useVisualTokens();
+    return (
+      <Text
+        ref={ref}
+        className={cn('mb-1 font-semibold text-foreground', className)}
+        style={[typographyStyle(visual, 'body'), style]}
+        {...props}
+      />
+    );
+  }
+);
 
 AlertTitle.displayName = 'AlertTitle';
 
@@ -48,8 +69,16 @@ AlertTitle.displayName = 'AlertTitle';
 export interface AlertDescriptionProps extends TextProps {}
 
 const AlertDescription = React.forwardRef<Text, AlertDescriptionProps>(
-  ({ className, ...props }, ref) => {
-    return <Text ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />;
+  ({ className, style, ...props }, ref) => {
+    const visual = useVisualTokens();
+    return (
+      <Text
+        ref={ref}
+        className={cn('text-muted-foreground', className)}
+        style={[typographyStyle(visual, 'label'), style]}
+        {...props}
+      />
+    );
   }
 );
 

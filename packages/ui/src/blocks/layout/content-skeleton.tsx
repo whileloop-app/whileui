@@ -1,6 +1,8 @@
 import { View, type ViewProps } from 'react-native';
 import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -14,8 +16,16 @@ export interface ContentSkeletonProps extends ViewProps {
 // ─── Component ───────────────────────────────────────────────
 
 function ListRow() {
+  const visual = useVisualTokens();
+
   return (
-    <View className="flex-row items-center gap-3 border-b border-border pb-4 mb-4">
+    <View
+      className="flex-row items-center gap-3 border-border mb-4"
+      style={{
+        borderBottomWidth: visual.borderWidthHairline,
+        paddingBottom: surfacePadding(visual, 'sm'),
+      }}
+    >
       <Skeleton className="h-12 w-12 rounded-full shrink-0" />
       <View className="flex-1 gap-2">
         <Skeleton className="h-4 w-3/4" />
@@ -25,9 +35,15 @@ function ListRow() {
   );
 }
 
-function ListVariant({ className, rows = 4, ...props }: ContentSkeletonProps) {
+function ListVariant({ className, rows = 4, style, ...props }: ContentSkeletonProps) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn('p-4', className)} {...props}>
+    <View
+      className={className}
+      style={[{ padding: surfacePadding(visual, 'sm') }, style]}
+      {...props}
+    >
       {Array.from({ length: rows }).map((_, i) => (
         <ListRow key={i} />
       ))}
@@ -35,14 +51,23 @@ function ListVariant({ className, rows = 4, ...props }: ContentSkeletonProps) {
   );
 }
 
-function CardVariant({ className, ...props }: ContentSkeletonProps) {
+function CardVariant({ className, style, ...props }: ContentSkeletonProps) {
+  const visual = useVisualTokens();
+
   return (
     <View
-      className={cn('rounded-xl overflow-hidden bg-card border border-border', className)}
+      className={cn('overflow-hidden bg-card border-border', className)}
+      style={[
+        {
+          borderRadius: surfaceRadius(visual, 'xl'),
+          borderWidth: visual.borderWidthHairline,
+        },
+        style,
+      ]}
       {...props}
     >
       <Skeleton className="aspect-video w-full" />
-      <View className="p-4 gap-3">
+      <View className="gap-3" style={{ padding: surfacePadding(visual, 'sm') }}>
         <Skeleton className="h-5 w-2/3" />
         <Skeleton className="h-3 w-full" />
         <Skeleton className="h-3 w-full" />
@@ -52,9 +77,15 @@ function CardVariant({ className, ...props }: ContentSkeletonProps) {
   );
 }
 
-function GenericVariant({ className, ...props }: ContentSkeletonProps) {
+function GenericVariant({ className, style, ...props }: ContentSkeletonProps) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn('p-4 gap-4', className)} {...props}>
+    <View
+      className={cn('gap-4', className)}
+      style={[{ padding: surfacePadding(visual, 'sm') }, style]}
+      {...props}
+    >
       <Skeleton className="h-6 w-1/2" />
       <View className="gap-3">
         <Skeleton className="h-4 w-full" />

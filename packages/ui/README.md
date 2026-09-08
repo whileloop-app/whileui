@@ -548,7 +548,7 @@ The WhileUI token contract is strict for cross-app reuse. Define these in **ever
 - Required core tokens: `background`, `foreground`, `card`, `card-foreground`, `popover`, `popover-foreground`, `primary`, `primary-foreground`, `secondary`, `secondary-foreground`, `muted`, `muted-foreground`, `accent`, `accent-foreground`, `destructive`, `destructive-foreground`, `border`, `input`, `ring`
 - Optional status tokens: `success`, `success-foreground`, `warning`, `warning-foreground`, `info`, `info-foreground`
 - Optional effect tokens: `overlay`, `overlay-strong`, `surface-elevated`, `surface-border`, `surface-highlight`, `surface-translucent`, `surface-translucent-border`, `state-hover`, `state-pressed`, `state-disabled`
-- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`, `--ui-blur-intensity-subtle`, `--ui-blur-intensity-medium`, `--ui-blur-intensity-strong`, `--ui-blur-saturation-pct`, `--ui-frosted-highlight-height`, `--ui-frosted-backdrop-blur-intensity`, `--ui-frosted-backdrop-blur-scale`, `--ui-frosted-android-experimental-blur`, `--ui-drawer-frosted-inset`, `--ui-drawer-frosted-radius`, `--ui-drawer-content-top-padding`
+- Optional interaction/motion tokens: `--ui-press-opacity`, `--ui-press-opacity-strong`, `--ui-disabled-opacity`, `--ui-disabled-opacity-soft`, `--ui-disabled-opacity-subtle`, `--ui-inactive-opacity`, `--ui-motion-fast`, `--ui-motion-normal`, `--ui-motion-slow`, `--ui-drawer-open-duration`, `--ui-drawer-close-duration`, `--ui-blur-intensity-subtle`, `--ui-blur-intensity-medium`, `--ui-blur-intensity-strong`, `--ui-blur-saturation-pct`, `--ui-frosted-highlight-height`, `--ui-frosted-backdrop-blur-intensity`, `--ui-frosted-backdrop-blur-scale`, `--ui-frosted-android-tint-alpha-scale`, `--ui-frosted-android-experimental-blur`, `--ui-drawer-frosted-inset`, `--ui-drawer-frosted-radius`, `--ui-drawer-content-top-padding`
 - Optional scale tokens: spacing (`--spacing`, `--spacing-*`), typography (`--text-*`, `--leading-*`, `--tracking-*`), radius (`--radius-*`), elevation (`--shadow-*`)
 
 Minimal contract example:
@@ -608,6 +608,8 @@ Some apps want a frosted or translucent look for floating panels (modals, sheets
 
 **Optional:** Add `expo-blur` and register its `BlurView` once at app startup for full frosted blur. For tint-only (no blur), translucent surface tokens are sufficient.
 
+**Android note:** frosted panels usually need denser tint than iOS/web. WhileUI now scales frosted tint alpha on Android with `--ui-frosted-android-tint-alpha-scale` (default `1.18`). Set it to `1` to match other platforms exactly, or raise it if your Android surfaces still feel washed out.
+
 ```tsx
 import { BlurView } from 'expo-blur';
 import { registerFrostedBlurView } from '@thewhileloop/whileui';
@@ -635,6 +637,7 @@ Additional frosted tuning tokens:
 - `--ui-frosted-highlight-height` (top highlight strip height in px, set `0` to disable hard top sheen)
 - `--ui-frosted-backdrop-blur-intensity` (default backdrop blur amount)
 - `--ui-frosted-backdrop-blur-scale` (ratio used when component blur is overridden)
+- `--ui-frosted-android-tint-alpha-scale` (Android-only alpha multiplier applied to frosted tint and backdrop layers)
 - `--ui-frosted-android-experimental-blur` (`1` enables `expo-blur` Android experimental path)
 - `--ui-drawer-frosted-inset` (floating inset for frosted drawer shells)
 - `--ui-drawer-frosted-radius` (drawer corner radius in px)
@@ -687,6 +690,7 @@ WhileUI components also read optional `--ui-*` tokens for deeper control of pres
   --ui-frosted-highlight-height: 0;
   --ui-frosted-backdrop-blur-intensity: 14;
   --ui-frosted-backdrop-blur-scale: 0.55;
+  --ui-frosted-android-tint-alpha-scale: 1.22;
   --ui-frosted-android-experimental-blur: 1;
   --ui-drawer-frosted-inset: 0;
   --ui-drawer-frosted-radius: 28;

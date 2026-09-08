@@ -1,0 +1,22 @@
+{
+  // The DOM track compiles as its own project because the two tracks need
+  // different globals. `tsconfig.json` has no DOM lib and picks up React
+  // Native's ambient types (its `KeyboardEvent` has no `.key`, `document` does
+  // not exist). Adding DOM there would collide with RN's `fetch`/`FormData`
+  // declarations. So: same outDir and rootDir, so `dist/web/` lands beside the
+  // native output, but a DOM lib and only `src/web/` as roots — TypeScript
+  // follows imports into the shared, renderer-free `src/lib/` files itself.
+  //
+  // This is the seam the 2.0 package split will fall along. See ROADMAP.md.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/web/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

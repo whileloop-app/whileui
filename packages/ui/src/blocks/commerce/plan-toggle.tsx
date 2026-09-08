@@ -4,6 +4,8 @@ import { Badge, BadgeText } from '../../components/badge';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { controlRecipe, typographyStyle } from '../../lib/recipes';
 
 export type PlanToggleValue = 'monthly' | 'annual';
 
@@ -23,27 +25,43 @@ export function PlanToggle({
   annualDiscount,
   onChange,
   className,
+  style,
   ...props
 }: PlanToggleProps) {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+  const segmentStyle = controlRecipe(visual, 'sm');
+  const labelStyle = typographyStyle(visual, 'label');
 
   const renderItem = (value: PlanToggleValue, label: string) => {
     const active = selected === value;
+    const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
+      disabled: !onChange,
+      pressedVariant: 'default',
+    });
     return (
       <Pressable
         key={value}
         className={cn(
-          'flex-1 flex-row items-center justify-center gap-2 rounded-lg px-3 py-2',
+          'flex-1 flex-row items-center justify-center gap-2',
           active ? 'bg-background border border-border' : 'bg-transparent'
         )}
-        style={withInteractivePressableStyle(undefined, interaction, {
-          disabled: !onChange,
-          pressedVariant: 'default',
-        })}
+        style={(state) => {
+          const baseStyle =
+            typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+          return [
+            baseStyle,
+            segmentStyle,
+            active ? { borderWidth: visual.borderWidthHairline } : null,
+          ];
+        }}
         disabled={!onChange}
         onPress={() => onChange?.(value)}
       >
-        <Text className={cn('text-sm', active ? 'text-foreground' : 'text-muted-foreground')}>
+        <Text
+          className={cn(active ? 'text-foreground' : 'text-muted-foreground')}
+          style={labelStyle}
+        >
           {label}
         </Text>
         {value === 'annual' && annualDiscount ? (
@@ -56,7 +74,11 @@ export function PlanToggle({
   };
 
   return (
-    <View className={cn('rounded-xl bg-muted p-1', className)} {...props}>
+    <View
+      className={cn('bg-muted p-1', className)}
+      style={[{ borderRadius: visual.radiusLg }, style]}
+      {...props}
+    >
       <View className="flex-row">
         {[renderItem('monthly', monthlyLabel), renderItem('annual', annualLabel)]}
       </View>

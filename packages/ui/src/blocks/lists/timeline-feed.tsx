@@ -2,6 +2,8 @@ import React from 'react';
 import { View, ScrollView, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding } from '../../lib/recipes';
 
 export interface TimelineItem {
   id: string;
@@ -19,9 +21,11 @@ export interface TimelineFeedProps extends ViewProps {
 }
 
 function TimelineFeed({ className, items, showConnector = true, ...props }: TimelineFeedProps) {
+  const visual = useVisualTokens();
+
   return (
     <ScrollView className={cn('flex-1', className)} {...props}>
-      <View className="p-4">
+      <View style={{ padding: surfacePadding(visual, 'sm') }}>
         {items.map((item, index) => (
           <View key={item.id} className="flex-row">
             <View className="items-center mr-4" style={{ minWidth: 16 }}>
@@ -31,7 +35,10 @@ function TimelineFeed({ className, items, showConnector = true, ...props }: Time
                   {item.icon}
                 </View>
               ) : (
-                <View className="w-4 h-4 rounded-full bg-primary border-2 border-background shrink-0" />
+                <View
+                  className="w-4 h-4 rounded-full bg-primary border-background shrink-0"
+                  style={{ borderWidth: visual.borderWidthEmphasis }}
+                />
               )}
               {showConnector && index < items.length - 1 && (
                 <View className="w-0.5 bg-border flex-1 min-h-4" />

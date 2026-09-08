@@ -4,6 +4,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  type PressableProps,
   type StyleProp,
   useWindowDimensions,
   View,
@@ -13,9 +14,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { composeEventHandlers } from '../../lib/compose-event-handlers';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 import {
   useFrostedSurface,
   useFrostedBackdrop,
@@ -53,9 +56,10 @@ export interface SheetContentProps extends ViewProps {
 
 export interface SheetFooterProps extends ViewProps {}
 
-export interface SheetCloseProps extends ViewProps {
+export interface SheetCloseProps extends PressableProps {
   children: React.ReactNode;
   asChild?: boolean;
+  className?: string;
 }
 
 // ─── Components ───────────────────────────────────────────────
@@ -114,7 +118,12 @@ export function Sheet({
 
   const sheetStyle: StyleProp<ViewStyle> = [
     maxHeightStyle,
-    { paddingBottom: Math.max(insets.bottom, 16) },
+    {
+      paddingBottom: Math.max(insets.bottom, 16),
+      borderTopLeftRadius: surfaceRadius(visual, 'xl'),
+      borderTopRightRadius: surfaceRadius(visual, 'xl'),
+      borderWidth: visual.borderWidthHairline,
+    },
     widthStyle,
     frostedSurface.surfaceStyle,
   ];
@@ -126,6 +135,7 @@ export function Sheet({
       animationType="slide"
       onRequestClose={onClose}
       statusBarTranslucent={Platform.OS === 'android'}
+      navigationBarTranslucent={Platform.OS === 'android'}
       presentationStyle="overFullScreen"
     >
       <View
@@ -136,7 +146,7 @@ export function Sheet({
         <Pressable className="flex-1" onPress={onClose} />
         <View
           className={cn(
-            'rounded-t-xl border border-border overflow-hidden relative',
+            'border-border overflow-hidden relative',
             frosted ? 'bg-transparent' : 'bg-background'
           )}
           style={sheetStyle}
@@ -154,39 +164,61 @@ export function SheetHeader({
   description,
   className,
   children,
+  style,
   ...props
 }: SheetHeaderProps) {
   const { onClose } = useContext(SheetContext);
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   return (
     <View
-      className={cn(
-        'flex-row items-center justify-between gap-3 border-b border-border px-4 py-3',
-        className
-      )}
+      className={cn('flex-row items-center justify-between gap-3 border-border', className)}
+      style={[
+        {
+          borderBottomWidth: visual.borderWidthHairline,
+          paddingHorizontal: surfacePadding(visual, 'sm'),
+          paddingVertical: visual.controlPaddingYDefault,
+        },
+        style,
+      ]}
       {...props}
     >
       <View className="flex-1 min-w-0 gap-0.5 self-stretch justify-center">
         {title && (
-          <Text className="text-base font-semibold text-foreground text-left">{title}</Text>
+          <Text
+            className="font-semibold text-foreground text-left"
+            style={typographyStyle(visual, 'body')}
+          >
+            {title}
+          </Text>
         )}
         {description && (
-          <Text className="text-sm text-muted-foreground text-left">{description}</Text>
+          <Text
+            className="text-muted-foreground text-left"
+            style={typographyStyle(visual, 'label')}
+          >
+            {description}
+          </Text>
         )}
       </View>
       {children ?? (
         <Pressable
           onPress={onClose}
-          className="p-2 -mr-2 -mt-2 -mb-2 rounded-lg"
-          style={withInteractivePressableStyle(undefined, interaction, {
+          className="p-2 -mr-2 -mt-2 -mb-2"
+          style={withInteractivePressableStyle({ borderRadius: visual.radiusMd }, interaction, {
             pressedVariant: 'default',
           })}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel="Close"
         >
-          <Text className="text-xl text-muted-foreground leading-none">×</Text>
+          <Text
+            className="text-muted-foreground leading-none"
+            style={typographyStyle(visual, 'title')}
+          >
+            ×
+          </Text>
         </Pressable>
       )}
     </View>
@@ -197,14 +229,19 @@ export function SheetContent({
   scrollEnabled = true,
   className,
   children,
+  style,
   ...props
 }: SheetContentProps) {
+  const visual = useVisualTokens();
+  const contentPadding = surfacePadding(visual, 'sm');
+
   if (scrollEnabled) {
     return (
       <ScrollView
         className={cn('flex-1', className)}
+        style={style}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
+        contentContainerStyle={{ padding: contentPadding }}
         {...(props as any)}
       >
         {children}
@@ -212,37 +249,55 @@ export function SheetContent({
     );
   }
   return (
-    <View className={cn('flex-1 px-4 py-4', className)} {...props}>
+    <View
+      className={cn('flex-1', className)}
+      style={[{ padding: contentPadding }, style]}
+      {...props}
+    >
       {children}
     </View>
   );
 }
 
-export function SheetFooter({ className, ...props }: SheetFooterProps) {
+export function SheetFooter({ className, style, ...props }: SheetFooterProps) {
+  const visual = useVisualTokens();
+
   return (
     <View
-      className={cn('flex-row gap-2 justify-end border-t border-border px-4 py-3', className)}
+      className={cn('flex-row gap-2 justify-end border-border', className)}
+      style={[
+        {
+          borderTopWidth: visual.borderWidthHairline,
+          paddingHorizontal: surfacePadding(visual, 'sm'),
+          paddingVertical: visual.controlPaddingYDefault,
+        },
+        style,
+      ]}
       {...props}
     />
   );
 }
 
-export function SheetClose({ children, asChild, className, ...props }: SheetCloseProps) {
+export function SheetClose({ children, asChild, className, onPress, ...props }: SheetCloseProps) {
   const { onClose } = useContext(SheetContext);
 
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        onClose();
-      },
       ...props,
+      className: cn(child.props.className, className),
+      onPress: composeEventHandlers(composeEventHandlers(child.props.onPress, onPress), () =>
+        onClose()
+      ),
     });
   }
 
   return (
-    <Pressable className={cn(className)} onPress={onClose} {...props}>
+    <Pressable
+      {...props}
+      className={cn(className)}
+      onPress={composeEventHandlers(onPress, () => onClose())}
+    >
       {children}
     </Pressable>
   );

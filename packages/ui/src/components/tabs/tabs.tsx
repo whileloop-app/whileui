@@ -3,6 +3,9 @@ import { View, Pressable, type ViewProps, type PressableProps } from 'react-nati
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -19,10 +22,10 @@ const TabsContext = createContext<TabsContextValue>({
 // ─── Variants ────────────────────────────────────────────────
 
 const tabsTriggerVariants = tv({
-  base: 'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium',
+  base: 'inline-flex items-center justify-center whitespace-nowrap font-medium',
   variants: {
     state: {
-      active: 'bg-background text-foreground shadow',
+      active: 'text-foreground',
       inactive: 'text-muted-foreground',
     },
   },
@@ -30,6 +33,35 @@ const tabsTriggerVariants = tv({
     state: 'inactive',
   },
 });
+
+function getTabsListStyle(
+  visual: ReturnType<typeof useVisualTokens>,
+  colors: ReturnType<typeof useThemeColors>
+) {
+  const inset = Math.max(4, Math.round(visual.controlPaddingYSm * 0.5));
+  return {
+    borderRadius: visual.radiusXl,
+    backgroundColor: colors.muted,
+    padding: inset,
+  };
+}
+
+function getTabsTriggerStyle(
+  visual: ReturnType<typeof useVisualTokens>,
+  colors: ReturnType<typeof useThemeColors>,
+  active: boolean
+) {
+  return {
+    ...typographyStyle(visual, 'label'),
+    minHeight: visual.controlHeightDefault,
+    borderRadius: visual.radiusLg,
+    paddingHorizontal: visual.controlPaddingXDefault,
+    paddingVertical: visual.controlPaddingYDefault,
+    borderWidth: active ? visual.borderWidthHairline : 0,
+    borderColor: active ? colors.surfaceBorder : 'transparent',
+    backgroundColor: active ? colors.surfaceElevated : 'transparent',
+  };
+}
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -82,10 +114,13 @@ function Tabs({
   );
 }
 
-function TabsList({ className, ...props }: TabsListProps) {
+function TabsList({ className, style, ...props }: TabsListProps) {
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
   return (
     <View
-      className={cn('flex flex-row items-center justify-center rounded-lg bg-muted p-1', className)}
+      className={cn('flex flex-row items-center justify-center', className)}
+      style={[getTabsListStyle(visual, colors), style]}
       {...props}
     />
   );
@@ -102,10 +137,13 @@ function TabsTrigger({
   const { value, onValueChange } = useContext(TabsContext);
   const isActive = value === tabValue;
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     disabled: Boolean(disabled),
     pressedVariant: 'default',
   });
+  const tokenStyle = getTabsTriggerStyle(visual, colors, isActive);
 
   return (
     <Pressable
@@ -114,7 +152,11 @@ function TabsTrigger({
         'flex-1',
         className
       )}
-      style={interactiveStyle}
+      style={(state) => {
+        const baseStyle =
+          typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
+        return [baseStyle, tokenStyle];
+      }}
       onPress={() => onValueChange(tabValue)}
       disabled={disabled}
       {...props}

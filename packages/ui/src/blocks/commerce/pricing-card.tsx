@@ -4,6 +4,9 @@ import { Button, ButtonText } from '../../components/button';
 import { Badge, BadgeText } from '../../components/badge';
 import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { shadowStyle, surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -35,13 +38,19 @@ function PricingCardSkeleton({
   highlighted?: boolean;
   className?: string;
 }) {
+  const visual = useVisualTokens();
   return (
     <View
       className={cn(
-        'overflow-hidden rounded-2xl p-6',
-        highlighted ? 'border-2 border-primary bg-card' : 'border border-border bg-card',
+        'overflow-hidden',
+        highlighted ? 'border-primary bg-card' : 'border-border bg-card',
         className
       )}
+      style={{
+        borderRadius: surfaceRadius(visual, 'xl'),
+        padding: surfacePadding(visual, 'lg'),
+        borderWidth: highlighted ? visual.borderWidthEmphasis : visual.borderWidthHairline,
+      }}
     >
       <View className="mb-4 flex-row items-center justify-between">
         <Skeleton className="h-5 w-1/3 rounded-md" />
@@ -79,24 +88,42 @@ export function PricingCard({
   onPress,
   loading = false,
   className,
+  style,
   ...props
 }: PricingCardProps) {
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
+
   if (loading) {
     return <PricingCardSkeleton highlighted={highlighted} className={className} />;
   }
 
+  const emphasis = typographyStyle(visual, 'emphasis');
+  const label = typographyStyle(visual, 'label');
+
   return (
     <View
       className={cn(
-        'overflow-hidden rounded-2xl p-6',
-        highlighted ? 'border-2 border-primary bg-card' : 'border border-border bg-card',
+        'overflow-hidden',
+        highlighted ? 'border-primary bg-card' : 'border-border bg-card',
         className
       )}
+      style={[
+        {
+          borderRadius: surfaceRadius(visual, 'xl'),
+          padding: surfacePadding(visual, 'lg'),
+          borderWidth: highlighted ? visual.borderWidthEmphasis : visual.borderWidthHairline,
+        },
+        highlighted ? shadowStyle(visual, colors, 'md') : null,
+        style,
+      ]}
       {...props}
     >
       {/* Header */}
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-lg font-semibold text-foreground">{name}</Text>
+        <Text className="font-semibold text-foreground" style={emphasis}>
+          {name}
+        </Text>
         {badge && (
           <Badge variant={highlighted ? 'default' : 'secondary'}>
             <BadgeText>{badge}</BadgeText>
@@ -104,7 +131,11 @@ export function PricingCard({
         )}
       </View>
 
-      {description && <Text className="mb-4 text-sm text-muted-foreground">{description}</Text>}
+      {description && (
+        <Text className="mb-4 text-muted-foreground" style={label}>
+          {description}
+        </Text>
+      )}
 
       {/* Price */}
       <View className="mb-6 flex-row items-baseline">
@@ -121,9 +152,9 @@ export function PricingCard({
             </Text>
             <Text
               className={cn(
-                'text-sm',
                 feature.included ? 'text-foreground' : 'text-muted-foreground line-through'
               )}
+              style={label}
             >
               {feature.label}
             </Text>

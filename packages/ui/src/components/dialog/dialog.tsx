@@ -11,8 +11,11 @@ import {
   type PressableProps,
 } from 'react-native';
 import { cn } from '../../lib/cn';
+import { composeEventHandlers } from '../../lib/compose-event-handlers';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { shadowStyle, typographyStyle } from '../../lib/recipes';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -81,29 +84,35 @@ function Dialog({
   const open = controlledOpen ?? internalOpen;
 
   const setOpen = (value: boolean) => {
-    setInternalOpen(value);
+    if (controlledOpen === undefined) {
+      setInternalOpen(value);
+    }
     onOpenChange?.(value);
   };
 
   return <DialogContext.Provider value={{ open, setOpen }}>{children}</DialogContext.Provider>;
 }
 
-function DialogTrigger({ className, children, asChild, ...props }: DialogTriggerProps) {
+function DialogTrigger({ className, children, asChild, onPress, ...props }: DialogTriggerProps) {
   const { setOpen } = useContext(DialogContext);
 
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        setOpen(true);
-      },
       ...props,
+      className: cn(child.props.className, className),
+      onPress: composeEventHandlers(composeEventHandlers(child.props.onPress, onPress), () =>
+        setOpen(true)
+      ),
     });
   }
 
   return (
-    <Pressable className={cn(className)} onPress={() => setOpen(true)} {...props}>
+    <Pressable
+      {...props}
+      className={cn(className)}
+      onPress={composeEventHandlers(onPress, () => setOpen(true))}
+    >
       {children}
     </Pressable>
   );
@@ -120,6 +129,7 @@ function DialogContent({
 }: DialogContentProps) {
   const { open, setOpen } = useContext(DialogContext);
   const colors = useThemeColors();
+  const visual = useVisualTokens();
   const frostedSurface = useFrostedSurface({
     frosted,
     blurIntensity,
@@ -130,7 +140,14 @@ function DialogContent({
   const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
 
   return (
-    <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+    <Modal
+      visible={open}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={() => setOpen(false)}
+    >
       <Pressable
         className="flex-1 justify-center items-center px-4"
         style={{ backgroundColor: colors.overlayStrong }}
@@ -138,11 +155,20 @@ function DialogContent({
       >
         <Pressable
           className={cn(
-            'w-full max-w-lg rounded-lg border border-border p-6 shadow-lg relative overflow-hidden',
+            'w-full border-border relative overflow-hidden',
             frosted ? 'bg-transparent' : 'bg-background',
             className
           )}
-          style={contentStyle}
+          style={[
+            {
+              maxWidth: visual.sheetMaxWidth,
+              borderWidth: visual.borderWidthHairline,
+              borderRadius: visual.radiusXl,
+              padding: visual.surfacePaddingDefault,
+            },
+            shadowStyle(visual, colors, 'lg'),
+            contentStyle,
+          ]}
           onPress={(e) => e.stopPropagation()}
           {...props}
         >
@@ -162,32 +188,50 @@ function DialogFooter({ className, ...props }: DialogFooterProps) {
   return <View className={cn('flex flex-row justify-end gap-2 pt-4', className)} {...props} />;
 }
 
-function DialogTitle({ className, ...props }: DialogTitleProps) {
-  return <Text className={cn('text-lg font-semibold text-foreground', className)} {...props} />;
+function DialogTitle({ className, style, ...props }: DialogTitleProps) {
+  const visual = useVisualTokens();
+  return (
+    <Text
+      className={cn('font-semibold text-foreground', className)}
+      style={[typographyStyle(visual, 'title'), style]}
+      {...props}
+    />
+  );
 }
 
-function DialogDescription({ className, ...props }: DialogDescriptionProps) {
-  return <Text className={cn('text-sm text-muted-foreground', className)} {...props} />;
+function DialogDescription({ className, style, ...props }: DialogDescriptionProps) {
+  const visual = useVisualTokens();
+  return (
+    <Text
+      className={cn('text-muted-foreground', className)}
+      style={[typographyStyle(visual, 'label'), style]}
+      {...props}
+    />
+  );
 }
 
 // ... (interfaces update needed too)
 
-function DialogClose({ className, children, asChild, ...props }: DialogCloseProps) {
+function DialogClose({ className, children, asChild, onPress, ...props }: DialogCloseProps) {
   const { setOpen } = useContext(DialogContext);
 
   if (asChild && React.isValidElement(children)) {
     const child = children as React.ReactElement<any>;
     return React.cloneElement(child, {
-      onPress: (e: any) => {
-        child.props.onPress?.(e);
-        setOpen(false);
-      },
       ...props,
+      className: cn(child.props.className, className),
+      onPress: composeEventHandlers(composeEventHandlers(child.props.onPress, onPress), () =>
+        setOpen(false)
+      ),
     });
   }
 
   return (
-    <Pressable className={cn(className)} onPress={() => setOpen(false)} {...props}>
+    <Pressable
+      {...props}
+      className={cn(className)}
+      onPress={composeEventHandlers(onPress, () => setOpen(false))}
+    >
       {children}
     </Pressable>
   );

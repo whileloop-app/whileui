@@ -4,17 +4,19 @@ import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 const numericInputVariants = tv({
-  base: 'w-full flex-row items-center rounded-md border border-border bg-muted',
+  base: 'w-full flex-row items-center border-border bg-muted',
   variants: {
     variant: {
       default: 'border-border',
       error: 'border-destructive',
     },
     size: {
-      default: 'h-10',
-      compact: 'h-9',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -24,33 +26,15 @@ const numericInputVariants = tv({
 });
 
 const numericInputTextVariants = tv({
-  base: 'px-3 py-2 text-foreground',
+  base: 'text-foreground',
   variants: {
     size: {
-      default: 'text-sm',
-      compact: 'text-xs',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
     size: 'default',
-  },
-});
-
-const stepperButtonVariants = tv({
-  base: 'h-full w-11 items-center justify-center',
-  variants: {
-    size: {
-      default: 'px-3',
-      compact: 'px-2',
-    },
-    disabled: {
-      true: '',
-      false: '',
-    },
-  },
-  defaultVariants: {
-    size: 'default',
-    disabled: false,
   },
 });
 
@@ -103,6 +87,8 @@ export interface NumericInputProps
   max?: number;
   step?: number;
   showSteppers?: boolean;
+  /** Drop the field shell (border, background, radius, padding) for embedding inside another field shell like LabeledField. */
+  unstyled?: boolean;
 }
 
 const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
@@ -119,6 +105,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       max,
       step = 1,
       showSteppers = false,
+      unstyled = false,
       variant = 'default',
       size = 'default',
       editable = true,
@@ -131,6 +118,7 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
   ) => {
     const colors = useThemeColors();
     const interaction = useInteractionTokens();
+    const visual = useVisualTokens();
     const [internalText, setInternalText] = useState(() => toInputText(defaultValue));
     const isControlled = value !== undefined;
     const textValue = isControlled ? toInputText(value) : internalText;
@@ -209,12 +197,38 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
       applyNumericValue(roundToStepPrecision(raw, step));
     };
 
+    const controlHeight = size === 'compact' ? visual.controlHeightSm : visual.controlHeightDefault;
+    // Steppers render as inset soft buttons, centered inside the field shell.
+    const stepInset = Math.max(3, Math.round(controlHeight * 0.1));
+    const stepSize = controlHeight - stepInset * 2;
+    const stepRadius = Math.max(3, Math.min(visual.radiusMd, Math.round(stepSize / 3)));
+
     return (
       <View
-        className={cn(numericInputVariants({ variant, size }), className)}
-        style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
+        className={cn(
+          numericInputVariants({ variant, size }),
+          unstyled && 'bg-transparent',
+          className
+        )}
+        style={[
+          {
+            // Definite height (not minHeight) so inner elements can center reliably.
+            height: controlHeight,
+            borderWidth: unstyled ? 0 : visual.borderWidthControl,
+            borderRadius: unstyled ? 0 : visual.radiusLg,
+            paddingLeft: !unstyled && prefix ? visual.controlPaddingXDefault : 0,
+            paddingRight: unstyled ? 0 : showSteppers ? stepInset : 0,
+          },
+          !editable ? { opacity: interaction.disabledOpacity } : undefined,
+        ]}
       >
-        {prefix ? <View className="shrink-0 pl-3">{prefix}</View> : null}
+        {prefix ? (
+          <View
+            style={{ paddingRight: Math.max(8, Math.round(visual.controlPaddingXDefault * 0.5)) }}
+          >
+            {prefix}
+          </View>
+        ) : null}
         <View
           className="min-w-0 flex-1"
           style={Platform.OS === 'web' ? { minWidth: 0, flex: 1 } : undefined}
@@ -226,7 +240,33 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
               'w-full outline-none',
               inputClassName
             )}
-            style={Platform.OS === 'web' ? [{ width: '100%', minWidth: 0 }, styleProp] : styleProp}
+            style={
+              Platform.OS === 'web'
+                ? [
+                    {
+                      ...typographyStyle(visual, size === 'compact' ? 'caption' : 'label'),
+                      width: '100%',
+                      minWidth: 0,
+                      paddingVertical:
+                        size === 'compact'
+                          ? visual.controlPaddingYSm
+                          : visual.controlPaddingYDefault,
+                      paddingHorizontal: unstyled ? 0 : visual.controlPaddingXDefault,
+                    },
+                    styleProp,
+                  ]
+                : [
+                    {
+                      ...typographyStyle(visual, size === 'compact' ? 'caption' : 'label'),
+                      paddingVertical:
+                        size === 'compact'
+                          ? visual.controlPaddingYSm
+                          : visual.controlPaddingYDefault,
+                      paddingHorizontal: unstyled ? 0 : visual.controlPaddingXDefault,
+                    },
+                    styleProp,
+                  ]
+            }
             value={textValue}
             onChangeText={handleTextChange}
             onBlur={handleBlur}
@@ -236,37 +276,52 @@ const NumericInput = React.forwardRef<TextInput, NumericInputProps>(
             {...props}
           />
         </View>
-        {suffix ? <View className="shrink-0 pr-3">{suffix}</View> : null}
+        {suffix ? (
+          <View
+            style={{ paddingLeft: Math.max(8, Math.round(visual.controlPaddingXDefault * 0.5)) }}
+          >
+            {suffix}
+          </View>
+        ) : null}
 
         {showSteppers ? (
-          <View className="h-full shrink-0 flex-row border-l border-border bg-muted">
+          <View
+            className="shrink-0 flex-row items-center"
+            style={{ gap: stepInset, paddingLeft: Math.max(6, stepInset) }}
+          >
             <Pressable
-              className={cn(
-                stepperButtonVariants({ size, disabled: !canDecrease }),
-                'shrink-0 min-w-11 border-r border-border'
-              )}
-              style={stepDownStyle}
+              className="shrink-0 items-center justify-center bg-secondary"
+              style={(state) => {
+                const baseStyle =
+                  typeof stepDownStyle === 'function' ? stepDownStyle(state) : stepDownStyle;
+                return [baseStyle, { width: stepSize, height: stepSize, borderRadius: stepRadius }];
+              }}
               onPress={() => nudge(-1)}
               disabled={!canDecrease}
               hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Decrease value"
             >
-              <Text className="text-base font-medium text-foreground">-</Text>
+              <Text className="font-medium text-foreground" style={typographyStyle(visual, 'body')}>
+                −
+              </Text>
             </Pressable>
             <Pressable
-              className={cn(
-                stepperButtonVariants({ size, disabled: !canIncrease }),
-                'shrink-0 min-w-11'
-              )}
-              style={stepUpStyle}
+              className="shrink-0 items-center justify-center bg-secondary"
+              style={(state) => {
+                const baseStyle =
+                  typeof stepUpStyle === 'function' ? stepUpStyle(state) : stepUpStyle;
+                return [baseStyle, { width: stepSize, height: stepSize, borderRadius: stepRadius }];
+              }}
               onPress={() => nudge(1)}
               disabled={!canIncrease}
               hitSlop={4}
               accessibilityRole="button"
               accessibilityLabel="Increase value"
             >
-              <Text className="text-base font-medium text-foreground">+</Text>
+              <Text className="font-medium text-foreground" style={typographyStyle(visual, 'body')}>
+                +
+              </Text>
             </Pressable>
           </View>
         ) : null}

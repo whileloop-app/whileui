@@ -5,6 +5,8 @@ import { Badge, BadgeText } from '../../components/badge';
 import { Skeleton } from '../../components/skeleton';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 export interface SubscriptionCardProps extends ViewProps {
   planName: string;
@@ -23,7 +25,7 @@ export interface SubscriptionCardProps extends ViewProps {
 
 function SubscriptionCardSkeleton({ className }: { className?: string }) {
   return (
-    <Card className={cn('rounded-xl', className)}>
+    <Card className={className}>
       <CardHeader className="pb-2">
         <View className="flex-row items-center justify-between">
           <Skeleton className="h-5 w-1/3 rounded-md" />
@@ -59,12 +61,16 @@ export function SubscriptionCard({
   className,
   ...props
 }: SubscriptionCardProps) {
+  const visual = useVisualTokens();
+
   if (loading) {
     return <SubscriptionCardSkeleton className={className} />;
   }
 
+  const label = typographyStyle(visual, 'label');
+
   return (
-    <Card className={cn('rounded-xl', className)} {...props}>
+    <Card className={cn(className)} {...props}>
       <CardHeader className="pb-2">
         <View className="flex-row items-center justify-between">
           <CardTitle>{planName}</CardTitle>
@@ -76,12 +82,18 @@ export function SubscriptionCard({
       <CardContent className="gap-2">
         <View className="flex-row items-baseline gap-1">
           <Text className="text-2xl font-bold text-foreground">{price}</Text>
-          <Text className="text-sm text-muted-foreground">{period}</Text>
+          <Text className="text-muted-foreground" style={label}>
+            {period}
+          </Text>
         </View>
         {expiresAt ? (
-          <Text className="text-sm text-muted-foreground">Renews on {expiresAt}</Text>
+          <Text className="text-muted-foreground" style={label}>
+            Renews on {expiresAt}
+          </Text>
         ) : (
-          <Text className="text-sm text-muted-foreground">No renewal date set</Text>
+          <Text className="text-muted-foreground" style={label}>
+            No renewal date set
+          </Text>
         )}
       </CardContent>
       <CardFooter className="gap-2">

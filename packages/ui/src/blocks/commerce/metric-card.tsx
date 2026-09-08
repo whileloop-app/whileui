@@ -5,9 +5,10 @@ import { Card } from '../../components/card';
 import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 const metricCardVariants = tv({
-  base: 'p-4',
+  base: '',
   variants: {
     variant: {
       default: 'bg-card',
@@ -65,6 +66,8 @@ function MetricCard({
   loading = false,
   ...props
 }: MetricCardProps) {
+  const visual = useVisualTokens();
+
   if (loading) {
     return <MetricCardSkeleton className={className} variant={variant ?? 'default'} />;
   }
@@ -90,17 +93,23 @@ function MetricCard({
 
       {progress !== undefined && (
         <View className="mt-3">
-          <View className="h-2 bg-muted rounded-full overflow-hidden">
+          <View className="h-2 bg-muted overflow-hidden" style={{ borderRadius: visual.radiusSm }}>
             <View
-              className="h-full bg-primary rounded-full"
-              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+              className="h-full bg-primary"
+              style={{
+                borderRadius: visual.radiusSm,
+                width: `${Math.min(100, Math.max(0, progress))}%`,
+              }}
             />
           </View>
         </View>
       )}
 
       {segments && segments.length > 0 && (
-        <View className="mt-3 flex-row h-3 rounded-full overflow-hidden">
+        <View
+          className="mt-3 flex-row h-3 overflow-hidden"
+          style={{ borderRadius: visual.radiusSm }}
+        >
           {segments.map((seg, i) => (
             <View
               key={i}

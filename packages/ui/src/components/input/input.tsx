@@ -4,9 +4,11 @@ import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 const inputVariants = tv({
-  base: 'min-h-10 w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground',
+  base: 'w-full border-border bg-muted text-foreground',
   variants: {
     variant: {
       default: 'border-border',
@@ -41,29 +43,53 @@ const Input = React.forwardRef<TextInput, InputProps>(
   ) => {
     const colors = useThemeColors();
     const interaction = useInteractionTokens();
+    const visual = useVisualTokens();
     return (
       <View
         className={cn(
-          'flex-row items-center rounded-md border border-border bg-muted',
+          'flex-row items-center border-border bg-muted',
           inputVariants({ variant }),
           className
         )}
-        style={!editable ? { opacity: interaction.disabledOpacity } : undefined}
+        style={[
+          {
+            minHeight: visual.controlHeightDefault,
+            borderWidth: visual.borderWidthControl,
+            borderRadius: visual.radiusLg,
+            paddingHorizontal: visual.controlPaddingXDefault,
+          },
+          !editable ? { opacity: interaction.disabledOpacity } : undefined,
+        ]}
       >
-        {prefix && <View className="pl-3">{prefix}</View>}
+        {prefix && (
+          <View
+            style={{ paddingRight: Math.max(8, Math.round(visual.controlPaddingXDefault * 0.5)) }}
+          >
+            {prefix}
+          </View>
+        )}
         <TextInput
           ref={ref}
           className={cn(
-            'flex-1 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none',
-            prefix && 'pl-2',
-            suffix && 'pr-2',
+            'flex-1 text-foreground placeholder:text-muted-foreground outline-none',
             inputClassName
           )}
+          style={{
+            ...typographyStyle(visual, 'label'),
+            minHeight: visual.controlHeightDefault - 2,
+            paddingVertical: visual.controlPaddingYDefault,
+          }}
           editable={editable}
           placeholderTextColor={placeholderTextColor ?? colors.placeholder}
           {...props}
         />
-        {suffix && <View className="pr-3">{suffix}</View>}
+        {suffix && (
+          <View
+            style={{ paddingLeft: Math.max(8, Math.round(visual.controlPaddingXDefault * 0.5)) }}
+          >
+            {suffix}
+          </View>
+        )}
       </View>
     );
   }

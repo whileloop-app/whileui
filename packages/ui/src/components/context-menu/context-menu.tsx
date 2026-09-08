@@ -3,6 +3,9 @@ import { type StyleProp, type ViewStyle } from 'react-native';
 import { View, Modal, Pressable, Text, type ViewProps, type PressableProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { shadowStyle, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -90,6 +93,8 @@ function ContextMenuContent({
   ...props
 }: ContextMenuContentProps) {
   const { open, setOpen } = useContext(ContextMenuContext);
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
   const frostedSurface = useFrostedSurface({
     frosted,
     blurIntensity,
@@ -97,14 +102,32 @@ function ContextMenuContent({
     defaultTintToken: 'popover',
     defaultBlurPreset: 'medium',
   });
-  const contentStyle: StyleProp<ViewStyle> = [frostedSurface.surfaceStyle, style];
+  const contentStyle: StyleProp<ViewStyle> = [
+    {
+      borderTopLeftRadius: surfaceRadius(visual, 'lg'),
+      borderTopRightRadius: surfaceRadius(visual, 'lg'),
+      borderTopWidth: visual.borderWidthHairline,
+      borderLeftWidth: visual.borderWidthHairline,
+      borderRightWidth: visual.borderWidthHairline,
+    },
+    shadowStyle(visual, colors, 'md'),
+    frostedSurface.surfaceStyle,
+    style,
+  ];
 
   return (
-    <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+    <Modal
+      visible={open}
+      transparent
+      animationType="slide"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={() => setOpen(false)}
+    >
       <Pressable className="flex-1 justify-end" onPress={() => setOpen(false)}>
         <Pressable
           className={cn(
-            'w-full rounded-t-xl border-t border-x border-border p-2 pb-8 shadow-lg relative overflow-hidden',
+            'w-full border-border p-2 pb-8 relative overflow-hidden',
             frosted ? 'bg-transparent' : 'bg-popover',
             className
           )}
@@ -120,11 +143,19 @@ function ContextMenuContent({
   );
 }
 
-function ContextMenuItem({ className, ...props }: ContextMenuItemProps) {
+function ContextMenuItem({ className, style, ...props }: ContextMenuItemProps) {
   const { setOpen } = useContext(ContextMenuContext);
+  const visual = useVisualTokens();
+  const tokenStyle: ViewStyle = {
+    borderRadius: visual.radiusSm,
+    minHeight: visual.touchTargetMinSize,
+    paddingHorizontal: visual.controlPaddingXSm,
+    paddingVertical: visual.controlPaddingYSm,
+  };
   return (
     <Pressable
-      className={cn('flex flex-row items-center rounded-md px-2 py-2 active:bg-accent', className)}
+      className={cn('flex flex-row items-center active:bg-accent', className)}
+      style={(state) => [tokenStyle, typeof style === 'function' ? style(state) : style]}
       onPress={(e) => {
         props.onPress?.(e);
         setOpen(false);
@@ -135,10 +166,13 @@ function ContextMenuItem({ className, ...props }: ContextMenuItemProps) {
 }
 
 function ContextMenuLabel({ className, children, ...props }: ContextMenuLabelProps) {
+  const visual = useVisualTokens();
   return (
     <View className={cn('px-2 py-1.5', className)} {...props}>
       {typeof children === 'string' ? (
-        <Text className="text-sm font-semibold text-foreground">{children}</Text>
+        <Text className="font-semibold text-foreground" style={typographyStyle(visual, 'label')}>
+          {children}
+        </Text>
       ) : (
         children
       )}
@@ -146,8 +180,15 @@ function ContextMenuLabel({ className, children, ...props }: ContextMenuLabelPro
   );
 }
 
-function ContextMenuSeparator({ className, ...props }: ContextMenuSeparatorProps) {
-  return <View className={cn('-mx-1 my-1 h-px bg-border', className)} {...props} />;
+function ContextMenuSeparator({ className, style, ...props }: ContextMenuSeparatorProps) {
+  const visual = useVisualTokens();
+  return (
+    <View
+      className={cn('-mx-1 my-1 bg-border', className)}
+      style={[{ height: visual.borderWidthHairline }, style]}
+      {...props}
+    />
+  );
 }
 
 ContextMenu.displayName = 'ContextMenu';

@@ -3,6 +3,7 @@ import { View, Pressable, Animated, PanResponder, type ViewProps } from 'react-n
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -39,15 +40,46 @@ export function SwipeableItem({
   const translateX = useRef(new Animated.Value(0)).current;
   const visual = useVisualTokens();
   const actionWidth = visual.swipeActionWidth;
+  const leftActionsRef = useRef(leftActions);
+  const rightActionsRef = useRef(rightActions);
+  const onSwipeLeftRef = useRef(onSwipeLeft);
+  const onSwipeRightRef = useRef(onSwipeRight);
+  const swipeThresholdRef = useRef(swipeThreshold);
+  const actionWidthRef = useRef(actionWidth);
+  const hasInteractiveSwipeRef = useRef(false);
+
+  leftActionsRef.current = leftActions;
+  rightActionsRef.current = rightActions;
+  onSwipeLeftRef.current = onSwipeLeft;
+  onSwipeRightRef.current = onSwipeRight;
+  swipeThresholdRef.current = swipeThreshold;
+  actionWidthRef.current = actionWidth;
+  hasInteractiveSwipeRef.current =
+    leftActions.length > 0 ||
+    rightActions.length > 0 ||
+    typeof onSwipeLeft === 'function' ||
+    typeof onSwipeRight === 'function';
+
+  const animateTo = (value: number) => {
+    Animated.spring(translateX, {
+      toValue: value,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 10;
+        if (!hasInteractiveSwipeRef.current) return false;
+
+        const absDx = Math.abs(gestureState.dx);
+        const absDy = Math.abs(gestureState.dy);
+
+        return absDx > 10 && absDx > absDy * 1.25;
       },
       onPanResponderMove: (_, gestureState) => {
-        const maxLeft = leftActions.length * actionWidth;
-        const maxRight = rightActions.length * actionWidth;
+        const maxLeft = leftActionsRef.current.length * actionWidthRef.current;
+        const maxRight = rightActionsRef.current.length * actionWidthRef.current;
 
         let newX = gestureState.dx;
         if (newX > maxLeft) newX = maxLeft;
@@ -56,34 +88,27 @@ export function SwipeableItem({
         translateX.setValue(newX);
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > swipeThreshold && leftActions.length > 0) {
-          // Show left actions
-          Animated.spring(translateX, {
-            toValue: leftActions.length * actionWidth,
-            useNativeDriver: true,
-          }).start();
-        } else if (gestureState.dx < -swipeThreshold && rightActions.length > 0) {
-          // Show right actions
-          Animated.spring(translateX, {
-            toValue: -rightActions.length * actionWidth,
-            useNativeDriver: true,
-          }).start();
+        const maxLeft = leftActionsRef.current.length * actionWidthRef.current;
+        const maxRight = rightActionsRef.current.length * actionWidthRef.current;
+
+        if (gestureState.dx > swipeThresholdRef.current) {
+          onSwipeRightRef.current?.();
+          animateTo(maxLeft > 0 ? maxLeft : 0);
+        } else if (gestureState.dx < -swipeThresholdRef.current) {
+          onSwipeLeftRef.current?.();
+          animateTo(maxRight > 0 ? -maxRight : 0);
         } else {
-          // Reset
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
+          animateTo(0);
         }
+      },
+      onPanResponderTerminate: () => {
+        animateTo(0);
       },
     })
   ).current;
 
   const resetPosition = () => {
-    Animated.spring(translateX, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
+    animateTo(0);
   };
 
   return (
@@ -101,7 +126,10 @@ export function SwipeableItem({
             style={{ width: actionWidth, backgroundColor: action.color }}
           >
             {action.icon}
-            <Text className="mt-1 text-xs font-medium text-swipe-action-foreground">
+            <Text
+              className="mt-1 font-medium text-swipe-action-foreground"
+              style={typographyStyle(visual, 'caption')}
+            >
               {action.label}
             </Text>
           </Pressable>
@@ -121,7 +149,10 @@ export function SwipeableItem({
             style={{ width: actionWidth, backgroundColor: action.color }}
           >
             {action.icon}
-            <Text className="mt-1 text-xs font-medium text-swipe-action-foreground">
+            <Text
+              className="mt-1 font-medium text-swipe-action-foreground"
+              style={typographyStyle(visual, 'caption')}
+            >
               {action.label}
             </Text>
           </Pressable>

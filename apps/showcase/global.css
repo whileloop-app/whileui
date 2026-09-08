@@ -4,14 +4,18 @@
 @source '../../packages/ui/src';
 
 /* ═══════════════════════════════════════════════════════════════
-   Apple Liquid Glass — Design System
-   Frosted surfaces, translucent panels, system blue accent
-   Inspired by iOS/macOS glass and App&Flow
+   WhileUI Showcase Theme — "Cosmic Aura Redesign"
+   A premium visual skin featuring strictly abstract canvas backdrops,
+   restrained glassmorphic surfaces, and a studio-grade rose & cyan 
+   accent system.
    ═══════════════════════════════════════════════════════════════ */
 
 @theme {
+  /* ═══════════════════════════════════════════════════════════
+     FOUNDATION TOKENS
+     ═══════════════════════════════════════════════════════════ */
+
   /* ─── Spacing Scale ────────────────────────────────────────── */
-  /* Generous, rhythmic spacing for premium feel                  */
   --spacing: 0.25rem;
   --spacing-0: 0px;
   --spacing-0.5: 2px;
@@ -49,86 +53,122 @@
   --spacing-96: 384px;
 
   /* ─── Typography Scale ─────────────────────────────────────── */
-  /* Bold, confident sizing                                       */
   --text-xs: 0.6875rem;
-  /* 11px — captions */
   --text-sm: 0.8125rem;
-  /* 13px — secondary text */
   --text-base: 0.9375rem;
-  /* 15px — body text */
   --text-lg: 1.0625rem;
-  /* 17px — emphasized body */
-  --text-xl: 1.25rem;
-  /* 20px — section headers */
-  --text-2xl: 1.5rem;
-  /* 24px — card titles */
-  --text-3xl: 1.875rem;
-  /* 30px — page headers */
-  --text-4xl: 2.25rem;
-  /* 36px — hero text */
-  --text-5xl: 3rem;
-  /* 48px — display */
-  --text-6xl: 3.75rem;
-  /* 60px — jumbo display */
+  --text-xl: 1.3125rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --text-5xl: 3.25rem;
+  --text-6xl: 4rem;
 
   /* ─── Letter Spacing ───────────────────────────────────────── */
-  /* Tighter tracking for premium, dense look                     */
-  --tracking-tighter: -0.04em;
-  --tracking-tight: -0.02em;
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.03em;
   --tracking-normal: -0.01em;
   --tracking-wide: 0.01em;
-  --tracking-wider: 0.04em;
-  --tracking-widest: 0.1em;
+  --tracking-wider: 0.06em;
+  --tracking-widest: 0.14em;
 
   /* ─── Line Height ──────────────────────────────────────────── */
-  /* Compact, confident line heights                              */
   --leading-none: 1;
-  --leading-tight: 1.15;
-  --leading-snug: 1.3;
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
   --leading-normal: 1.45;
   --leading-relaxed: 1.6;
   --leading-loose: 1.9;
 
-  /* ─── Border Radius ────────────────────────────────────────── */
-  /* Apple-style: generous, pill-friendly                         */
+  /* ─── Border Radius (Organic and Balanced) ─────────────────── */
   --radius-none: 0;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 22px;
-  --radius-3xl: 28px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 36px;
+  --radius-2xl: 44px;
+  --radius-3xl: 60px;
   --radius-full: 9999px;
 
-  /* ─── Shadows ──────────────────────────────────────────────── */
-  /* Apple-style: soft, diffused depth for glass layers            */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.12);
-  --shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.14);
+  /* ─── Font (Plus Jakarta Sans) ─────────────────────────────── */
+  --font-sans: PlusJakartaSans_400Regular;
+
+  /* ─── Shadows (Studio Layered Restrained Glow) ─────────────── */
+  --shadow-sm: 0 2px 8px oklch(0.12 0.02 330 / 0.08);
+  --shadow-md: 0 8px 24px oklch(0.12 0.02 330 / 0.12);
+  --shadow-lg: 0 16px 40px oklch(0.12 0.02 330 / 0.16);
+  /* Rose ambient glow for hero states */
+  --shadow-xl: 0 16px 48px oklch(0.64 0.2 350 / 0.06), 0 4px 12px oklch(0.12 0.02 330 / 0.08);
+  /* Cyan ambient glow for active/selected highlights */
+  --shadow-2xl: 0 16px 48px oklch(0.72 0.16 200 / 0.08), 0 4px 12px oklch(0.12 0.02 330 / 0.08);
   --shadow-none: 0 0 0 rgba(0, 0, 0, 0);
+}
 
-  /* ─── Interaction + Motion Tokens ─────────────────────────── */
-  /* Global control for press/disabled feedback and motion speed  */
-  --ui-press-opacity: 0.72;
-  --ui-press-opacity-strong: 0.9;
-  --ui-disabled-opacity: 0.5;
-  --ui-disabled-opacity-soft: 0.6;
-  --ui-disabled-opacity-subtle: 0.4;
-  --ui-inactive-opacity: 0.5;
+@theme static {
+  --ui-press-opacity: 0.82;
+  --ui-press-opacity-strong: 0.92;
+  --ui-disabled-opacity: 0.46;
+  --ui-disabled-opacity-soft: 0.56;
+  --ui-disabled-opacity-subtle: 0.36;
+  --ui-inactive-opacity: 0.54;
+  --ui-motion-fast: 140;
+  --ui-motion-normal: 200;
+  --ui-motion-slow: 280;
+  --ui-drawer-open-duration: 260;
+  --ui-drawer-close-duration: 180;
 
-  --ui-motion-fast: 160;
-  --ui-motion-normal: 220;
-  --ui-motion-slow: 300;
-  --ui-drawer-open-duration: 300;
-  --ui-drawer-close-duration: 220;
-
-  /* ─── Visual Layout Tokens ──────────────────────────────────── */
-  /* Tune via CSS for copy-paste theming                           */
+  --ui-radius-sm: 10;
+  --ui-radius-md: 14;
+  --ui-radius-lg: 18;
+  --ui-radius-xl: 24;
+  --ui-control-height-sm: 36;
+  --ui-control-height-default: 44;
+  --ui-control-height-lg: 52;
+  --ui-control-padding-x-sm: 12;
+  --ui-control-padding-x-default: 16;
+  --ui-control-padding-x-lg: 24;
+  --ui-control-padding-y-sm: 8;
+  --ui-control-padding-y-default: 10;
+  --ui-control-padding-y-lg: 14;
+  --ui-surface-padding-sm: 16;
+  --ui-surface-padding-default: 24;
+  --ui-surface-padding-lg: 32;
+  --ui-badge-radius: 999;
+  --ui-badge-padding-x: 10;
+  --ui-badge-padding-y: 4;
+  --ui-font-size-xs: 11;
+  --ui-font-size-sm: 13;
+  --ui-font-size-base: 15;
+  --ui-font-size-lg: 17;
+  --ui-font-size-xl: 20;
+  --ui-font-size-2xl: 24;
+  --ui-letter-spacing-caption: 0.2;
+  --ui-letter-spacing-label: 0.1;
+  --ui-letter-spacing-body: 0;
+  --ui-letter-spacing-title: -0.2;
+  --ui-letter-spacing-headline: -0.4;
+  --ui-border-width-hairline: 1;
+  --ui-border-width-control: 1;
+  --ui-border-width-emphasis: 2;
+  --ui-focus-ring-width: 2;
+  --ui-shadow-opacity-sm: 0.06;
+  --ui-shadow-opacity-md: 0.1;
+  --ui-shadow-opacity-lg: 0.16;
+  --ui-shadow-radius-sm: 3;
+  --ui-shadow-radius-md: 12;
+  --ui-shadow-radius-lg: 28;
+  --ui-shadow-offset-y-sm: 1;
+  --ui-shadow-offset-y-md: 4;
+  --ui-shadow-offset-y-lg: 12;
+  --ui-shadow-elevation-sm: 1;
+  --ui-shadow-elevation-md: 4;
+  --ui-shadow-elevation-lg: 10;
   --ui-touch-target-min-size: 44;
-  --ui-drawer-width-ratio: 0.82;
-  --ui-drawer-max-width-web: 360;
+  --ui-drawer-width-ratio: 0.84;
+  --ui-drawer-max-width-web: 380;
+  --ui-drawer-frosted-inset: 10;
+  --ui-drawer-frosted-radius: 34;
+  --ui-drawer-content-top-padding: 0;
   --ui-drawer-item-font-size: 15;
   --ui-drawer-badge-min-width: 20;
   --ui-nav-section-title-font-size: 11;
@@ -145,332 +185,370 @@
   --ui-smart-input-max-height: 120;
   --ui-form-modal-content-min-height-ratio: 0.4;
   --ui-sheet-tablet-breakpoint: 600;
-  --ui-sheet-max-width: 360;
-  --ui-sheet-half-max-height-ratio: 0.5;
-  --ui-sheet-half-min-height: 320;
+  --ui-sheet-max-width: 400;
+  --ui-sheet-half-max-height-ratio: 0.56;
+  --ui-sheet-half-min-height: 340;
   --ui-swipe-action-width: 80;
   --ui-skeleton-shimmer-band-width: 56;
-  --ui-blur-intensity-subtle: 22;
-  --ui-blur-intensity-medium: 30;
-  --ui-blur-intensity-strong: 40;
-  --ui-blur-saturation-pct: 160;
-  --ui-frosted-highlight-height: 0;
-  --ui-frosted-backdrop-blur-intensity: 26;
-  --ui-frosted-backdrop-blur-scale: 0.68;
+  --ui-blur-intensity-subtle: 18;
+  --ui-blur-intensity-medium: 26;
+  --ui-blur-intensity-strong: 34;
+  --ui-blur-saturation-pct: 145;
+  --ui-frosted-highlight-height: 2;
+  --ui-frosted-backdrop-blur-intensity: 22;
+  --ui-frosted-backdrop-blur-scale: 0.72;
   --ui-frosted-android-experimental-blur: 1;
-  --ui-drawer-frosted-inset: 0;
-  --ui-drawer-frosted-radius: 30;
-  --ui-drawer-content-top-padding: 0;
-
-  /* ─── Font ─────────────────────────────────────────────────── */
-  /* Nunito — friendly sans (swap to system/SF Pro for tighter Apple match) */
-  --font-sans: Nunito_400Regular;
 }
 
-/* ─── Explicit Font Mappings for React Native ────────────────── */
-/* Nunito: friendly sans (use SF Pro or system font for tighter Apple match) */
 .font-normal,
 .font-sans {
-  font-family: 'Nunito_400Regular';
+  font-family: 'PlusJakartaSans_400Regular';
   font-weight: 400;
 }
-
 .font-medium {
-  font-family: 'Nunito_500Medium';
+  font-family: 'PlusJakartaSans_500Medium';
   font-weight: 500;
 }
-
 .font-semibold {
-  font-family: 'Nunito_600SemiBold';
+  font-family: 'PlusJakartaSans_600SemiBold';
   font-weight: 600;
 }
-
 .font-bold {
-  font-family: 'Nunito_700Bold';
+  font-family: 'PlusJakartaSans_700Bold';
   font-weight: 700;
 }
-
 .font-extrabold {
-  font-family: 'Nunito_800ExtraBold';
+  font-family: 'PlusJakartaSans_800ExtraBold';
   font-weight: 800;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   THEME COLORS — Apple Liquid Glass
-   Frosted surfaces, translucent panels, system blue accent
-   ═══════════════════════════════════════════════════════════════ */
-
 @layer theme {
   :root {
-    /* ─── Light Mode: Airy base, frosted panels ───────────────────── */
+    /* ═══════════════════════════════════════════════════════════
+       LIGHT THEME — Cosmic Plum & Subtle Aurora Teal Accent
+       ═══════════════════════════════════════════════════════════ */
     @variant light {
-      /* Core: brand navy canvas */
-      --color-background: oklch(0.32 0.09 255.7);
-      --color-foreground: oklch(0.99 0.004 250);
+      --color-background: oklch(0.975 0.012 330); /* Warm cream/rose-tinted canvas */
+      --color-foreground: oklch(0.22 0.03 315); /* Deep plum-charcoal text */
+      --color-card: oklch(1 0.006 330 / 0.72); /* Translucent soft card */
+      --color-card-foreground: oklch(0.22 0.03 315);
+      --color-popover: oklch(0.975 0.012 330 / 0.85); /* Surface Strong */
+      --color-popover-foreground: oklch(0.22 0.03 315);
 
-      /* Cards & Popovers: blue-tinted solid surfaces over navy */
-      --color-card: oklch(0.49 0.08 251 / 0.78);
-      --color-card-foreground: oklch(0.99 0.004 250);
+      --color-primary: oklch(0.5 0.15 335); /* Deeper rose/plum */
+      --color-primary-foreground: oklch(0.99 0.008 330);
+      --color-secondary: oklch(0.94 0.018 325 / 0.78); /* Soft secondary surface */
+      --color-secondary-foreground: oklch(0.38 0.035 315);
+      --color-accent: oklch(0.58 0.11 205); /* Aurora teal/cyan accent */
+      --color-accent-foreground: oklch(0.98 0.006 205);
 
-      --color-popover: oklch(0.49 0.08 251 / 0.92);
-      --color-popover-foreground: oklch(0.99 0.004 250);
-
-      /* Primary: vivid indigo-blue */
-      --color-primary: oklch(0.616 0.132 251.6);
-      --color-primary-foreground: oklch(0.99 0.002 250);
-
-      /* Secondary: soft blue surface */
-      --color-secondary: oklch(0.72 0.08 243 / 0.64);
-      --color-secondary-foreground: oklch(0.99 0.004 250);
-
-      /* Accent: cyan-teal */
-      --color-accent: oklch(0.796 0.136 219.6);
-      --color-accent-foreground: oklch(0.288 0.086 255.7);
-
-      /* Muted */
-      --color-muted: oklch(0.66 0.06 235 / 0.72);
-      --color-muted-foreground: oklch(0.91 0.022 245);
-
-      /* Destructive */
-      --color-destructive: oklch(0.62 0.24 28);
-      --color-destructive-foreground: oklch(0.99 0.002 85);
-
-      /* Borders/inputs */
-      --color-border: oklch(0.94 0.012 248 / 0.24);
-      --color-input: oklch(0.47 0.075 251 / 0.9);
-      --color-ring: oklch(0.796 0.136 219.6);
+      --color-muted: oklch(0.93 0.012 325 / 0.75);
+      --color-muted-foreground: oklch(0.52 0.026 315);
+      --color-destructive: oklch(0.48 0.14 25); /* Deep wine/red */
+      --color-destructive-foreground: oklch(0.99 0.008 25);
+      --color-border: oklch(0.28 0.025 315 / 0.12); /* Subtle plum-border */
+      --color-input: oklch(0.94 0.018 325 / 0.78);
+      --color-ring: oklch(0.58 0.11 205);
 
       /* Status */
-      --color-success: oklch(0.66 0.16 155);
-      --color-success-foreground: oklch(0.99 0.002 85);
+      --color-success: oklch(0.58 0.12 145); /* Sage Green Success */
+      --color-success-foreground: #ffffff;
+      --color-warning: oklch(0.72 0.1 75); /* Warm ochre warning */
+      --color-warning-foreground: oklch(0.25 0.04 75);
+      --color-info: oklch(0.56 0.1 220); /* Soft steel blue info */
+      --color-info-foreground: #ffffff;
 
-      --color-warning: oklch(0.8 0.16 84);
-      --color-warning-foreground: oklch(0.2 0.03 85);
+      /* Surface + Effects */
+      --color-overlay: oklch(0.22 0.03 315 / 0.3);
+      --color-overlay-strong: oklch(0.22 0.03 315 / 0.5);
+      --color-surface-elevated: oklch(1 0.006 330 / 0.85);
+      --color-surface-border: oklch(0.28 0.025 315 / 0.08);
+      --color-surface-highlight: oklch(0.5 0.15 335 / 0.15); /* Plum/rose highlights */
+      --color-surface-translucent: oklch(1 0.006 330 / 0.4);
+      --color-surface-translucent-border: oklch(0.28 0.025 315 / 0.08);
+      --color-shadow: oklch(0.22 0.03 315);
 
-      --color-info: oklch(0.796 0.136 219.6);
-      --color-info-foreground: oklch(0.99 0.002 85);
+      /* Feedback */
+      --color-state-hover: oklch(0.5 0.15 335 / 0.08);
+      --color-state-pressed: oklch(0.5 0.15 335 / 0.15);
+      --color-state-disabled: oklch(0.38 0.035 315 / 0.2);
 
-      /* Effect tokens */
-      --color-overlay: oklch(0.13 0.05 255 / 0.44);
-      --color-overlay-strong: oklch(0.1 0.04 255 / 0.6);
-      --color-surface-elevated: oklch(0.52 0.08 251 / 0.82);
-      --color-surface-border: oklch(0.99 0.004 250 / 0.22);
-      --color-surface-highlight: oklch(0.99 0.004 250 / 0.12);
-      --color-surface-translucent: oklch(0.5 0.08 251 / 0.78);
-      --color-surface-translucent-border: oklch(0.99 0.004 250 / 0.28);
-      --color-state-hover: oklch(0.616 0.132 251.6 / 0.1);
-      --color-state-pressed: oklch(0.616 0.132 251.6 / 0.16);
-      --color-state-disabled: oklch(0.94 0.01 240 / 0.38);
+      --color-primary-active: oklch(0.44 0.13 335);
+      --color-secondary-active: oklch(0.94 0.018 325 / 0.95);
+      --color-destructive-active: oklch(0.42 0.13 25);
 
-      /* Semantic */
-      --color-primary-active: oklch(0.56 0.128 251.6);
-      --color-secondary-active: oklch(0.76 0.09 243 / 0.36);
-      --color-destructive-active: oklch(0.56 0.24 28);
-      --color-muted-soft: oklch(0.94 0.016 240 / 0.22);
-      --color-primary-soft-subtle: oklch(0.616 0.132 251.6 / 0.07);
-      --color-primary-soft: oklch(0.616 0.132 251.6 / 0.13);
-      --color-secondary-soft: oklch(0.796 0.136 219.6 / 0.16);
-      --color-destructive-soft: oklch(0.62 0.24 28 / 0.12);
-      --color-destructive-soft-border: oklch(0.62 0.24 28 / 0.3);
-      --color-success-soft: oklch(0.66 0.16 155 / 0.12);
-      --color-success-soft-border: oklch(0.66 0.16 155 / 0.3);
-      --color-warning-soft: oklch(0.8 0.16 84 / 0.14);
-      --color-warning-soft-border: oklch(0.8 0.16 84 / 0.34);
-      --color-info-soft: oklch(0.67 0.13 236 / 0.12);
-      --color-info-soft-border: oklch(0.67 0.13 236 / 0.3);
-      --color-destructive-muted: oklch(0.62 0.24 28 / 0.7);
-      --color-primary-foreground-muted: oklch(0.99 0.004 250 / 0.82);
-      --color-destructive-foreground-muted: oklch(0.99 0.002 85 / 0.9);
-      --color-success-foreground-muted: oklch(0.99 0.002 85 / 0.9);
-      --color-swipe-action-foreground: oklch(0.99 0.002 85);
+      --color-primary-soft: oklch(0.5 0.15 335 / 0.18);
+      --color-primary-soft-subtle: oklch(0.5 0.15 335 / 0.08);
+      --color-secondary-soft: oklch(0.94 0.018 325 / 0.05);
+      --color-muted-soft: oklch(0.93 0.012 325 / 0.3);
+      --color-destructive-soft: oklch(0.48 0.14 25 / 0.18);
+      --color-destructive-soft-border: oklch(0.48 0.14 25 / 0.32);
+      --color-success-soft: oklch(0.58 0.12 145 / 0.18);
+      --color-success-soft-border: oklch(0.58 0.12 145 / 0.32);
+      --color-warning-soft: oklch(0.72 0.1 75 / 0.18);
+      --color-warning-soft-border: oklch(0.72 0.1 75 / 0.36);
+      --color-info-soft: oklch(0.56 0.1 220 / 0.18);
+      --color-info-soft-border: oklch(0.56 0.1 220 / 0.32);
 
-      /* RN fallbacks */
-      --app-color-background: #072a54;
-      --app-color-foreground: #f7fefe;
-      --app-color-card: rgba(66, 136, 209, 0.78);
-      --app-color-card-foreground: #f7fefe;
-      --app-color-popover: rgba(66, 136, 209, 0.92);
-      --app-color-popover-foreground: #f7fefe;
-      --app-color-primary: #4288d1;
-      --app-color-primary-foreground: #f7fefe;
-      --app-color-secondary: rgba(66, 136, 209, 0.64);
-      --app-color-secondary-foreground: #f7fefe;
-      --app-color-muted: rgba(45, 208, 248, 0.72);
-      --app-color-muted-foreground: rgba(227, 240, 252, 0.9);
-      --app-color-border: rgba(247, 254, 254, 0.24);
-      --app-color-input: rgba(66, 136, 209, 0.9);
-      --app-color-ring: #2dd0f8;
-      --app-color-accent: #2dd0f8;
-      --app-color-accent-foreground: #072a54;
-      --app-color-destructive: #ef4444;
-      --app-color-destructive-foreground: #ffffff;
-      --app-color-success: #22b573;
+      /* React Native Fallbacks */
+      --app-color-background: #fcf4fb;
+      --app-color-foreground: #201624;
+      --app-color-card: #ffffff;
+      --app-color-card-foreground: #201624;
+      --app-color-popover: #ffffff;
+      --app-color-popover-foreground: #201624;
+      --app-color-primary: #943b84;
+      --app-color-primary-foreground: #fffafe;
+      --app-color-secondary: #f2e7f2;
+      --app-color-secondary-foreground: #493d4f;
+      --app-color-muted: #ece5ec;
+      --app-color-muted-foreground: #6f6573;
+      --app-color-border: rgba(46, 37, 49, 0.12);
+      --app-color-input: rgba(242, 231, 242, 0.78);
+      --app-color-ring: rgba(0, 140, 153, 0.5);
+      --app-color-accent: #008c99;
+      --app-color-accent-foreground: #f4fafa;
+      --app-color-destructive: #9d3533;
+      --app-color-destructive-foreground: #fffaf9;
+      --app-color-success: #478d4b;
       --app-color-success-foreground: #ffffff;
-      --app-color-warning: #f59e0b;
-      --app-color-warning-foreground: #1c1c1e;
-      --app-color-info: #2dd0f8;
-      --app-color-info-foreground: #072a54;
-      --app-color-overlay: rgba(7, 20, 48, 0.44);
-      --app-color-overlay-strong: rgba(7, 20, 48, 0.6);
-      --app-color-surface-elevated: rgba(66, 136, 209, 0.82);
-      --app-color-surface-translucent: rgba(66, 136, 209, 0.78);
-      --app-color-surface-translucent-border: rgba(247, 254, 254, 0.28);
-      --app-color-surface-border: rgba(247, 254, 254, 0.22);
-      --app-color-surface-highlight: rgba(247, 254, 254, 0.12);
-      --app-color-state-hover: rgba(45, 208, 248, 0.14);
-      --app-color-state-pressed: rgba(66, 136, 209, 0.2);
-      --app-color-state-disabled: rgba(247, 254, 254, 0.38);
+      --app-color-warning: #c99b5a;
+      --app-color-warning-foreground: #2d1f0a;
+      --app-color-info: #0a819d;
+      --app-color-info-foreground: #ffffff;
 
-      /* Showcase backdrop tuning: solid geometric light mode */
-      --ui-showcase-backdrop-base: rgba(7, 42, 84, 1);
-      --ui-showcase-backdrop-band: rgba(66, 136, 209, 0.18);
-      --ui-showcase-backdrop-geo-a: rgba(66, 136, 209, 0.2);
-      --ui-showcase-backdrop-geo-b: rgba(45, 208, 248, 0.16);
-      --ui-showcase-backdrop-geo-c: rgba(247, 254, 254, 0.08);
-      --ui-showcase-backdrop-veil: rgba(7, 42, 84, 0.12);
-      --ui-showcase-backdrop-tint: rgba(45, 208, 248, 0.05);
-      --ui-showcase-backdrop-frost: rgba(247, 254, 254, 0.03);
-      --ui-showcase-backdrop-image-opacity: 0;
-      --ui-showcase-backdrop-image-blur: 0;
-      --ui-showcase-backdrop-blur-intensity: 0;
+      /* React Native Fallbacks - Surface, Feedback & Effects */
+      --app-color-overlay: rgba(32, 22, 36, 0.3);
+      --app-color-overlay-strong: rgba(32, 22, 36, 0.5);
+      --app-color-surface-elevated: #ffffff;
+      --app-color-surface-translucent: rgba(255, 254, 255, 0.4);
+      --app-color-surface-translucent-border: rgba(46, 37, 49, 0.08);
+      --app-color-surface-border: rgba(46, 37, 49, 0.08);
+      --app-color-surface-highlight: rgba(148, 59, 132, 0.15);
+      --app-color-state-hover: rgba(148, 59, 132, 0.08);
+      --app-color-state-pressed: rgba(148, 59, 132, 0.15);
+      --app-color-state-disabled: rgba(111, 101, 115, 0.2);
+      --app-color-shadow: #201624;
+      --app-color-primary-active: #7e3271;
+      --app-color-secondary-active: rgba(242, 231, 242, 0.95);
+      --app-color-destructive-active: #812b2a;
+      --app-color-primary-soft: rgba(148, 59, 132, 0.18);
+      --app-color-primary-soft-subtle: rgba(148, 59, 132, 0.08);
+      --app-color-secondary-soft: rgba(0, 140, 153, 0.1);
+      --app-color-muted-soft: rgba(236, 229, 236, 0.3);
+      --app-color-destructive-soft: rgba(157, 53, 51, 0.18);
+      --app-color-destructive-soft-border: rgba(157, 53, 51, 0.32);
+      --app-color-success-soft: rgba(71, 141, 75, 0.18);
+      --app-color-success-soft-border: rgba(71, 141, 75, 0.32);
+      --app-color-warning-soft: rgba(201, 155, 90, 0.18);
+      --app-color-warning-soft-border: rgba(201, 155, 90, 0.36);
+      --app-color-info-soft: rgba(10, 129, 157, 0.18);
+      --app-color-info-soft-border: rgba(10, 129, 157, 0.32);
+
+      /* Visual Tokens */
+      --ui-radius-sm: 12;
+      --ui-radius-md: 20;
+      --ui-radius-lg: 28;
+      --ui-radius-xl: 36;
+
+      --ui-control-height-sm: 36;
+      --ui-control-height-default: 44;
+      --ui-control-height-lg: 54;
+      --ui-control-padding-x-default: 18;
+
+      /* Depth */
+      --ui-shadow-opacity-sm: 0.08;
+      --ui-shadow-opacity-md: 0.12;
+      --ui-shadow-opacity-lg: 0.16;
+      --ui-shadow-radius-sm: 8;
+      --ui-shadow-radius-md: 24;
+      --ui-shadow-radius-lg: 40;
+
+      /* Glass */
+      --ui-blur-intensity-subtle: 20;
+      --ui-blur-intensity-medium: 30;
+      --ui-blur-intensity-strong: 50;
+      --ui-blur-saturation-pct: 100;
+      --ui-frosted-backdrop-blur-intensity: 30;
+
+      /* Showcase-only Backdrop Tuning */
+      --ui-showcase-backdrop-base: rgba(252, 244, 251, 1);
+      --ui-showcase-backdrop-band: rgba(148, 59, 132, 0.04);
+      --ui-showcase-backdrop-geo-a: rgba(148, 59, 132, 0.12);
+      --ui-showcase-backdrop-geo-b: rgba(0, 140, 153, 0.1);
+      --ui-showcase-backdrop-geo-c: rgba(255, 255, 255, 0.03);
+      --ui-showcase-backdrop-veil: rgba(255, 255, 255, 0.25);
+      --ui-showcase-backdrop-tint: rgba(148, 59, 132, 0.02);
+      --ui-showcase-backdrop-frost: rgba(255, 255, 255, 0.03);
+      --ui-showcase-backdrop-image-opacity: 0.85;
+      --ui-showcase-backdrop-image-blur: 8;
+      --ui-showcase-backdrop-blur-intensity: 8;
     }
 
-    /* ─── Dark Mode: Deep base, frosted dark glass ─────────────────── */
+    /* ═══════════════════════════════════════════════════════════
+       DARK THEME — Cosmic Plum & Subtle Aurora Teal Accent
+       ═══════════════════════════════════════════════════════════ */
     @variant dark {
-      /* Core: Deep neutral graphite */
-      --color-background: oklch(0.17 0.008 260);
-      --color-foreground: oklch(0.96 0.008 260);
+      /* ─── Foundation Colors ────────────────────────────────── */
+      --color-background: oklch(0.115 0.025 315); /* Deep plum-black canvas */
+      --color-foreground: oklch(0.96 0.012 330); /* Warm ivory text */
+      --color-card: oklch(0.18 0.035 315 / 0.68); /* Translucent dark glass */
+      --color-card-foreground: oklch(0.96 0.012 330);
+      --color-popover: oklch(0.24 0.04 315 / 0.74); /* Surface Strong */
+      --color-popover-foreground: oklch(0.96 0.012 330);
 
-      /* Cards & Popovers: Translucent dark glass */
-      --color-card: oklch(0.26 0.01 260 / 0.8);
-      --color-card-foreground: oklch(0.96 0.008 260);
+      --color-primary: oklch(0.58 0.16 335); /* Muted plum-rose */
+      --color-primary-foreground: oklch(0.98 0.01 330);
+      --color-secondary: oklch(0.24 0.04 315 / 0.74); /* Translucent secondary surface */
+      --color-secondary-foreground: oklch(0.82 0.025 325);
+      --color-accent: oklch(0.67 0.13 205); /* Aurora teal/cyan accent */
+      --color-accent-foreground: oklch(0.1 0.02 220);
 
-      --color-popover: oklch(0.26 0.01 260 / 0.9);
-      --color-popover-foreground: oklch(0.96 0.008 260);
+      --color-muted: oklch(0.25 0.025 315 / 0.72);
+      --color-muted-foreground: oklch(0.7 0.025 325);
+      --color-destructive: oklch(0.5 0.15 25); /* Deep wine/red */
+      --color-destructive-foreground: oklch(0.98 0.01 25);
+      --color-border: oklch(0.92 0.02 330 / 0.1); /* Low-opacity hairline border */
+      --color-input: oklch(0.18 0.035 315 / 0.68);
+      --color-ring: oklch(0.67 0.13 205);
 
-      /* Primary: Soft ivory on dark */
-      --color-primary: oklch(0.93 0.004 260);
-      --color-primary-foreground: oklch(0.2 0.008 260);
+      /* ─── Status Colors ────────────────────────────────────── */
+      --color-success: oklch(0.68 0.12 145); /* Sage green success */
+      --color-success-foreground: oklch(0.12 0.02 145);
+      --color-warning: oklch(0.78 0.1 80); /* Warm ochre warning */
+      --color-warning-foreground: oklch(0.2 0.04 80);
+      --color-info: oklch(0.66 0.12 240); /* Soft steel/slate blue info */
+      --color-info-foreground: oklch(0.12 0.02 240);
 
-      /* Secondary: Translucent fill */
-      --color-secondary: oklch(0.3 0.01 260 / 0.82);
-      --color-secondary-foreground: oklch(0.96 0.008 260);
+      /* ─── Surface + Effect Colors ──────────────────────────── */
+      --color-overlay: rgba(0, 0, 0, 0.7);
+      --color-overlay-strong: rgba(0, 0, 0, 0.85);
+      --color-surface-elevated: oklch(0.24 0.04 315 / 0.72);
+      --color-surface-border: oklch(255 255 255 / 0.1);
+      --color-surface-highlight: oklch(0.58 0.16 335 / 0.15); /* Plum/rose highlights */
+      --color-surface-translucent: oklch(0.18 0.035 315 / 0.4);
+      --color-surface-translucent-border: oklch(0.58 0.16 335 / 0.12);
+      --color-shadow: #000000;
 
-      /* Accent: Soft ivory */
-      --color-accent: oklch(0.9 0.004 260);
-      --color-accent-foreground: oklch(0.13 0.02 260);
+      /* ─── Feedback + Semantic Helpers ──────────────────────── */
+      --color-state-hover: oklch(0.58 0.16 335 / 0.12);
+      --color-state-pressed: oklch(0.58 0.16 335 / 0.2);
+      --color-state-disabled: oklch(255 255 255 / 0.1);
+      --color-primary-active: oklch(0.62 0.14 335);
+      --color-secondary-active: oklch(255 255 255 / 0.15);
+      --color-destructive-active: oklch(0.44 0.14 25);
 
-      /* Muted */
-      --color-muted: oklch(0.24 0.01 260);
-      --color-muted-foreground: oklch(0.73 0.01 260);
+      --color-primary-soft: oklch(0.58 0.16 335 / 0.18);
+      --color-primary-soft-subtle: oklch(0.58 0.16 335 / 0.09);
+      --color-secondary-soft: oklch(255 255 255 / 0.05);
+      --color-muted-soft: oklch(0.25 0.025 315 / 0.03);
+      --color-destructive-soft: oklch(0.5 0.15 25 / 0.18);
+      --color-destructive-soft-border: oklch(0.5 0.15 25 / 0.38);
+      --color-success-soft: oklch(0.68 0.12 145 / 0.18);
+      --color-success-soft-border: oklch(0.68 0.12 145 / 0.36);
+      --color-warning-soft: oklch(0.78 0.1 80 / 0.18);
+      --color-warning-soft-border: oklch(0.78 0.1 80 / 0.38);
+      --color-info-soft: oklch(0.66 0.12 240 / 0.14);
+      --color-info-soft-border: oklch(0.66 0.12 240 / 0.36);
 
-      /* Destructive */
-      --color-destructive: oklch(0.6 0.22 25);
-      --color-destructive-foreground: oklch(0.99 0.002 85);
+      /* ─── React Native Fallback Colors ─────────────────────── */
+      --app-color-background: #08030b;
+      --app-color-foreground: #f7eff6;
+      --app-color-card: #170c1c;
+      --app-color-card-foreground: #f7eff6;
+      --app-color-popover: #1f1224;
+      --app-color-popover-foreground: #f7eff6;
+      --app-color-primary: #b14f9f;
+      --app-color-primary-foreground: #fdf6fc;
+      --app-color-secondary: #26192c;
+      --app-color-secondary-foreground: #cdbfcd;
+      --app-color-muted: #261e2a;
+      --app-color-muted-foreground: #a799a7;
+      --app-color-border: rgba(237, 224, 235, 0.1);
+      --app-color-input: rgba(38, 25, 44, 0.74);
+      --app-color-ring: rgba(0, 171, 187, 0.5);
+      --app-color-accent: #00abbb;
+      --app-color-accent-foreground: #000407;
+      --app-color-destructive: #a83634;
+      --app-color-destructive-foreground: #fff6f5;
+      --app-color-success: #66ac69;
+      --app-color-success-foreground: #030703;
+      --app-color-warning: #d9b06b;
+      --app-color-warning-foreground: #1f1401;
+      --app-color-info: #419bd4;
+      --app-color-info-foreground: #01060c;
 
-      /* Borders */
-      --color-border: oklch(0.72 0.01 260 / 0.22);
-      --color-input: oklch(0.24 0.01 260);
-      --color-ring: oklch(0.8 0.004 260);
+      /* React Native Fallbacks - Surface, Feedback & Effects */
+      --app-color-overlay: rgba(0, 0, 0, 0.7);
+      --app-color-overlay-strong: rgba(0, 0, 0, 0.85);
+      --app-color-surface-elevated: #1f1224;
+      --app-color-surface-translucent: rgba(23, 12, 28, 0.4);
+      --app-color-surface-translucent-border: rgba(177, 79, 159, 0.12);
+      --app-color-surface-border: rgba(255, 255, 255, 0.1);
+      --app-color-surface-highlight: rgba(177, 79, 159, 0.15);
+      --app-color-state-hover: rgba(177, 79, 159, 0.12);
+      --app-color-state-pressed: rgba(177, 79, 159, 0.2);
+      --app-color-state-disabled: rgba(255, 255, 255, 0.1);
+      --app-color-shadow: #000000;
+      --app-color-primary-active: #c265b1;
+      --app-color-secondary-active: rgba(255, 255, 255, 0.15);
+      --app-color-destructive-active: #ba4644;
+      --app-color-primary-soft: rgba(177, 79, 159, 0.18);
+      --app-color-primary-soft-subtle: rgba(177, 79, 159, 0.09);
+      --app-color-secondary-soft: rgba(255, 255, 255, 0.05);
+      --app-color-muted-soft: rgba(255, 255, 255, 0.03);
+      --app-color-destructive-soft: rgba(168, 54, 52, 0.18);
+      --app-color-destructive-soft-border: rgba(168, 54, 52, 0.38);
+      --app-color-success-soft: rgba(102, 172, 105, 0.18);
+      --app-color-success-soft-border: rgba(102, 172, 105, 0.36);
+      --app-color-warning-soft: rgba(217, 176, 107, 0.18);
+      --app-color-warning-soft-border: rgba(217, 176, 107, 0.38);
+      --app-color-info-soft: rgba(65, 155, 212, 0.14);
+      --app-color-info-soft-border: rgba(65, 155, 212, 0.36);
 
-      /* Status */
-      --color-success: oklch(0.6 0.18 155);
-      --color-success-foreground: oklch(0.99 0.002 85);
+      /* ─── Visual Tokens (runtime, dark) ────────────────────── */
+      --ui-radius-sm: 12;
+      --ui-radius-md: 20;
+      --ui-radius-lg: 28;
+      --ui-radius-xl: 36;
 
-      --color-warning: oklch(0.78 0.15 85);
-      --color-warning-foreground: oklch(0.13 0.02 260);
+      --ui-control-height-sm: 36;
+      --ui-control-height-default: 44;
+      --ui-control-height-lg: 54;
+      --ui-control-padding-x-default: 18;
 
-      --color-info: oklch(0.72 0.02 235);
-      --color-info-foreground: oklch(0.99 0.002 85);
+      /* Depth: Subtle neutral and color space glows */
+      --ui-shadow-opacity-sm: 0.2;
+      --ui-shadow-opacity-md: 0.4;
+      --ui-shadow-opacity-lg: 0.6;
+      --ui-shadow-radius-sm: 12;
+      --ui-shadow-radius-md: 24;
+      --ui-shadow-radius-lg: 48;
 
-      /* Effect: Frosted dark glass */
-      --color-overlay: oklch(0.04 0.005 260 / 0.52);
-      --color-overlay-strong: oklch(0.03 0.005 260 / 0.66);
-      --color-surface-elevated: oklch(0.3 0.01 260 / 0.82);
-      --color-surface-border: oklch(0.97 0.005 260 / 0.24);
-      --color-surface-highlight: oklch(0.98 0.005 260 / 0.1);
-      --color-surface-translucent: oklch(0.3 0.01 260 / 0.72);
-      --color-surface-translucent-border: oklch(0.97 0.005 260 / 0.22);
-      --color-state-hover: oklch(0.93 0.004 260 / 0.1);
-      --color-state-pressed: oklch(0.93 0.004 260 / 0.16);
-      --color-state-disabled: oklch(0.95 0.01 260 / 0.4);
+      /* Glass: Premium frosted glass effects */
+      --ui-blur-intensity-subtle: 20;
+      --ui-blur-intensity-medium: 40;
+      --ui-blur-intensity-strong: 60;
+      --ui-blur-saturation-pct: 140;
+      --ui-frosted-backdrop-blur-intensity: 40;
 
-      /* Semantic */
-      --color-primary-active: oklch(0.97 0.004 260);
-      --color-secondary-active: oklch(0.21 0.01 260);
-      --color-destructive-active: oklch(0.55 0.24 25);
-      --color-muted-soft: oklch(0.95 0.005 260 / 0.18);
-      --color-primary-soft-subtle: oklch(0.93 0.004 260 / 0.1);
-      --color-primary-soft: oklch(0.93 0.004 260 / 0.16);
-      --color-secondary-soft: oklch(0.93 0.004 260 / 0.05);
-      --color-destructive-soft: oklch(0.6 0.22 25 / 0.2);
-      --color-destructive-soft-border: oklch(0.6 0.22 25 / 0.4);
-      --color-success-soft: oklch(0.6 0.18 155 / 0.2);
-      --color-success-soft-border: oklch(0.6 0.18 155 / 0.4);
-      --color-warning-soft: oklch(0.78 0.15 85 / 0.2);
-      --color-warning-soft-border: oklch(0.78 0.15 85 / 0.45);
-      --color-info-soft: oklch(0.72 0.02 235 / 0.2);
-      --color-info-soft-border: oklch(0.72 0.02 235 / 0.4);
-      --color-destructive-muted: oklch(0.6 0.22 25 / 0.7);
-      --color-primary-foreground-muted: oklch(0.99 0.002 85 / 0.8);
-      --color-destructive-foreground-muted: oklch(0.99 0.002 85 / 0.9);
-      --color-success-foreground-muted: oklch(0.99 0.002 85 / 0.9);
-      --color-swipe-action-foreground: oklch(0.99 0.002 85);
-
-      /* RN fallbacks */
-      --app-color-background: #1e2229;
-      --app-color-foreground: #f3f5f8;
-      --app-color-card: rgba(48, 53, 64, 0.8);
-      --app-color-card-foreground: #f3f5f8;
-      --app-color-popover: rgba(50, 56, 68, 0.9);
-      --app-color-popover-foreground: #f3f5f8;
-      --app-color-primary: #eef2f8;
-      --app-color-primary-foreground: #1f2530;
-      --app-color-secondary: rgba(52, 58, 70, 0.82);
-      --app-color-secondary-foreground: #f3f5f8;
-      --app-color-muted: #2a2f39;
-      --app-color-muted-foreground: #9ea6b5;
-      --app-color-border: rgba(212, 220, 236, 0.2);
-      --app-color-input: #2a2f39;
-      --app-color-ring: #d8e0ea;
-      --app-color-accent: #eef2f8;
-      --app-color-accent-foreground: #1f2530;
-      --app-color-destructive: #ff453a;
-      --app-color-destructive-foreground: #ffffff;
-      --app-color-success: #30d158;
-      --app-color-success-foreground: #000000;
-      --app-color-warning: #ff9f0a;
-      --app-color-warning-foreground: #000000;
-      --app-color-info: #8da0b8;
-      --app-color-info-foreground: #000000;
-      --app-color-overlay: rgba(10, 12, 17, 0.52);
-      --app-color-overlay-strong: rgba(8, 10, 14, 0.66);
-      --app-color-surface-elevated: rgba(56, 62, 74, 0.82);
-      --app-color-surface-translucent: rgba(56, 62, 74, 0.72);
-      --app-color-surface-translucent-border: rgba(242, 246, 252, 0.22);
-      --app-color-surface-border: rgba(242, 246, 252, 0.24);
-      --app-color-surface-highlight: rgba(242, 246, 252, 0.1);
-      --app-color-state-hover: rgba(238, 242, 248, 0.1);
-      --app-color-state-pressed: rgba(238, 242, 248, 0.16);
-      --app-color-state-disabled: rgba(245, 245, 247, 0.4);
-
-      /* Showcase backdrop tuning (tokenized, no hardcoded App.tsx colors) */
-      --ui-showcase-backdrop-base: rgba(14, 17, 24, 0.9);
-      --ui-showcase-backdrop-band: rgba(14, 17, 24, 0);
-      --ui-showcase-backdrop-geo-a: rgba(124, 132, 146, 0);
-      --ui-showcase-backdrop-geo-b: rgba(94, 102, 116, 0);
-      --ui-showcase-backdrop-geo-c: rgba(124, 132, 146, 0);
-      --ui-showcase-backdrop-veil: rgba(10, 12, 18, 0.5);
-      --ui-showcase-backdrop-tint: rgba(126, 136, 152, 0.03);
+      /* ─── Showcase-only Backdrop Tuning ────────────────────── */
+      --ui-showcase-backdrop-base: rgba(8, 3, 11, 1);
+      --ui-showcase-backdrop-band: rgba(177, 79, 159, 0.04);
+      --ui-showcase-backdrop-geo-a: rgba(177, 79, 159, 0.12);
+      --ui-showcase-backdrop-geo-b: rgba(0, 171, 187, 0.1);
+      --ui-showcase-backdrop-geo-c: rgba(255, 255, 255, 0.03);
+      --ui-showcase-backdrop-veil: rgba(0, 0, 0, 0.4);
+      --ui-showcase-backdrop-tint: rgba(177, 79, 159, 0.02);
       --ui-showcase-backdrop-frost: rgba(255, 255, 255, 0.03);
-      --ui-showcase-backdrop-image-opacity: 0.46;
-      --ui-showcase-backdrop-image-blur: 26;
-      --ui-showcase-backdrop-blur-intensity: 38;
+      --ui-showcase-backdrop-image-opacity: 0.25;
+      --ui-showcase-backdrop-image-blur: 24;
+      --ui-showcase-backdrop-blur-intensity: 24;
     }
   }
 }
 
-/* ─── Web: ensure root fills viewport (fixes empty content on RN Web) ─── */
+/* ─── Web: Cosmic Space Backdrop ───────────────────────────────── */
 @layer base {
   html,
   body {
@@ -479,6 +557,16 @@
   }
   body {
     overflow: hidden;
+    background:
+      /* Top Left: Extremely soft glowing plum leak */
+      radial-gradient(circle at 10% 10%, oklch(0.58 0.16 335 / 0.07), transparent 50%),
+      /* Bottom Right: Very soft aurora teal wash */
+        radial-gradient(circle at 90% 90%, oklch(0.67 0.13 205 / 0.05), transparent 50%),
+      /* Base Space Velvet Background */ var(--color-background);
+    background-size:
+      100% 100%,
+      100% 100%,
+      100% 100%;
   }
   #root {
     display: flex;

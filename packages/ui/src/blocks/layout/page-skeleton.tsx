@@ -1,9 +1,11 @@
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps, type ViewStyle } from 'react-native';
 import { type ReactNode } from 'react';
 import { Skeleton } from '../../components/skeleton';
 import { Stack } from '../../components/stack';
 import { Row } from '../../components/row';
 import { cn } from '../../lib/cn';
+import { useVisualTokens, type VisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -23,18 +25,27 @@ export interface PageSkeletonProps extends ViewProps {
   headerPlaceholder?: boolean | PageSkeletonHeaderPlaceholder;
 }
 
-const PADDING_CLASS: Record<PageSkeletonPadding, string> = {
-  none: 'p-0',
-  sm: 'p-3',
-  default: 'p-4',
-  lg: 'p-6',
-};
+function containerPadding(visual: VisualTokens, padding: PageSkeletonPadding): ViewStyle {
+  return { padding: surfacePadding(visual, padding) };
+}
+
+function cardSurface(visual: VisualTokens): ViewStyle {
+  return {
+    borderRadius: surfaceRadius(visual, 'xl'),
+    borderWidth: visual.borderWidthHairline,
+    padding: surfacePadding(visual, 'sm'),
+  };
+}
 
 function HeaderPlaceholder({ variant }: { variant: PageSkeletonHeaderPlaceholder }) {
+  const visual = useVisualTokens();
   const compact = variant === 'compact';
 
   return (
-    <View className={cn(compact ? 'px-4 pt-3 pb-2' : 'px-4 pt-4 pb-3')}>
+    <View
+      className={cn(compact ? 'pt-3 pb-2' : 'pt-4 pb-3')}
+      style={{ paddingHorizontal: surfacePadding(visual, 'sm') }}
+    >
       <Row align="center" justify="between">
         <Row align="center" gap="sm">
           <Skeleton className={cn('rounded-full', compact ? 'h-8 w-8' : 'h-10 w-10')} />
@@ -54,13 +65,16 @@ function HeaderPlaceholder({ variant }: { variant: PageSkeletonHeaderPlaceholder
 function DashboardVariant({
   className,
   padding = 'default',
+  style,
   ...props
 }: Omit<PageSkeletonProps, 'variant' | 'count'>) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn(PADDING_CLASS[padding], className)} {...props}>
+    <View className={className} style={[containerPadding(visual, padding), style]} {...props}>
       <Stack gap="md">
         {/* Summary card: badges + coach tip */}
-        <View className="rounded-2xl border border-border bg-card p-4">
+        <View className="border-border bg-card" style={cardSurface(visual)}>
           <Row className="mb-3 gap-2" align="center">
             <Skeleton className="h-6 w-16 rounded-full" />
             <Skeleton className="h-6 w-20 rounded-full" />
@@ -73,7 +87,7 @@ function DashboardVariant({
         {/* Macro cards row */}
         <Row gap="sm" align="stretch">
           {[1, 2, 3].map((i) => (
-            <View key={i} className="flex-1 rounded-2xl border border-border bg-card p-3">
+            <View key={i} className="flex-1 border-border bg-card" style={cardSurface(visual)}>
               <Skeleton className="mb-2 h-3 w-2/3" />
               <Skeleton className="h-6 w-1/2" />
             </View>
@@ -83,7 +97,12 @@ function DashboardVariant({
         {/* Activity list */}
         <Skeleton className="h-4 w-1/3" />
         {[1, 2, 3].map((i) => (
-          <Row key={i} className="items-center gap-3 py-3" align="center">
+          <Row
+            key={i}
+            className="items-center gap-3"
+            style={{ paddingVertical: visual.controlPaddingYDefault }}
+            align="center"
+          >
             <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
             <Stack className="flex-1" gap="xs">
               <Skeleton className="h-4 w-3/4" />
@@ -100,14 +119,25 @@ function ListVariant({
   count = 3,
   className,
   padding = 'default',
+  style,
   ...props
 }: PageSkeletonProps & { variant: 'list' }) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn(PADDING_CLASS[padding], className)} {...props}>
+    <View className={className} style={[containerPadding(visual, padding), style]} {...props}>
       <Stack gap="md">
         <Skeleton className="h-5 w-1/3" />
         {Array.from({ length: count }).map((_, i) => (
-          <Row key={i} className="items-center gap-3 border-b border-border pb-4" align="center">
+          <Row
+            key={i}
+            className="items-center gap-3 border-border"
+            style={{
+              borderBottomWidth: visual.borderWidthHairline,
+              paddingBottom: surfacePadding(visual, 'sm'),
+            }}
+            align="center"
+          >
             <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
             <Stack className="flex-1" gap="xs">
               <Skeleton className="h-4 w-3/4" />
@@ -124,15 +154,22 @@ function SettingsVariant({
   count = 4,
   className,
   padding = 'default',
+  style,
   ...props
 }: PageSkeletonProps & { variant: 'settings' }) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn(PADDING_CLASS[padding], className)} {...props}>
+    <View className={className} style={[containerPadding(visual, padding), style]} {...props}>
       <Stack gap="none">
         {Array.from({ length: count }).map((_, i) => (
           <Row
             key={i}
-            className="items-center justify-between border-b border-border py-4"
+            className="items-center justify-between border-border"
+            style={{
+              borderBottomWidth: visual.borderWidthHairline,
+              paddingVertical: surfacePadding(visual, 'sm'),
+            }}
             align="center"
           >
             <Skeleton className="h-4 w-1/3" />
@@ -147,12 +184,21 @@ function SettingsVariant({
 function CardVariant({
   className,
   padding = 'default',
+  style,
   ...props
 }: Omit<PageSkeletonProps, 'variant' | 'count'>) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn(PADDING_CLASS[padding], className)} {...props}>
-      <View className="rounded-2xl border border-border bg-card overflow-hidden">
-        <View className="p-4 gap-3">
+    <View className={className} style={[containerPadding(visual, padding), style]} {...props}>
+      <View
+        className="border-border bg-card overflow-hidden"
+        style={{
+          borderRadius: surfaceRadius(visual, 'xl'),
+          borderWidth: visual.borderWidthHairline,
+        }}
+      >
+        <View className="gap-3" style={{ padding: surfacePadding(visual, 'sm') }}>
           <Skeleton className="h-5 w-2/3" />
           <Skeleton className="h-3 w-full" />
           <Skeleton className="h-3 w-full" />
@@ -167,10 +213,13 @@ function CardVariant({
 function GenericVariant({
   className,
   padding = 'default',
+  style,
   ...props
 }: Omit<PageSkeletonProps, 'variant' | 'count'>) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn(PADDING_CLASS[padding], className)} {...props}>
+    <View className={className} style={[containerPadding(visual, padding), style]} {...props}>
       <Stack gap="lg">
         <Skeleton className="h-6 w-1/2" />
         <Stack gap="sm">

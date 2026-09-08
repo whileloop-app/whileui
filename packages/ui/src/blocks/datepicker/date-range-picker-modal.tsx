@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
@@ -7,6 +7,8 @@ import { Text } from '../../components/text';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { fieldRecipe, surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 import { useCalendarTheme, type CalendarTheme } from './use-calendar-theme';
 
@@ -109,6 +111,7 @@ export function DateRangePickerModal({
   const insets = useSafeAreaInsets();
   const { theme } = useUniwind();
   const colors = useThemeColors();
+  const visual = useVisualTokens();
   const frostedSurface = useFrostedSurface({
     frosted,
     blurIntensity,
@@ -122,17 +125,31 @@ export function DateRangePickerModal({
     calendarTheme.monthTextColor ??
     calendarTheme.dayTextColor ??
     colors.foreground;
+  const arrowFontSize = typographyStyle(visual, 'body').fontSize;
   const renderArrow = useCallback(
     (direction: 'left' | 'right') => (
-      <Text className="text-base font-medium" style={{ color: arrowColor }}>
+      <Text className="font-medium" style={{ color: arrowColor, fontSize: arrowFontSize }}>
         {direction === 'left' ? '<' : '>'}
       </Text>
     ),
-    [arrowColor]
+    [arrowColor, arrowFontSize]
   );
 
   const [draftStart, setDraftStart] = useState<string | null>(value?.start ?? null);
   const [draftEnd, setDraftEnd] = useState<string | null>(value?.end ?? null);
+  const prevOpenRef = useRef(open);
+
+  useEffect(() => {
+    if (open && !prevOpenRef.current) {
+      setDraftStart(value?.start ?? null);
+      setDraftEnd(value?.end ?? null);
+    } else if (!open && prevOpenRef.current) {
+      setDraftStart(null);
+      setDraftEnd(null);
+    }
+
+    prevOpenRef.current = open;
+  }, [open, value]);
 
   const markedDates = useMemo((): MarkedDates => {
     const color = calendarTheme.selectedDayBackgroundColor;
@@ -201,16 +218,21 @@ export function DateRangePickerModal({
       {trigger ? (
         <Pressable
           onPress={handleOpen}
-          className={cn(
-            'min-h-10 w-full flex-row items-center rounded-lg border border-border bg-muted px-4',
-            className
-          )}
+          className={cn('w-full flex-row items-center border-border bg-muted', className)}
+          style={fieldRecipe(visual, 'default')}
         >
           {trigger}
         </Pressable>
       ) : null}
 
-      <Modal visible={open} transparent animationType="slide">
+      <Modal
+        visible={open}
+        transparent
+        animationType="slide"
+        statusBarTranslucent
+        navigationBarTranslucent
+        onRequestClose={handleBackdropPress}
+      >
         <Pressable
           className="flex-1 justify-end"
           style={{ backgroundColor: colors.overlay }}
@@ -218,26 +240,44 @@ export function DateRangePickerModal({
         >
           <Pressable
             className={cn(
-              'rounded-t-xl border border-border relative overflow-hidden',
+              'border border-border relative overflow-hidden',
               frosted ? 'bg-transparent' : 'bg-background'
             )}
             style={
               [
-                { paddingBottom: Math.max(insets.bottom, 16) } as ViewStyle,
+                {
+                  borderTopLeftRadius: surfaceRadius(visual, 'xl'),
+                  borderTopRightRadius: surfaceRadius(visual, 'xl'),
+                  paddingBottom: Math.max(insets.bottom, surfacePadding(visual, 'sm')),
+                } as ViewStyle,
                 frostedSurface.surfaceStyle,
               ] as StyleProp<ViewStyle>
             }
             onPress={(e) => e.stopPropagation()}
           >
             {frostedSurface.overlay}
-            <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
-              <Text className="text-base font-medium text-foreground">{title}</Text>
+            <View
+              className="flex-row items-center justify-between border-b border-border"
+              style={{
+                paddingHorizontal: surfacePadding(visual, 'sm'),
+                paddingVertical: visual.controlPaddingYDefault,
+              }}
+            >
+              <Text className="font-medium text-foreground" style={typographyStyle(visual, 'body')}>
+                {title}
+              </Text>
               <Button size="sm" onPress={handleConfirm}>
                 <ButtonText>{confirmLabel}</ButtonText>
               </Button>
             </View>
-            <View className="p-4">
-              <View className="rounded-xl border border-border overflow-hidden">
+            <View style={{ padding: surfacePadding(visual, 'sm') }}>
+              <View
+                className="border-border overflow-hidden"
+                style={{
+                  borderRadius: surfaceRadius(visual, 'lg'),
+                  borderWidth: visual.borderWidthHairline,
+                }}
+              >
                 <Calendar
                   key={theme}
                   current={draftStart ?? value?.start ?? undefined}
@@ -269,10 +309,12 @@ export function DateRangePickerTrigger({
   placeholder?: string;
   className?: string;
 }) {
+  const visual = useVisualTokens();
   return (
     <View className={cn('flex-1 flex-row items-center min-w-0', className)}>
       <Text
-        className={cn('flex-1 text-base', value ? 'text-foreground' : 'text-muted-foreground')}
+        className={cn('flex-1', value ? 'text-foreground' : 'text-muted-foreground')}
+        style={typographyStyle(visual, 'body')}
         numberOfLines={1}
       >
         {value ? formatRangeDisplay(value) : placeholder}

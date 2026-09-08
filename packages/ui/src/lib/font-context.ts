@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { Platform } from 'react-native';
 
 /**
  * Map of Tailwind font-weight class names to the actual font family name
@@ -20,6 +21,7 @@ export interface FontFamilyMap {
 
 export interface ResolvedFont {
   fontFamily: string;
+  paddingRight?: number;
   /** Omit fontWeight — with explicit font files (Nunito_700Bold etc.) the family
    *  name encodes weight. Passing fontWeight on Android triggers synthetic bold
    *  (setTypeface(_, BOLD)) which distorts B, D, P, R. */
@@ -52,19 +54,23 @@ export interface ResolvedFontResult {
 export function useResolveFontFamily(className?: string): ResolvedFontResult | undefined {
   const map = useContext(FontContext);
   if (!map) return undefined;
+
+  const isNative = Platform.OS !== 'web';
+  const paddingRight = isNative ? 4 : undefined;
+
   if (!className)
     return {
-      style: { fontFamily: map['font-normal'] },
+      style: { fontFamily: map['font-normal'], paddingRight },
       className: '',
     };
 
   const classes = className.split(/\s+/);
-  let resolved: ResolvedFont = { fontFamily: map['font-normal'] };
+  let resolved: ResolvedFont = { fontFamily: map['font-normal'], paddingRight };
   for (let i = classes.length - 1; i >= 0; i--) {
     const cls = classes[i] as keyof FontFamilyMap;
     const mapped = map[cls];
     if (mapped) {
-      resolved = { fontFamily: mapped };
+      resolved = { fontFamily: mapped, paddingRight };
       break;
     }
   }

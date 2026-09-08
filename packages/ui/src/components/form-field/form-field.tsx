@@ -3,6 +3,8 @@ import { Text, View, type TextProps, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 const formFieldVariants = tv({
   base: 'w-full',
@@ -21,8 +23,8 @@ const formControlVariants = tv({
   base: 'justify-center',
   variants: {
     density: {
-      default: 'min-h-10',
-      compact: 'min-h-9',
+      default: '',
+      compact: '',
     },
     invalid: {
       true: '',
@@ -96,18 +98,20 @@ const FormField = React.forwardRef<View, FormFieldProps>(
 FormField.displayName = 'FormField';
 
 const FormLabel = React.forwardRef<Text, FormLabelProps>(
-  ({ className, showRequiredIndicator = true, children, ...props }, ref) => {
+  ({ className, showRequiredIndicator = true, children, style, ...props }, ref) => {
     const { invalid, disabled, required } = useContext(FormFieldContext);
+    const visual = useVisualTokens();
 
     return (
       <Text
         ref={ref}
         className={cn(
-          'text-sm font-medium leading-tight text-foreground',
+          'font-medium text-foreground',
           invalid && 'text-destructive',
           disabled && 'text-muted-foreground',
           className
         )}
+        style={[typographyStyle(visual, 'label'), style]}
         {...props}
       >
         {children}
@@ -119,37 +123,45 @@ const FormLabel = React.forwardRef<Text, FormLabelProps>(
 
 FormLabel.displayName = 'FormLabel';
 
-const FormControl = React.forwardRef<View, FormControlProps>(({ className, ...props }, ref) => {
-  const { density, invalid, disabled } = useContext(FormFieldContext);
-  const interaction = useInteractionTokens();
+const FormControl = React.forwardRef<View, FormControlProps>(
+  ({ className, style, ...props }, ref) => {
+    const { density, invalid, disabled } = useContext(FormFieldContext);
+    const interaction = useInteractionTokens();
+    const visual = useVisualTokens();
 
-  return (
-    <View
-      ref={ref}
-      className={cn(
-        formControlVariants({ density, invalid }),
-        invalid && 'rounded-md ring-1 ring-destructive-soft-border',
-        className
-      )}
-      style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
-      {...props}
-    />
-  );
-});
+    return (
+      <View
+        ref={ref}
+        className={cn(
+          formControlVariants({ density, invalid }),
+          invalid && 'ring-1 ring-destructive-soft-border',
+          className
+        )}
+        style={[
+          {
+            minHeight: density === 'compact' ? visual.controlHeightSm : visual.controlHeightDefault,
+          },
+          invalid ? { borderRadius: visual.radiusMd } : null,
+          disabled ? { opacity: interaction.disabledOpacitySoft } : null,
+          style,
+        ]}
+        {...props}
+      />
+    );
+  }
+);
 
 FormControl.displayName = 'FormControl';
 
-const FormHint = React.forwardRef<Text, FormHintProps>(({ className, ...props }, ref) => {
+const FormHint = React.forwardRef<Text, FormHintProps>(({ className, style, ...props }, ref) => {
   const { invalid } = useContext(FormFieldContext);
+  const visual = useVisualTokens();
 
   return (
     <Text
       ref={ref}
-      className={cn(
-        'text-xs text-muted-foreground',
-        invalid && 'text-destructive-muted',
-        className
-      )}
+      className={cn('text-muted-foreground', invalid && 'text-destructive-muted', className)}
+      style={[typographyStyle(visual, 'caption'), style]}
       {...props}
     />
   );
@@ -158,13 +170,20 @@ const FormHint = React.forwardRef<Text, FormHintProps>(({ className, ...props },
 FormHint.displayName = 'FormHint';
 
 const FormMessage = React.forwardRef<Text, FormMessageProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, children, style, ...props }, ref) => {
+    const visual = useVisualTokens();
+
     if (children === undefined || children === null || children === false) {
       return null;
     }
 
     return (
-      <Text ref={ref} className={cn('text-xs font-medium text-destructive', className)} {...props}>
+      <Text
+        ref={ref}
+        className={cn('font-medium text-destructive', className)}
+        style={[typographyStyle(visual, 'caption'), style]}
+        {...props}
+      >
         {children}
       </Text>
     );

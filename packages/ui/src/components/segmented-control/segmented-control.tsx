@@ -11,14 +11,16 @@ import {
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 const segmentedControlVariants = tv({
-  base: 'w-full flex-row items-center rounded-lg bg-muted p-1',
+  base: 'w-full flex-row items-center',
   variants: {
     variant: {
-      default: 'rounded-lg',
-      pill: 'rounded-full',
+      default: '',
+      pill: '',
     },
     wrap: {
       true: 'flex-wrap justify-center gap-1',
@@ -37,19 +39,19 @@ const segmentedControlVariants = tv({
 });
 
 const segmentedControlItemVariants = tv({
-  base: 'min-h-10 min-w-0 flex-row items-center justify-center px-3',
+  base: 'min-w-0 flex-row items-center justify-center',
   variants: {
     variant: {
-      default: 'rounded-md',
-      pill: 'rounded-full',
+      default: '',
+      pill: '',
     },
     selected: {
-      true: 'bg-background shadow-sm',
-      false: 'bg-transparent',
+      true: '',
+      false: '',
     },
     size: {
-      default: 'py-2',
-      compact: 'min-h-9 py-1.5',
+      default: '',
+      compact: '',
     },
     disabled: {
       true: '',
@@ -77,8 +79,8 @@ const segmentedControlItemTextVariants = tv({
       false: 'text-muted-foreground',
     },
     size: {
-      default: 'text-sm',
-      compact: 'text-xs',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -86,6 +88,38 @@ const segmentedControlItemTextVariants = tv({
     size: 'default',
   },
 });
+
+function getSegmentedContainerStyle(
+  visual: ReturnType<typeof useVisualTokens>,
+  colors: ReturnType<typeof useThemeColors>,
+  variant: 'default' | 'pill'
+) {
+  const inset = Math.max(4, Math.round(visual.controlPaddingYSm * 0.5));
+  return {
+    borderRadius: variant === 'pill' ? 999 : visual.radiusXl,
+    backgroundColor: colors.muted,
+    padding: inset,
+  };
+}
+
+function getSegmentedItemStyle(
+  visual: ReturnType<typeof useVisualTokens>,
+  colors: ReturnType<typeof useThemeColors>,
+  size: 'default' | 'compact',
+  variant: 'default' | 'pill',
+  selected: boolean
+) {
+  const compact = size === 'compact';
+  return {
+    minHeight: compact ? visual.controlHeightSm : visual.controlHeightDefault,
+    borderRadius: variant === 'pill' ? 999 : visual.radiusLg,
+    paddingHorizontal: compact ? visual.controlPaddingXSm : visual.controlPaddingXDefault,
+    paddingVertical: compact ? visual.controlPaddingYSm : visual.controlPaddingYDefault,
+    borderWidth: selected ? visual.borderWidthHairline : 0,
+    borderColor: selected ? colors.surfaceBorder : 'transparent',
+    backgroundColor: selected ? colors.surfaceElevated : 'transparent',
+  };
+}
 
 interface SegmentedControlContextValue {
   value: string;
@@ -146,8 +180,11 @@ function SegmentedControl({
   disabled = false,
   className,
   children,
+  style: styleProp,
   ...props
 }: SegmentedControlProps) {
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
   const [internalValue, setInternalValue] = useState(defaultValue);
   const value = controlledValue ?? internalValue;
   const itemCount = useMemo(
@@ -173,6 +210,7 @@ function SegmentedControl({
     <SegmentedControlContext.Provider value={contextValue}>
       <View
         className={cn(segmentedControlVariants({ variant, wrap: shouldWrap, size }), className)}
+        style={[getSegmentedContainerStyle(visual, colors, variant), styleProp]}
         accessibilityRole="radiogroup"
         {...props}
       >
@@ -196,6 +234,7 @@ function SegmentedControlItem({
   const finalDisabled = disabled || Boolean(itemDisabled);
   const interaction = useInteractionTokens();
   const visual = useVisualTokens();
+  const colors = useThemeColors();
   const interactiveStyle = withInteractivePressableStyle(styleProp, interaction, {
     disabled: finalDisabled,
     pressedVariant: 'default',
@@ -203,6 +242,7 @@ function SegmentedControlItem({
   const wrapBasisStyle = wrap
     ? { flexBasis: `${visual.segmentedWrapBasisRatio * 100}%` as DimensionValue }
     : undefined;
+  const tokenStyle = getSegmentedItemStyle(visual, colors, size, variant, selected);
 
   return (
     <SegmentedControlItemContext.Provider value={{ selected, size }}>
@@ -224,7 +264,7 @@ function SegmentedControlItem({
         style={(state) => {
           const baseStyle =
             typeof interactiveStyle === 'function' ? interactiveStyle(state) : interactiveStyle;
-          return [baseStyle, wrapBasisStyle ?? null];
+          return [baseStyle, tokenStyle, wrapBasisStyle ?? null];
         }}
         hitSlop={4}
         {...props}
@@ -239,12 +279,15 @@ function SegmentedControlItem({
   );
 }
 
-function SegmentedControlItemText({ className, ...props }: SegmentedControlItemTextProps) {
+function SegmentedControlItemText({ className, style, ...props }: SegmentedControlItemTextProps) {
   const { selected, size } = useContext(SegmentedControlItemContext);
+  const visual = useVisualTokens();
+  const typography = typographyStyle(visual, size === 'compact' ? 'caption' : 'label');
 
   return (
     <Text
       className={cn(segmentedControlItemTextVariants({ selected, size }), className)}
+      style={[typography, style]}
       numberOfLines={1}
       {...props}
     />

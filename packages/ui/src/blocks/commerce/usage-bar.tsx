@@ -1,6 +1,8 @@
 import { View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 export type UsageBarVariant = 'default' | 'warning' | 'exceeded';
 
@@ -23,6 +25,7 @@ function getUsageVariant(used: number, limit: number, variant?: UsageBarVariant)
 }
 
 export function UsageBar({ label, used, limit, variant, className, ...props }: UsageBarProps) {
+  const visual = useVisualTokens();
   const resolvedVariant = getUsageVariant(used, limit, variant);
   const safeLimit = limit <= 0 ? 1 : limit;
   const clamped = Math.max(0, Math.min(100, (used / safeLimit) * 100));
@@ -44,15 +47,17 @@ export function UsageBar({ label, used, limit, variant, className, ...props }: U
   return (
     <View className={cn('gap-2', className)} {...props}>
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-medium text-foreground">{label}</Text>
-        <Text className={cn('text-xs', captionClass)}>
+        <Text className="font-medium text-foreground" style={typographyStyle(visual, 'label')}>
+          {label}
+        </Text>
+        <Text className={cn(captionClass)} style={typographyStyle(visual, 'caption')}>
           {used}/{limit}
         </Text>
       </View>
-      <View className="h-2 overflow-hidden rounded-full bg-muted">
+      <View className="h-2 overflow-hidden bg-muted" style={{ borderRadius: visual.radiusSm }}>
         <View
-          className={cn('h-full rounded-full', progressClass)}
-          style={{ width: `${clamped}%` }}
+          className={cn('h-full', progressClass)}
+          style={{ borderRadius: visual.radiusSm, width: `${clamped}%` }}
         />
       </View>
     </View>

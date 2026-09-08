@@ -5,6 +5,7 @@ import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { controlRecipe, shadowStyle, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 export interface SmartInputProps extends TextInputProps {
   /** Left slot: emoji, attach, etc. */
@@ -37,6 +38,7 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
     safeArea = true,
     placeholderTextColor,
     editable = true,
+    style,
     ...props
   },
   ref
@@ -54,25 +56,43 @@ export const SmartInput = forwardRef<TextInput, SmartInputProps>(function SmartI
     >
       <View
         className={cn(
-          'w-full flex-row items-center gap-2 px-3 py-2 bg-background',
-          variant === 'bar' && 'border-t border-border',
-          variant === 'card' && 'rounded-2xl border border-border shadow-md',
+          'w-full flex-row items-center gap-2 bg-background',
+          variant === 'bar' && 'border-border',
+          variant === 'card' && 'border-border',
           className
         )}
-        style={{ paddingBottom: bottomPadding }}
+        style={[
+          {
+            paddingHorizontal: visual.controlPaddingXSm,
+            paddingTop: visual.controlPaddingYSm,
+            paddingBottom: bottomPadding,
+          },
+          variant === 'bar' ? { borderTopWidth: visual.borderWidthHairline } : null,
+          variant === 'card'
+            ? {
+                borderRadius: surfaceRadius(visual, 'xl'),
+                borderWidth: visual.borderWidthHairline,
+                ...shadowStyle(visual, colors, 'md'),
+              }
+            : null,
+        ]}
       >
         {leftSlot && <View className="shrink-0">{leftSlot}</View>}
         {centerSlot && <View className="shrink-0">{centerSlot}</View>}
         <TextInput
           ref={ref}
           style={[
+            controlRecipe(visual, 'default'),
+            typographyStyle(visual, 'label'),
+            variant === 'bar' ? { borderWidth: visual.borderWidthControl } : null,
             { maxHeight: visual.smartInputMaxHeight },
             !editable ? { opacity: interaction.disabledOpacity } : null,
+            style,
           ]}
           className={cn(
-            'flex-1 min-h-11 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none',
-            variant === 'bar' && 'rounded-xl border border-border bg-muted',
-            variant === 'card' && 'rounded-xl bg-transparent',
+            'flex-1 text-foreground placeholder:text-muted-foreground outline-none',
+            variant === 'bar' && 'border-border bg-muted',
+            variant === 'card' && 'bg-transparent',
             inputClassName
           )}
           multiline

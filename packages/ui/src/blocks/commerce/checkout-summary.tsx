@@ -3,6 +3,8 @@ import { Text } from '../../components/text';
 import { Separator } from '../../components/separator';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -37,11 +39,31 @@ export function CheckoutSummary({
   onCheckout,
   loading = false,
   className,
+  style,
   ...props
 }: CheckoutSummaryProps) {
+  const visual = useVisualTokens();
+  const label = typographyStyle(visual, 'label');
+  const body = typographyStyle(visual, 'body');
+  const emphasis = typographyStyle(visual, 'emphasis');
+  const title = typographyStyle(visual, 'title');
+
   return (
-    <View className={cn('rounded-xl border border-border bg-card p-4', className)} {...props}>
-      <Text className="mb-4 text-lg font-semibold text-foreground">Order Summary</Text>
+    <View
+      className={cn('border border-border bg-card', className)}
+      style={[
+        {
+          borderRadius: surfaceRadius(visual, 'xl'),
+          padding: surfacePadding(visual, 'default'),
+          borderWidth: visual.borderWidthHairline,
+        },
+        style,
+      ]}
+      {...props}
+    >
+      <Text className="mb-4 font-semibold text-foreground" style={emphasis}>
+        Order Summary
+      </Text>
 
       {/* Items */}
       {items.length > 0 && (
@@ -50,18 +72,18 @@ export function CheckoutSummary({
             <View key={index} className="flex-row items-center justify-between">
               <Text
                 className={cn(
-                  'text-sm',
                   item.emphasized ? 'font-medium text-foreground' : 'text-muted-foreground'
                 )}
+                style={label}
                 numberOfLines={1}
               >
                 {item.label}
               </Text>
               <Text
                 className={cn(
-                  'text-sm',
                   item.emphasized ? 'font-medium text-foreground' : 'text-muted-foreground'
                 )}
+                style={label}
               >
                 {item.value}
               </Text>
@@ -74,31 +96,47 @@ export function CheckoutSummary({
 
       {/* Subtotal */}
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm text-muted-foreground">Subtotal</Text>
-        <Text className="text-sm text-foreground">{subtotal}</Text>
+        <Text className="text-muted-foreground" style={label}>
+          Subtotal
+        </Text>
+        <Text className="text-foreground" style={label}>
+          {subtotal}
+        </Text>
       </View>
 
       {/* Shipping */}
       {shipping && (
         <View className="mt-2 flex-row items-center justify-between">
-          <Text className="text-sm text-muted-foreground">Shipping</Text>
-          <Text className="text-sm text-foreground">{shipping}</Text>
+          <Text className="text-muted-foreground" style={label}>
+            Shipping
+          </Text>
+          <Text className="text-foreground" style={label}>
+            {shipping}
+          </Text>
         </View>
       )}
 
       {/* Tax */}
       {tax && (
         <View className="mt-2 flex-row items-center justify-between">
-          <Text className="text-sm text-muted-foreground">Tax</Text>
-          <Text className="text-sm text-foreground">{tax}</Text>
+          <Text className="text-muted-foreground" style={label}>
+            Tax
+          </Text>
+          <Text className="text-foreground" style={label}>
+            {tax}
+          </Text>
         </View>
       )}
 
       {/* Discount */}
       {discount && (
         <View className="mt-2 flex-row items-center justify-between">
-          <Text className="text-sm text-muted-foreground">Discount</Text>
-          <Text className="text-sm text-primary">-{discount}</Text>
+          <Text className="text-muted-foreground" style={label}>
+            Discount
+          </Text>
+          <Text className="text-primary" style={label}>
+            -{discount}
+          </Text>
         </View>
       )}
 
@@ -106,8 +144,12 @@ export function CheckoutSummary({
 
       {/* Total */}
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-foreground">Total</Text>
-        <Text className="text-xl font-bold text-foreground">{total}</Text>
+        <Text className="font-semibold text-foreground" style={body}>
+          Total
+        </Text>
+        <Text className="font-bold text-foreground" style={title}>
+          {total}
+        </Text>
       </View>
 
       {/* Checkout Button */}

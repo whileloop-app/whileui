@@ -3,13 +3,14 @@ import { Text, View, type TextProps, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 const dataRowVariants = tv({
   base: 'w-full flex-row items-center gap-3',
   variants: {
     size: {
-      default: 'min-h-11 py-2',
-      compact: 'min-h-10 py-1.5',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -17,12 +18,25 @@ const dataRowVariants = tv({
   },
 });
 
+function getDataRowStyle(visual: ReturnType<typeof useVisualTokens>, size: 'default' | 'compact') {
+  if (size === 'compact') {
+    return {
+      minHeight: Math.round((visual.controlHeightSm + visual.controlHeightDefault) / 2),
+      paddingVertical: Math.max(4, Math.round(visual.controlPaddingYSm * 0.75)),
+    };
+  }
+  return {
+    minHeight: visual.controlHeightDefault,
+    paddingVertical: visual.controlPaddingYSm,
+  };
+}
+
 const dataRowLabelVariants = tv({
   base: 'font-medium text-foreground',
   variants: {
     size: {
-      default: 'text-sm',
-      compact: 'text-xs',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -34,8 +48,8 @@ const dataRowDescriptionVariants = tv({
   base: 'text-muted-foreground',
   variants: {
     size: {
-      default: 'text-xs',
-      compact: 'text-xs',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -47,8 +61,8 @@ const dataRowValueVariants = tv({
   base: 'font-medium text-foreground text-right',
   variants: {
     size: {
-      default: 'text-sm',
-      compact: 'text-xs',
+      default: '',
+      compact: '',
     },
   },
   defaultVariants: {
@@ -94,10 +108,16 @@ export interface DataRowValueProps extends TextProps {
 }
 
 const DataRow = React.forwardRef<View, DataRowProps>(
-  ({ className, size = 'default', ...props }, ref) => {
+  ({ className, size = 'default', style, ...props }, ref) => {
+    const visual = useVisualTokens();
     return (
       <DataRowContext.Provider value={{ size }}>
-        <View ref={ref} className={cn(dataRowVariants({ size }), className)} {...props} />
+        <View
+          ref={ref}
+          className={cn(dataRowVariants({ size }), className)}
+          style={[getDataRowStyle(visual, size), style]}
+          {...props}
+        />
       </DataRowContext.Provider>
     );
   }
@@ -135,18 +155,22 @@ const DataRowRight = React.forwardRef<View, DataRowRightProps>(
 
 DataRowRight.displayName = 'DataRowRight';
 
-const DataRowLabel = React.forwardRef<Text, DataRowLabelProps>(({ className, ...props }, ref) => {
-  const { size } = useContext(DataRowContext);
+const DataRowLabel = React.forwardRef<Text, DataRowLabelProps>(
+  ({ className, style, ...props }, ref) => {
+    const { size } = useContext(DataRowContext);
+    const visual = useVisualTokens();
 
-  return (
-    <Text
-      ref={ref}
-      className={cn(dataRowLabelVariants({ size }), className)}
-      numberOfLines={1}
-      {...props}
-    />
-  );
-});
+    return (
+      <Text
+        ref={ref}
+        className={cn(dataRowLabelVariants({ size }), className)}
+        style={[typographyStyle(visual, size === 'compact' ? 'caption' : 'label'), style]}
+        numberOfLines={1}
+        {...props}
+      />
+    );
+  }
+);
 
 DataRowLabel.displayName = 'DataRowLabel';
 
@@ -160,7 +184,9 @@ const DataRowDescription = React.forwardRef<Text, DataRowDescriptionProps>(
         ref={ref}
         className={cn(dataRowDescriptionVariants({ size }), className)}
         style={
-          size === 'compact' ? [{ fontSize: visual.dataRowCompactDescriptionSize }, style] : style
+          size === 'compact'
+            ? [{ fontSize: visual.dataRowCompactDescriptionSize }, style]
+            : [typographyStyle(visual, 'caption'), style]
         }
         numberOfLines={2}
         {...props}
@@ -171,18 +197,22 @@ const DataRowDescription = React.forwardRef<Text, DataRowDescriptionProps>(
 
 DataRowDescription.displayName = 'DataRowDescription';
 
-const DataRowValue = React.forwardRef<Text, DataRowValueProps>(({ className, ...props }, ref) => {
-  const { size } = useContext(DataRowContext);
+const DataRowValue = React.forwardRef<Text, DataRowValueProps>(
+  ({ className, style, ...props }, ref) => {
+    const { size } = useContext(DataRowContext);
+    const visual = useVisualTokens();
 
-  return (
-    <Text
-      ref={ref}
-      className={cn(dataRowValueVariants({ size }), className)}
-      numberOfLines={1}
-      {...props}
-    />
-  );
-});
+    return (
+      <Text
+        ref={ref}
+        className={cn(dataRowValueVariants({ size }), className)}
+        style={[typographyStyle(visual, size === 'compact' ? 'caption' : 'label'), style]}
+        numberOfLines={1}
+        {...props}
+      />
+    );
+  }
+);
 
 DataRowValue.displayName = 'DataRowValue';
 

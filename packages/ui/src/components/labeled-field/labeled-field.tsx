@@ -10,6 +10,7 @@ import {
 } from '../form-field';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 export interface LabeledFieldProps extends Omit<FormFieldProps, 'children'> {
   label?: React.ReactNode;
@@ -40,6 +41,7 @@ function LabeledField({
 }: LabeledFieldProps) {
   const isInvalid = invalid ?? Boolean(error);
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   return (
     <FormField required={required} disabled={disabled} invalid={isInvalid} {...props}>
@@ -47,15 +49,27 @@ function LabeledField({
       <FormControl>
         <View
           className={cn(
-            'flex-row items-center gap-2 rounded-md border border-border bg-muted px-3',
+            'flex-row items-center gap-2 border border-border bg-muted',
             isInvalid && 'border-destructive',
             disabled && '',
             controlWrapperClassName
           )}
-          style={disabled ? { opacity: interaction.disabledOpacitySoft } : undefined}
+          style={[
+            {
+              borderRadius: visual.radiusLg,
+              borderWidth: visual.borderWidthControl,
+              paddingHorizontal: visual.controlPaddingXDefault,
+            },
+            disabled ? { opacity: interaction.disabledOpacitySoft } : null,
+          ]}
         >
           {leftSlot ? <View className="shrink-0">{leftSlot}</View> : null}
-          <View className="min-h-10 min-w-0 flex-1 justify-center">{children}</View>
+          <View
+            className="min-w-0 flex-1 justify-center"
+            style={{ minHeight: visual.controlHeightDefault }}
+          >
+            {children}
+          </View>
           {rightSlot ? <View className="shrink-0">{rightSlot}</View> : null}
         </View>
       </FormControl>

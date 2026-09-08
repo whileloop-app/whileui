@@ -3,6 +3,8 @@ import { View, type ViewProps, type TextProps } from 'react-native';
 import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Context ─────────────────────────────────────────────────
 
@@ -15,13 +17,13 @@ const BadgeContext = createContext<BadgeContextValue>({
 });
 
 const badgeVariants = tv({
-  base: 'inline-flex items-center rounded-full px-2.5 py-0.5',
+  base: 'inline-flex items-center',
   variants: {
     variant: {
       default: 'bg-primary',
       secondary: 'bg-secondary',
       destructive: 'bg-destructive',
-      outline: 'border border-border bg-transparent',
+      outline: 'border-border bg-transparent',
       success: 'bg-success',
       warning: 'bg-warning',
       info: 'bg-info',
@@ -39,7 +41,7 @@ const badgeVariants = tv({
 });
 
 const badgeTextVariants = tv({
-  base: 'text-xs font-semibold',
+  base: 'font-semibold',
   variants: {
     variant: {
       default: 'text-primary-foreground',
@@ -66,21 +68,41 @@ export interface BadgeProps extends ViewProps, VariantProps<typeof badgeVariants
 
 export interface BadgeTextProps extends TextProps, VariantProps<typeof badgeTextVariants> {}
 
-function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {
+function Badge({ className, variant = 'default', children, style, ...props }: BadgeProps) {
+  const visual = useVisualTokens();
   return (
     <BadgeContext.Provider value={{ variant }}>
-      <View className={cn(badgeVariants({ variant }), className)} {...props}>
+      <View
+        className={cn(badgeVariants({ variant }), className)}
+        style={[
+          {
+            borderRadius: visual.badgeRadius,
+            paddingHorizontal: visual.badgePaddingX,
+            paddingVertical: visual.badgePaddingY,
+            ...(variant === 'outline' ? { borderWidth: visual.borderWidthHairline } : null),
+          },
+          style,
+        ]}
+        {...props}
+      >
         {children}
       </View>
     </BadgeContext.Provider>
   );
 }
 
-function BadgeText({ className, variant: variantProp, ...props }: BadgeTextProps) {
+function BadgeText({ className, variant: variantProp, style, ...props }: BadgeTextProps) {
   const context = useContext(BadgeContext);
+  const visual = useVisualTokens();
   const variant = variantProp ?? context.variant;
 
-  return <Text className={cn(badgeTextVariants({ variant }), className)} {...props} />;
+  return (
+    <Text
+      className={cn(badgeTextVariants({ variant }), className)}
+      style={[typographyStyle(visual, 'caption'), style]}
+      {...props}
+    />
+  );
 }
 
 Badge.displayName = 'Badge';

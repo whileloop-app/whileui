@@ -22,6 +22,7 @@ import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { shadowStyle, surfaceRadius } from '../../lib/recipes';
 import {
   useFrostedSurface,
   useFrostedBackdrop,
@@ -95,7 +96,7 @@ export function DrawerMenu({
     maxWidth ?? (Platform.OS === 'web' ? visual.drawerMaxWidthWeb : undefined);
   const drawerWidth = effectiveMaxWidth != null ? Math.min(rawWidth, effectiveMaxWidth) : rawWidth;
   const frostedInset = frosted ? visual.drawerFrostedInset : 0;
-  const cornerRadius = frosted ? visual.drawerFrostedRadius : 0;
+  const cornerRadius = frosted ? visual.drawerFrostedRadius : surfaceRadius(visual, 'xl');
   const useFloatingFrostedDrawer = frosted && frostedInset > 0;
   const contentTopPadding = insets.top + visual.drawerContentTopPadding;
   const progress = useSharedValue(0);
@@ -182,14 +183,15 @@ export function DrawerMenu({
             borderTopLeftRadius: useFloatingFrostedDrawer ? cornerRadius : 0,
             borderBottomLeftRadius: useFloatingFrostedDrawer ? cornerRadius : 0,
           },
+          shadowStyle(visual, colors, frosted ? 'lg' : 'md'),
           drawerStyle,
           frostedSurface.surfaceStyle,
           style,
         ]}
         className={cn(
           frosted
-            ? 'border border-border shadow-xl relative overflow-hidden'
-            : 'border-r border-border rounded-r-2xl shadow-lg relative overflow-hidden',
+            ? 'border border-border relative overflow-hidden'
+            : 'border-r border-border relative overflow-hidden',
           frosted ? 'bg-transparent' : 'bg-background',
           className
         )}
@@ -219,12 +221,21 @@ export function DrawerMenu({
                         key={item.key}
                         onPress={() => handleItemPress(item.key)}
                         className={cn(
-                          'flex-row items-center gap-3 px-4 py-3 mx-1 rounded-xl transition-colors',
+                          'flex-row items-center gap-3 mx-1 transition-colors',
                           isActive && 'bg-primary-soft-subtle'
                         )}
-                        style={withInteractivePressableStyle(undefined, interaction, {
-                          pressedVariant: 'default',
-                        })}
+                        style={withInteractivePressableStyle(
+                          {
+                            borderRadius: visual.radiusLg,
+                            paddingHorizontal: visual.controlPaddingXDefault,
+                            paddingVertical: visual.controlPaddingYDefault,
+                            minHeight: visual.touchTargetMinSize,
+                          },
+                          interaction,
+                          {
+                            pressedVariant: 'default',
+                          }
+                        )}
                       >
                         {item.icon}
                         <Text
@@ -242,8 +253,11 @@ export function DrawerMenu({
                         </Text>
                         {item.badge !== undefined && (
                           <View
-                            className="bg-primary px-2 py-0.5 rounded-full items-center"
-                            style={{ minWidth: visual.drawerBadgeMinWidth }}
+                            className="bg-primary px-2 py-0.5 items-center"
+                            style={{
+                              minWidth: visual.drawerBadgeMinWidth,
+                              borderRadius: visual.badgeRadius,
+                            }}
                           >
                             <Text
                               className="font-semibold text-primary-foreground"
@@ -277,6 +291,7 @@ export function DrawerMenu({
       animationType="none"
       onRequestClose={onClose}
       statusBarTranslucent
+      navigationBarTranslucent
       presentationStyle="overFullScreen"
     >
       {drawerTree}

@@ -4,16 +4,17 @@ import { Image } from 'expo-image';
 import { Skeleton } from '../../components/skeleton';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens, type VisualTokens } from '../../lib/visual-tokens';
 
 const smartImageVariants = tv({
   base: 'overflow-hidden',
   variants: {
     radius: {
-      none: 'rounded-none',
-      sm: 'rounded-sm',
-      md: 'rounded-md',
-      lg: 'rounded-lg',
-      xl: 'rounded-xl',
+      none: '',
+      sm: '',
+      md: '',
+      lg: '',
+      xl: '',
       full: 'rounded-full',
     },
     objectFit: {
@@ -28,6 +29,19 @@ const smartImageVariants = tv({
     objectFit: 'cover',
   },
 });
+
+type SmartImageRadius = NonNullable<VariantProps<typeof smartImageVariants>['radius']>;
+
+const FULL_RADIUS = 9999;
+
+function resolveRadius(visual: VisualTokens, radius: SmartImageRadius): number {
+  if (radius === 'none') return 0;
+  if (radius === 'sm') return visual.radiusSm;
+  if (radius === 'lg') return visual.radiusLg;
+  if (radius === 'xl') return visual.radiusXl;
+  if (radius === 'full') return FULL_RADIUS;
+  return visual.radiusMd;
+}
 
 export interface SmartImageProps
   extends Omit<ViewProps, 'className'>, VariantProps<typeof smartImageVariants> {
@@ -56,12 +70,15 @@ const SmartImage = React.forwardRef<View, SmartImageProps>(
       onLoad,
       onError,
       fallbackSource,
+      style,
       ...props
     },
     ref
   ) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const visual = useVisualTokens();
+    const borderRadius = resolveRadius(visual, radius ?? 'md');
 
     const handleLoad = () => {
       setLoading(false);
@@ -80,21 +97,12 @@ const SmartImage = React.forwardRef<View, SmartImageProps>(
       <View
         ref={ref}
         className={cn(smartImageVariants({ radius, objectFit }), className)}
+        style={[{ borderRadius }, style]}
         {...props}
       >
         {skeleton && loading && (
-          <Skeleton
-            className={cn(
-              'absolute inset-0',
-              radius === 'none' && 'rounded-none',
-              radius === 'sm' && 'rounded-sm',
-              radius === 'md' && 'rounded-md',
-              radius === 'lg' && 'rounded-lg',
-              radius === 'xl' && 'rounded-xl',
-              radius === 'full' && 'rounded-full',
-              skeletonClassName
-            )}
-          />
+          // Corner radius is inherited from the clipping container (overflow-hidden).
+          <Skeleton className={cn('absolute inset-0', skeletonClassName)} />
         )}
         <Image
           source={imageSource}

@@ -3,6 +3,8 @@ import { View, type ViewProps } from 'react-native';
 import { Text } from '../../components/text';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -23,9 +25,20 @@ export interface EmptyStateProps extends ViewProps {
 // ─── Component ───────────────────────────────────────────────
 
 function DefaultEmptyIcon() {
+  const visual = useVisualTokens();
+
   return (
-    <View className="mb-6 h-14 w-14 items-center justify-center rounded-2xl border-2 border-dashed border-muted">
-      <View className="h-4 w-5 rounded-sm border border-muted-foreground" />
+    <View
+      className="mb-6 h-14 w-14 items-center justify-center border-dashed border-muted"
+      style={{
+        borderRadius: visual.radiusLg,
+        borderWidth: visual.borderWidthEmphasis,
+      }}
+    >
+      <View
+        className="h-4 w-5 rounded-sm border-muted-foreground"
+        style={{ borderWidth: visual.borderWidthHairline }}
+      />
     </View>
   );
 }
@@ -37,15 +50,27 @@ export function EmptyState({
   action,
   secondaryAction,
   className,
+  style,
   ...props
 }: EmptyStateProps) {
+  const visual = useVisualTokens();
+
   return (
-    <View className={cn('flex-1 items-center justify-center p-8', className)} {...props}>
+    <View
+      className={cn('flex-1 items-center justify-center', className)}
+      style={[{ padding: surfacePadding(visual, 'lg') }, style]}
+      {...props}
+    >
       <View className="mb-6">
         {icon ? <View className="text-muted-foreground">{icon}</View> : <DefaultEmptyIcon />}
       </View>
 
-      <Text className="mb-2 text-center text-xl font-semibold text-foreground">{title}</Text>
+      <Text
+        className="mb-2 text-center font-semibold text-foreground"
+        style={typographyStyle(visual, 'title')}
+      >
+        {title}
+      </Text>
 
       {description && (
         <Text className="mb-6 max-w-xs text-center text-muted-foreground">{description}</Text>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
 
 export interface CheckboxProps extends Omit<ViewProps, 'children'> {
   checked?: boolean;
@@ -22,10 +23,13 @@ function Checkbox({
   const [internalChecked, setInternalChecked] = useState(defaultChecked);
   const isChecked = controlledChecked ?? internalChecked;
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const interactiveStyle = withInteractivePressableStyle(undefined, interaction, {
     disabled,
     pressedVariant: 'default',
   });
+  const size = Math.max(18, Math.round(visual.controlHeightSm * 0.55));
+  const checkSize = Math.max(8, Math.round(size * 0.5));
 
   const handleToggle = () => {
     if (disabled) return;
@@ -45,13 +49,28 @@ function Checkbox({
     >
       <View
         className={cn(
-          'h-5 w-5 items-center justify-center rounded border',
+          'items-center justify-center',
           isChecked ? 'border-primary bg-primary' : 'border-border bg-muted',
           className
         )}
+        style={{
+          width: size,
+          height: size,
+          borderWidth: visual.borderWidthControl,
+          borderRadius: Math.max(6, Math.round(visual.radiusSm * 0.7)),
+        }}
         {...props}
       >
-        {isChecked && <View className="h-2.5 w-2.5 rounded-sm bg-primary-foreground" />}
+        {isChecked && (
+          <View
+            className="bg-primary-foreground"
+            style={{
+              width: checkSize,
+              height: checkSize,
+              borderRadius: Math.max(3, Math.round(visual.radiusSm * 0.35)),
+            }}
+          />
+        )}
       </View>
     </Pressable>
   );

@@ -3,6 +3,9 @@ import { Platform, StyleSheet, type ViewStyle } from 'react-native';
 import * as HoverCardPrimitive from '@rn-primitives/hover-card';
 import { cn } from '../../lib/cn';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { shadowStyle, surfacePadding, surfaceRadius } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -73,8 +76,16 @@ const HoverCardContent = React.forwardRef<
       defaultTintToken: 'popover',
       defaultBlurPreset: 'subtle',
     });
+    const visual = useVisualTokens();
+    const colors = useThemeColors();
     const resolvedStyle = StyleSheet.flatten([
       Platform.OS === 'web' ? undefined : contentStyles,
+      {
+        borderRadius: surfaceRadius(visual, 'lg'),
+        borderWidth: visual.borderWidthHairline,
+        padding: surfacePadding(visual, 'sm'),
+      },
+      shadowStyle(visual, colors, 'md'),
       frostedSurface.surfaceStyle,
       style,
     ]) as ViewStyle;
@@ -89,7 +100,7 @@ const HoverCardContent = React.forwardRef<
             align={align}
             sideOffset={sideOffset}
             className={cn(
-              'z-50 w-64 rounded-lg border border-border p-4 shadow-lg relative overflow-hidden',
+              'z-50 w-64 border-border relative overflow-hidden',
               frosted ? 'bg-transparent' : 'bg-popover',
               'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
               className

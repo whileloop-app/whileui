@@ -4,6 +4,9 @@ import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { Text } from '../text';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { shadowStyle, surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -73,7 +76,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
 // ─── Toast Variants ──────────────────────────────────────────
 
 const toastVariants = tv({
-  base: 'w-full flex-row items-center justify-between rounded-lg border p-4 shadow-lg',
+  base: 'w-full flex-row items-center justify-between border',
   variants: {
     variant: {
       default: 'border-border bg-background',
@@ -93,8 +96,10 @@ export interface ToastProps extends ViewProps, VariantProps<typeof toastVariants
   onDismiss: () => void;
 }
 
-function Toast({ toast: toastData, onDismiss, className, ...props }: ToastProps) {
+function Toast({ toast: toastData, onDismiss, className, style, ...props }: ToastProps) {
   const { title, description, variant = 'default', duration = 4000, action } = toastData;
+  const visual = useVisualTokens();
+  const colors = useThemeColors();
 
   useEffect(() => {
     if (duration > 0) {
@@ -121,11 +126,28 @@ function Toast({ toast: toastData, onDismiss, className, ...props }: ToastProps)
       entering={SlideInUp.duration(300)}
       exiting={SlideOutUp.duration(200)}
       className={cn(toastVariants({ variant }), className)}
+      style={[
+        {
+          borderRadius: surfaceRadius(visual, 'lg'),
+          borderWidth: visual.borderWidthHairline,
+          padding: surfacePadding(visual, 'sm'),
+        },
+        shadowStyle(visual, colors, 'lg'),
+        style,
+      ]}
       {...props}
     >
       <View className="flex-1 gap-1">
-        {title && <Text className={cn('text-sm font-semibold', textColor)}>{title}</Text>}
-        {description && <Text className={cn('text-sm', descColor)}>{description}</Text>}
+        {title && (
+          <Text className={cn('font-semibold', textColor)} style={typographyStyle(visual, 'label')}>
+            {title}
+          </Text>
+        )}
+        {description && (
+          <Text className={cn(descColor)} style={typographyStyle(visual, 'label')}>
+            {description}
+          </Text>
+        )}
       </View>
       <View className="flex-row items-center gap-2">
         {action && (
@@ -134,13 +156,23 @@ function Toast({ toast: toastData, onDismiss, className, ...props }: ToastProps)
               action.onPress();
               onDismiss();
             }}
-            className="rounded-md border border-border px-3 py-1.5"
+            className="border border-border"
+            style={{
+              borderRadius: visual.radiusMd,
+              borderWidth: visual.borderWidthControl,
+              paddingHorizontal: visual.controlPaddingXSm,
+              paddingVertical: visual.controlPaddingYSm,
+            }}
           >
-            <Text className={cn('text-sm font-medium', textColor)}>{action.label}</Text>
+            <Text className={cn('font-medium', textColor)} style={typographyStyle(visual, 'label')}>
+              {action.label}
+            </Text>
           </Pressable>
         )}
         <Pressable onPress={onDismiss} className="p-1">
-          <Text className={cn('text-lg', textColor)}>×</Text>
+          <Text className={cn(textColor)} style={typographyStyle(visual, 'emphasis')}>
+            ×
+          </Text>
         </Pressable>
       </View>
     </Animated.View>
@@ -153,14 +185,21 @@ export interface ToastContainerProps extends ViewProps {
   position?: 'top' | 'bottom';
 }
 
-export function ToastContainer({ position = 'top', className, ...props }: ToastContainerProps) {
+export function ToastContainer({
+  position = 'top',
+  className,
+  style,
+  ...props
+}: ToastContainerProps) {
   const { toasts, dismiss } = useToast();
+  const visual = useVisualTokens();
 
   const positionClass = position === 'top' ? 'top-0' : 'bottom-0';
 
   return (
     <View
-      className={cn('absolute left-0 right-0 z-50 px-4 py-2', positionClass, className)}
+      className={cn('absolute left-0 right-0 z-50 py-2', positionClass, className)}
+      style={[{ paddingHorizontal: visual.surfacePaddingSm }, style]}
       pointerEvents="box-none"
       {...props}
     >

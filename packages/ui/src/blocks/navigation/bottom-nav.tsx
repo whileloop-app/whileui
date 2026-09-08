@@ -4,6 +4,7 @@ import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -64,10 +65,8 @@ function BottomNavItemComponent({
         )}
       </View>
       <Text
-        className={cn(
-          'mt-1 text-xs font-medium',
-          isActive ? 'text-primary' : 'text-muted-foreground'
-        )}
+        className={cn('mt-1 font-medium', isActive ? 'text-primary' : 'text-muted-foreground')}
+        style={typographyStyle(visual, 'caption')}
       >
         {label}
       </Text>

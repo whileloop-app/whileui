@@ -36,6 +36,14 @@
       "types": "./dist/vite.d.ts",
       "import": "./dist/vite.js"
     },
+    "./web": {
+      "types": "./dist/web/index.d.ts",
+      "import": "./dist/web/index.js"
+    },
+    "./web/*": {
+      "types": "./dist/web/*/index.d.ts",
+      "import": "./dist/web/*/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -47,11 +55,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.web.json",
     "prepack": "cp ../../README.md README.md",
     "postpack": "rm -f README.md",
     "prepare": "bun run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.web.json --noEmit"
   },
   "peerDependencies": {
     "@rn-primitives/hooks": ">=1.0.0",

@@ -5,22 +5,29 @@ import { tv, type VariantProps } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle, type TypographyRole } from '../../lib/recipes';
 
 // ─── Variants ────────────────────────────────────────────────
 
 const textareaVariants = tv({
-  base: 'w-full rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground',
+  base: 'w-full border-border bg-muted text-foreground',
   variants: {
     size: {
       default: '',
-      sm: 'text-xs',
-      lg: 'text-base',
+      sm: '',
+      lg: '',
     },
   },
   defaultVariants: {
     size: 'default',
   },
 });
+
+const TEXTAREA_TEXT_ROLE: Record<string, TypographyRole> = {
+  default: 'label',
+  sm: 'caption',
+  lg: 'body',
+};
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -45,7 +52,12 @@ const Textarea = React.forwardRef<React.ComponentRef<typeof TextInput>, Textarea
           : visual.textareaMinHeightDefault;
 
     const style: TextStyle = {
+      ...typographyStyle(visual, TEXTAREA_TEXT_ROLE[size ?? 'default'] ?? 'label'),
       minHeight,
+      borderWidth: visual.borderWidthControl,
+      borderRadius: visual.radiusLg,
+      paddingHorizontal: visual.controlPaddingXDefault,
+      paddingVertical: visual.controlPaddingYDefault,
       ...(props.editable === false ? { opacity: interaction.disabledOpacity } : null),
     };
 

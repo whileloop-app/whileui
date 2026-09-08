@@ -12,6 +12,7 @@ import { SmartInput } from '../layout/smart-input';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
 import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle, type TypographyRole } from '../../lib/recipes';
 import { tv } from '../../lib/tv';
 
 // ─── Types ───────────────────────────────────────────────────
@@ -63,14 +64,14 @@ export interface ChatProps {
 
 // ─── ChatMessage Variants ────────────────────────────────────
 
-const contentSizeClasses = {
-  sm: 'text-sm',
-  default: 'text-base',
-  lg: 'text-lg',
-} as const;
+const CONTENT_SIZE_ROLE: Record<'sm' | 'default' | 'lg', TypographyRole> = {
+  sm: 'label',
+  default: 'body',
+  lg: 'emphasis',
+};
 
 const chatMessageBubbleVariants = tv({
-  base: 'rounded-2xl px-4 py-3',
+  base: '',
   variants: {
     role: {
       user: 'self-end bg-primary',
@@ -92,7 +93,7 @@ export function ChatMessageBubble({
 }) {
   const role = message.role === 'system' ? 'system' : message.role;
   const isUser = message.role === 'user';
-  const sizeClass = contentSizeClasses[message.contentSize ?? 'default'];
+  const contentRole = CONTENT_SIZE_ROLE[message.contentSize ?? 'default'];
   const visual = useVisualTokens();
   const { width: screenWidth } = useWindowDimensions();
   const ratio =
@@ -107,24 +108,27 @@ export function ChatMessageBubble({
         isUser ? 'Your message' : message.role === 'system' ? 'System message' : 'Assistant message'
       }
       className={chatMessageBubbleVariants({ role })}
-      style={{ maxWidth }}
+      style={{
+        maxWidth,
+        borderRadius: visual.radiusLg,
+        paddingHorizontal: visual.controlPaddingXDefault,
+        paddingVertical: visual.controlPaddingYDefault,
+      }}
     >
       <Text
         className={cn(
           'leading-relaxed',
-          sizeClass,
           isUser ? 'text-primary-foreground' : 'text-foreground',
           contentClassName
         )}
+        style={typographyStyle(visual, contentRole)}
       >
         {message.content}
       </Text>
       {message.secondary && (
         <Text
-          className={cn(
-            'mt-1 text-xs',
-            isUser ? 'text-primary-foreground-muted' : 'text-muted-foreground'
-          )}
+          className={cn('mt-1', isUser ? 'text-primary-foreground-muted' : 'text-muted-foreground')}
+          style={typographyStyle(visual, 'caption')}
         >
           {message.secondary}
         </Text>
@@ -136,6 +140,8 @@ export function ChatMessageBubble({
 // ─── ChatSuggestions ──────────────────────────────────────────
 
 export function ChatSuggestions({ suggestions, onSelect, className }: ChatSuggestionsProps) {
+  const visual = useVisualTokens();
+
   return (
     <View className={cn('flex-row flex-wrap justify-center gap-2 px-4 py-6', className)}>
       {suggestions.map((text, i) => (
@@ -144,9 +150,16 @@ export function ChatSuggestions({ suggestions, onSelect, className }: ChatSugges
           onPress={() => onSelect(text)}
           accessibilityRole="button"
           accessibilityLabel={`Suggestion: ${text}`}
-          className="rounded-full border border-border bg-muted px-4 py-2 active:bg-muted"
+          className="rounded-full border-border bg-muted active:bg-muted"
+          style={{
+            borderWidth: visual.borderWidthHairline,
+            paddingHorizontal: visual.controlPaddingXDefault,
+            paddingVertical: visual.controlPaddingYSm,
+          }}
         >
-          <Text className="text-sm text-foreground">{text}</Text>
+          <Text className="text-foreground" style={typographyStyle(visual, 'label')}>
+            {text}
+          </Text>
         </Pressable>
       ))}
     </View>
@@ -180,6 +193,9 @@ export function Chat({
   messagesClassName,
 }: ChatProps) {
   const scrollRef = useRef<ScrollView>(null);
+  const visual = useVisualTokens();
+  const emptyTitleTypography = typographyStyle(visual, 'emphasis');
+  const emptyDescriptionTypography = typographyStyle(visual, 'label');
   const isEmpty = messages.length === 0;
   const showSuggestions = isEmpty && suggestions.length > 0;
 
@@ -223,12 +239,18 @@ export function Chat({
               </View>
             )}
             {emptyTitle && (
-              <Text className="mb-1 text-center text-lg font-medium text-foreground">
+              <Text
+                className="mb-1 text-center font-medium text-foreground"
+                style={emptyTitleTypography}
+              >
                 {emptyTitle}
               </Text>
             )}
             {emptyDescription && (
-              <Text className="mb-4 text-center text-sm text-muted-foreground">
+              <Text
+                className="mb-4 text-center text-muted-foreground"
+                style={emptyDescriptionTypography}
+              >
                 {emptyDescription}
               </Text>
             )}
@@ -264,22 +286,32 @@ export function Chat({
 
 function ChatSendButton({ onPress, disabled }: { onPress: () => void; disabled?: boolean }) {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={disabled ? 'Send (disabled)' : 'Send message'}
-      style={withInteractivePressableStyle(undefined, interaction, {
-        disabled: Boolean(disabled),
-        pressedVariant: 'strong',
-      })}
+      style={withInteractivePressableStyle(
+        {
+          height: visual.controlHeightDefault,
+          width: visual.controlHeightDefault,
+        },
+        interaction,
+        {
+          disabled: Boolean(disabled),
+          pressedVariant: 'strong',
+        }
+      )}
       className={cn(
-        'h-11 w-11 items-center justify-center rounded-full',
+        'items-center justify-center rounded-full',
         disabled ? 'bg-muted' : 'bg-primary'
       )}
     >
-      <Text className="text-lg text-primary-foreground">↑</Text>
+      <Text className="text-primary-foreground" style={typographyStyle(visual, 'emphasis')}>
+        ↑
+      </Text>
     </Pressable>
   );
 }

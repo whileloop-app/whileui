@@ -12,18 +12,20 @@ import { cn } from '../../lib/cn';
 import { tv } from '../../lib/tv';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Variants ─────────────────────────────────────────────────
 
 const otpCellVariants = tv({
-  base: 'items-center justify-center rounded-lg border bg-muted',
+  base: 'items-center justify-center border bg-muted',
   variants: {
-    size: { default: 'h-12 w-11', compact: 'h-10 w-9' },
+    size: { default: 'w-11', compact: 'w-9' },
     state: {
       idle: 'border-border',
-      focused: 'border-primary border-2',
+      focused: 'border-primary',
       error: 'border-destructive',
-      errorFocused: 'border-destructive border-2',
+      errorFocused: 'border-destructive',
     },
   },
   defaultVariants: { size: 'default', state: 'idle' },
@@ -65,6 +67,7 @@ function OTPInput({
   const [focused, setFocused] = useState(false);
   const colors = useThemeColors();
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   const shakeX = useSharedValue(0);
 
@@ -113,13 +116,19 @@ function OTPInput({
               : 'idle';
 
           return (
-            <View key={i} className={otpCellVariants({ size, state })}>
+            <View
+              key={i}
+              className={otpCellVariants({ size, state })}
+              style={{
+                height: size === 'compact' ? visual.controlHeightDefault : visual.controlHeightLg,
+                borderRadius: visual.radiusMd,
+                borderWidth: isCursor ? visual.borderWidthEmphasis : visual.borderWidthControl,
+              }}
+            >
               {digit ? (
                 <Text
-                  className={cn(
-                    'text-foreground font-semibold',
-                    size === 'compact' ? 'text-base' : 'text-lg'
-                  )}
+                  className={cn('text-foreground font-semibold')}
+                  style={typographyStyle(visual, size === 'compact' ? 'body' : 'emphasis')}
                 >
                   {secure ? '●' : digit}
                 </Text>

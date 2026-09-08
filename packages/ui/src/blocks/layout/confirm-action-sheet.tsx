@@ -12,6 +12,8 @@ import { Text } from '../../components/text';
 import { cn } from '../../lib/cn';
 import { useThemeColors } from '../../lib/theme-colors';
 import { useInteractionTokens, withInteractivePressableStyle } from '../../lib/interaction-tokens';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { controlRecipe, surfacePadding, surfaceRadius, typographyStyle } from '../../lib/recipes';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
 
 export type ConfirmActionSheetActionVariant = 'default' | 'destructive' | 'cancel';
@@ -59,6 +61,7 @@ export function ConfirmActionSheet({
   const insets = useSafeAreaInsets();
   const colors = useThemeColors();
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
   const frostedSurface = useFrostedSurface({
     frosted,
     blurIntensity,
@@ -98,17 +101,31 @@ export function ConfirmActionSheet({
   };
 
   return (
-    <Modal visible={open} transparent animationType="fade" onRequestClose={handleClose}>
+    <Modal
+      visible={open}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      navigationBarTranslucent
+      onRequestClose={handleClose}
+    >
       <View className="flex-1 justify-end" style={{ backgroundColor: colors.overlay }}>
         <Pressable className="flex-1" onPress={handleClose} />
         <View
           className={cn(
-            'rounded-t-lg border border-border px-4 pt-4 relative overflow-hidden',
+            'border-border relative overflow-hidden',
             frosted ? 'bg-transparent' : 'bg-background',
             className
           )}
           style={[
-            { paddingBottom: Math.max(insets.bottom, 12) } as ViewStyle,
+            {
+              borderTopLeftRadius: surfaceRadius(visual, 'xl'),
+              borderTopRightRadius: surfaceRadius(visual, 'xl'),
+              borderWidth: visual.borderWidthHairline,
+              paddingHorizontal: surfacePadding(visual, 'sm'),
+              paddingTop: surfacePadding(visual, 'sm'),
+              paddingBottom: Math.max(insets.bottom, 12),
+            } as ViewStyle,
             frostedSurface.surfaceStyle,
             style as StyleProp<ViewStyle>,
           ]}
@@ -116,9 +133,13 @@ export function ConfirmActionSheet({
         >
           {frostedSurface.overlay}
           <View className="mb-4 gap-1.5">
-            <Text className="text-base font-semibold text-foreground">{title}</Text>
+            <Text className="font-semibold text-foreground" style={typographyStyle(visual, 'body')}>
+              {title}
+            </Text>
             {description ? (
-              <Text className="text-sm text-muted-foreground">{description}</Text>
+              <Text className="text-muted-foreground" style={typographyStyle(visual, 'label')}>
+                {description}
+              </Text>
             ) : null}
           </View>
 
@@ -131,25 +152,33 @@ export function ConfirmActionSheet({
                 <Pressable
                   key={action.key}
                   className={cn(
-                    'min-h-11 items-center justify-center rounded-md border px-4 py-2',
+                    'items-center justify-center',
                     isCancel ? 'border-border bg-muted' : 'border-transparent bg-secondary',
                     isDestructive && 'bg-destructive-soft border-destructive-soft-border',
                     action.disabled && ''
                   )}
-                  style={withInteractivePressableStyle(undefined, interaction, {
-                    disabled: Boolean(action.disabled),
-                    pressedVariant: 'default',
-                  })}
+                  style={withInteractivePressableStyle(
+                    {
+                      ...controlRecipe(visual, 'default'),
+                      borderWidth: visual.borderWidthControl,
+                    },
+                    interaction,
+                    {
+                      disabled: Boolean(action.disabled),
+                      pressedVariant: 'default',
+                    }
+                  )}
                   onPress={() => handleActionPress(action)}
                   disabled={action.disabled}
                   accessibilityRole="button"
                 >
                   <Text
                     className={cn(
-                      'text-sm font-medium',
+                      'font-medium',
                       isCancel ? 'text-foreground' : 'text-secondary-foreground',
                       isDestructive && 'text-destructive'
                     )}
+                    style={typographyStyle(visual, 'label')}
                   >
                     {action.label}
                   </Text>

@@ -13,15 +13,15 @@ import { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } from 'react-native-
 import { useCSSVariable, useUniwind } from 'uniwind';
 import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import Animated from 'react-native-reanimated';
+import { withTiming } from 'react-native-reanimated';
 import {
   useFonts,
-  Nunito_400Regular,
-  Nunito_500Medium,
-  Nunito_600SemiBold,
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
-} from '@expo-google-fonts/nunito';
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+} from '@expo-google-fonts/plus-jakarta-sans';
 import * as ExpoSplashScreen from 'expo-splash-screen';
 import './global.css';
 
@@ -263,8 +263,8 @@ const triggerHaptic = (type: 'light' | 'medium' | 'selection' = 'light') => {
   }
 };
 
-const SHOWCASE_BACKDROP_IMAGE_URI =
-  'https://framerusercontent.com/images/n33pHn65YAjw2oFLhhj3fQ3Vjo.png';
+const darkBackdropImg = require('./assets/dark-backdrop.png');
+const lightBackdropImg = require('./assets/light-backdrop.png');
 
 function parseBackdropNumber(value: string | number | undefined, fallback: number): number {
   if (value === undefined || value === null) return fallback;
@@ -278,9 +278,10 @@ function resolveBackdropColor(value: string | number | undefined, fallback: stri
   return trimmed.length > 0 ? trimmed : fallback;
 }
 
-function DarkBackdrop() {
+function ThemedBackdrop() {
   const { theme } = useUniwind();
   const dark = theme === 'dark';
+  const isAndroid = Platform.OS === 'android';
   const [baseToken, imageOpacityToken, imageBlurToken, tintToken, veilToken] = useCSSVariable([
     '--ui-showcase-backdrop-base',
     '--ui-showcase-backdrop-image-opacity',
@@ -288,12 +289,22 @@ function DarkBackdrop() {
     '--ui-showcase-backdrop-tint',
     '--ui-showcase-backdrop-veil',
   ]);
-  const [showRemoteImage, setShowRemoteImage] = useState(true);
 
-  if (!dark) return null;
+  const configuredImageOpacity = Math.max(
+    0,
+    Math.min(1, parseBackdropNumber(imageOpacityToken, dark ? 0.75 : 0.85))
+  );
+  const imageOpacity = isAndroid ? configuredImageOpacity * 0.3 : configuredImageOpacity;
+  const configuredImageBlurRadius = Math.max(
+    0,
+    Math.round(parseBackdropNumber(imageBlurToken, dark ? 12 : 8))
+  );
+  const imageBlurRadius = isAndroid
+    ? Math.min(configuredImageBlurRadius, dark ? 4 : 2)
+    : configuredImageBlurRadius;
 
-  const imageOpacity = Math.max(0, Math.min(1, parseBackdropNumber(imageOpacityToken, 0.46)));
-  const imageBlurRadius = Math.max(0, Math.round(parseBackdropNumber(imageBlurToken, 26)));
+  const bgSource = dark ? darkBackdropImg : lightBackdropImg;
+  const fallbackBg = dark ? 'rgba(31, 28, 36, 1)' : 'rgba(254, 251, 251, 1)';
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
@@ -301,33 +312,48 @@ function DarkBackdrop() {
         style={[
           StyleSheet.absoluteFillObject,
           {
-            backgroundColor: resolveBackdropColor(baseToken, 'rgba(14, 17, 24, 0.9)'),
+            backgroundColor: resolveBackdropColor(baseToken, fallbackBg),
           },
         ]}
       />
-      {showRemoteImage && imageOpacity > 0 ? (
-        <ImageBackground
-          source={{ uri: SHOWCASE_BACKDROP_IMAGE_URI }}
-          resizeMode="cover"
-          blurRadius={imageBlurRadius}
-          imageStyle={{ opacity: imageOpacity }}
-          style={StyleSheet.absoluteFillObject}
-          onError={() => setShowRemoteImage(false)}
-        />
-      ) : null}
-      <View
-        style={[
-          StyleSheet.absoluteFillObject,
-          {
-            backgroundColor: resolveBackdropColor(tintToken, 'rgba(126, 136, 152, 0.03)'),
-          },
-        ]}
+      <ImageBackground
+        source={bgSource}
+        resizeMode="cover"
+        blurRadius={imageBlurRadius}
+        imageStyle={{ opacity: imageOpacity }}
+        style={StyleSheet.absoluteFillObject}
       />
       <View
         style={[
           StyleSheet.absoluteFillObject,
           {
-            backgroundColor: resolveBackdropColor(veilToken, 'rgba(10, 12, 18, 0.5)'),
+            backgroundColor: resolveBackdropColor(
+              tintToken,
+              dark
+                ? isAndroid
+                  ? 'rgba(236, 72, 153, 0.01)'
+                  : 'rgba(236, 72, 153, 0.02)'
+                : isAndroid
+                  ? 'rgba(219, 39, 119, 0.005)'
+                  : 'rgba(219, 39, 119, 0.01)'
+            ),
+          },
+        ]}
+      />
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: resolveBackdropColor(
+              veilToken,
+              dark
+                ? isAndroid
+                  ? 'rgba(18, 14, 23, 0.6)'
+                  : 'rgba(18, 14, 23, 0.35)'
+                : isAndroid
+                  ? 'rgba(254, 251, 251, 0.58)'
+                  : 'rgba(254, 251, 251, 0.25)'
+            ),
           },
         ]}
       />
@@ -346,11 +372,11 @@ const showcaseThemeAdapter: ThemeBridgeAdapter = {
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    Nunito_400Regular,
-    Nunito_500Medium,
-    Nunito_600SemiBold,
-    Nunito_700Bold,
-    Nunito_800ExtraBold,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
   });
 
   useEffect(() => {
@@ -364,11 +390,11 @@ export default function App() {
   }
 
   const fontMap = {
-    'font-normal': 'Nunito_400Regular',
-    'font-medium': 'Nunito_500Medium',
-    'font-semibold': 'Nunito_600SemiBold',
-    'font-bold': 'Nunito_700Bold',
-    'font-extrabold': 'Nunito_800ExtraBold',
+    'font-normal': 'PlusJakartaSans_400Regular',
+    'font-medium': 'PlusJakartaSans_500Medium',
+    'font-semibold': 'PlusJakartaSans_600SemiBold',
+    'font-bold': 'PlusJakartaSans_700Bold',
+    'font-extrabold': 'PlusJakartaSans_800ExtraBold',
   };
 
   return (
@@ -404,7 +430,7 @@ function AppContent() {
     return (
       <SafeAreaProvider>
         <View style={{ flex: 1 }} className="bg-background">
-          <DarkBackdrop />
+          <ThemedBackdrop />
           <StatusBar
             barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
             translucent
@@ -463,7 +489,7 @@ function AppContent() {
       <SafeAreaProvider>
         <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
         <View style={{ flex: 1 }} className="bg-background">
-          <DarkBackdrop />
+          <ThemedBackdrop />
           <StatusBar
             barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
             translucent
@@ -545,7 +571,7 @@ function AppContent() {
     <SafeAreaProvider>
       <ThemeBridge mode={themeMode} adapter={showcaseThemeAdapter} />
       <View style={{ flex: 1 }} className="bg-background">
-        <DarkBackdrop />
+        <ThemedBackdrop />
         <StatusBar
           barStyle={theme === 'light' ? 'dark-content' : 'light-content'}
           translucent
@@ -567,10 +593,8 @@ function AppContent() {
                     <Feather name="menu" size={20} color={colors.foreground} />
                   </Pressable>
                   <View>
-                    <Text className="text-3xl font-bold text-foreground tracking-tight">
-                      WhileUI
-                    </Text>
-                    <Text className="text-sm text-muted-foreground mt-0.5">
+                    <Text className="text-3xl font-bold text-foreground">WhileUI</Text>
+                    <Text className="text-base text-muted-foreground">
                       Beautiful native components
                     </Text>
                   </View>
@@ -606,7 +630,7 @@ function AppContent() {
                       setActiveTab(cat.key);
                     }}
                     className={cn(
-                      'flex-row items-center gap-1.5 rounded-full px-4 py-2',
+                      'flex-row items-center gap-2 rounded-full px-4 py-2.5',
                       activeTab === cat.key ? 'bg-primary' : 'bg-muted'
                     )}
                   >
@@ -1764,14 +1788,7 @@ function FormsBlocksTab() {
           rightSlot={<Text className="text-xs text-muted-foreground">USD</Text>}
         >
           <LabeledFieldControl>
-            <NumericInput
-              value={budget}
-              onValueChange={setBudget}
-              min={0}
-              step={50}
-              className="border-0 bg-transparent"
-              inputClassName="px-0"
-            />
+            <NumericInput value={budget} onValueChange={setBudget} min={0} step={50} unstyled />
           </LabeledFieldControl>
         </LabeledField>
 
@@ -2039,7 +2056,8 @@ function ChatBlocksTab({
   onMenuPress?: () => void;
   colors?: ReturnType<typeof useIconColors>;
 }) {
-  const iconColors = colors ?? useIconColors();
+  const fallbackColors = useIconColors();
+  const iconColors = colors ?? fallbackColors;
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const exampleMessage: ChatMessage = {
     id: 'example',

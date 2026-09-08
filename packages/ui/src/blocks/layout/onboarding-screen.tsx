@@ -11,6 +11,8 @@ import {
 import { Text } from '../../components/text';
 import { Button, ButtonText } from '../../components/button';
 import { cn } from '../../lib/cn';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { surfacePadding, typographyStyle } from '../../lib/recipes';
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -47,6 +49,7 @@ export function OnboardingScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const { width } = useWindowDimensions();
+  const visual = useVisualTokens();
 
   const isLastSlide = currentIndex === slides.length - 1;
 
@@ -95,14 +98,20 @@ export function OnboardingScreen({
         {slides.map((slide) => (
           <View
             key={slide.key}
-            style={{ width }}
-            className="flex-1 items-center justify-center p-8"
+            style={{ width, padding: surfacePadding(visual, 'lg') }}
+            className="flex-1 items-center justify-center"
           >
             {slide.image && <View className="mb-8">{slide.image}</View>}
-            <Text className="mb-4 text-center text-2xl font-bold text-foreground">
+            <Text
+              className="mb-4 text-center font-bold text-foreground"
+              style={typographyStyle(visual, 'headline')}
+            >
               {slide.title}
             </Text>
-            <Text className="max-w-sm text-center text-base text-muted-foreground">
+            <Text
+              className="max-w-sm text-center text-muted-foreground"
+              style={typographyStyle(visual, 'body')}
+            >
               {slide.description}
             </Text>
           </View>
@@ -110,7 +119,7 @@ export function OnboardingScreen({
       </ScrollView>
 
       {/* Bottom */}
-      <View className="px-8 pb-12">
+      <View className="pb-12" style={{ paddingHorizontal: surfacePadding(visual, 'lg') }}>
         {/* Dots */}
         <View className="mb-6 flex-row justify-center gap-2">
           {slides.map((_, index) => (

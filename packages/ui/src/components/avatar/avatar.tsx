@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Image, Text, type ViewProps, type ImageProps } from 'react-native';
 import { cn } from '../../lib/cn';
 import { tv, type VariantProps } from '../../lib/tv';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { typographyStyle } from '../../lib/recipes';
 
 // ─── Variants ────────────────────────────────────────────────
 
@@ -84,6 +86,7 @@ AvatarImage.displayName = 'AvatarImage';
 
 function AvatarFallback({ className, children, ...props }: AvatarFallbackProps) {
   const { imageLoaded } = React.useContext(AvatarContext);
+  const visual = useVisualTokens();
 
   if (imageLoaded) return null;
 
@@ -96,7 +99,12 @@ function AvatarFallback({ className, children, ...props }: AvatarFallbackProps) 
       {...props}
     >
       {typeof children === 'string' ? (
-        <Text className="text-sm font-medium text-muted-foreground">{children}</Text>
+        <Text
+          className="font-medium text-muted-foreground"
+          style={typographyStyle(visual, 'label')}
+        >
+          {children}
+        </Text>
       ) : (
         children
       )}

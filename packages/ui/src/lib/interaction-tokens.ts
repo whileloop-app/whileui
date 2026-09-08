@@ -67,17 +67,17 @@ export function useInteractionTokens(): InteractionTokens {
   ]);
 
   return {
-    pressOpacity: clampOpacity(parseNumber(pressOpacity, 0.72)),
-    pressOpacityStrong: clampOpacity(parseNumber(pressOpacityStrong, 0.9)),
-    disabledOpacity: clampOpacity(parseNumber(disabledOpacity, 0.5)),
-    disabledOpacitySoft: clampOpacity(parseNumber(disabledOpacitySoft, 0.6)),
-    disabledOpacitySubtle: clampOpacity(parseNumber(disabledOpacitySubtle, 0.4)),
-    inactiveOpacity: clampOpacity(parseNumber(inactiveOpacity, 0.5)),
-    motionFast: Math.max(0, Math.round(parseNumber(motionFast, 160))),
-    motionNormal: Math.max(0, Math.round(parseNumber(motionNormal, 220))),
-    motionSlow: Math.max(0, Math.round(parseNumber(motionSlow, 300))),
-    drawerOpenDuration: Math.max(0, Math.round(parseNumber(drawerOpenDuration, 300))),
-    drawerCloseDuration: Math.max(0, Math.round(parseNumber(drawerCloseDuration, 220))),
+    pressOpacity: clampOpacity(parseNumber(pressOpacity, 0.82)),
+    pressOpacityStrong: clampOpacity(parseNumber(pressOpacityStrong, 0.92)),
+    disabledOpacity: clampOpacity(parseNumber(disabledOpacity, 0.46)),
+    disabledOpacitySoft: clampOpacity(parseNumber(disabledOpacitySoft, 0.56)),
+    disabledOpacitySubtle: clampOpacity(parseNumber(disabledOpacitySubtle, 0.36)),
+    inactiveOpacity: clampOpacity(parseNumber(inactiveOpacity, 0.54)),
+    motionFast: Math.max(0, Math.round(parseNumber(motionFast, 140))),
+    motionNormal: Math.max(0, Math.round(parseNumber(motionNormal, 200))),
+    motionSlow: Math.max(0, Math.round(parseNumber(motionSlow, 280))),
+    drawerOpenDuration: Math.max(0, Math.round(parseNumber(drawerOpenDuration, 260))),
+    drawerCloseDuration: Math.max(0, Math.round(parseNumber(drawerCloseDuration, 180))),
   };
 }
 

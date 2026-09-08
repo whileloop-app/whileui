@@ -5,6 +5,9 @@ import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
 import { cn } from '../../lib/cn';
 import { useInteractionTokens } from '../../lib/interaction-tokens';
 import { useFrostedSurface, type FrostedSurfaceProps } from '../../lib/frosted-surface';
+import { useVisualTokens } from '../../lib/visual-tokens';
+import { useThemeColors } from '../../lib/theme-colors';
+import { fieldRecipe, shadowStyle, surfaceRadius, typographyStyle } from '../../lib/recipes';
 
 // iOS needs FullWindowOverlay to render above everything
 const FullWindowOverlay = Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fragment;
@@ -81,16 +84,18 @@ const SelectGroup = SelectPrimitive.Group;
 const SelectTrigger = React.forwardRef<SelectTriggerRef, SelectTriggerProps>(
   ({ className, children, style: styleProp, ...props }, ref) => {
     const interaction = useInteractionTokens();
+    const visual = useVisualTokens();
 
     return (
       <SelectPrimitive.Trigger
         ref={ref}
         className={cn(
-          'border-border bg-muted flex min-h-12 w-full flex-row items-center justify-between gap-2 rounded-lg border px-4 shadow-sm active:bg-state-pressed',
+          'border-border bg-muted flex w-full flex-row items-center justify-between gap-2 shadow-sm active:bg-state-pressed',
           props.disabled && '',
           className
         )}
         style={[
+          fieldRecipe(visual, 'default'),
           styleProp as any,
           props.disabled ? ({ opacity: interaction.disabledOpacity } as const) : null,
         ]}
@@ -110,9 +115,11 @@ function SelectValue({
   ...props
 }: SelectValueProps & React.RefAttributes<SelectPrimitive.ValueRef>) {
   const { value } = SelectPrimitive.useRootContext();
+  const visual = useVisualTokens();
   return (
     <SelectPrimitive.Value
-      className={cn('text-foreground text-base', !value && 'text-muted-foreground', className)}
+      className={cn('text-foreground', !value && 'text-muted-foreground', className)}
+      style={typographyStyle(visual, 'body')}
       placeholder={placeholder}
       {...props}
     />
@@ -145,6 +152,8 @@ const SelectContent = React.forwardRef<
       defaultTintToken: 'popover',
       defaultBlurPreset: 'subtle',
     });
+    const visual = useVisualTokens();
+    const colors = useThemeColors();
 
     return (
       <SelectPrimitive.Portal hostName={portalHost}>
@@ -154,9 +163,19 @@ const SelectContent = React.forwardRef<
               ref={ref}
               position={position}
               insets={insets}
-              style={StyleSheet.flatten([styleProp as any, frostedSurface.surfaceStyle]) as any}
+              style={
+                StyleSheet.flatten([
+                  {
+                    borderRadius: surfaceRadius(visual, 'lg'),
+                    borderWidth: visual.borderWidthHairline,
+                  },
+                  shadowStyle(visual, colors, 'md'),
+                  frostedSurface.surfaceStyle,
+                  styleProp as any,
+                ]) as any
+              }
               className={cn(
-                'border-border relative z-50 min-w-32 rounded-xl border shadow-lg overflow-hidden',
+                'border-border relative z-50 min-w-32 overflow-hidden',
                 frosted ? 'bg-transparent' : 'bg-popover',
                 Platform.select({
                   web: cn(
@@ -196,12 +215,13 @@ const SelectItem = React.forwardRef<
   SelectItemProps
 >(({ className, children, style: styleProp, ...props }, ref) => {
   const interaction = useInteractionTokens();
+  const visual = useVisualTokens();
 
   return (
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        'active:bg-accent group relative flex w-full flex-row items-center gap-2 rounded-lg py-3 pl-3 pr-8',
+        'active:bg-accent group relative flex w-full flex-row items-center gap-2 pr-8',
         Platform.select({
           web: 'focus:bg-accent focus:text-accent-foreground cursor-default outline-none',
         }),
@@ -209,6 +229,12 @@ const SelectItem = React.forwardRef<
         className
       )}
       style={[
+        {
+          borderRadius: visual.radiusSm,
+          minHeight: visual.touchTargetMinSize,
+          paddingVertical: visual.controlPaddingYSm,
+          paddingLeft: visual.controlPaddingXSm,
+        },
         styleProp as any,
         props.disabled ? ({ opacity: interaction.disabledOpacity } as const) : null,
       ]}
@@ -220,7 +246,10 @@ const SelectItem = React.forwardRef<
         </SelectPrimitive.ItemIndicator>
       </View>
       {children}
-      <SelectPrimitive.ItemText className="text-foreground group-active:text-accent-foreground text-base" />
+      <SelectPrimitive.ItemText
+        className="text-foreground group-active:text-accent-foreground"
+        style={typographyStyle(visual, 'body')}
+      />
     </SelectPrimitive.Item>
   );
 });
@@ -234,13 +263,17 @@ SelectItemIcon.displayName = 'SelectItemIcon';
 const SelectLabel = React.forwardRef<
   React.ComponentRef<typeof SelectPrimitive.Label>,
   SelectLabelProps
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Label
-    ref={ref}
-    className={cn('text-muted-foreground px-2 py-2 text-xs', className)}
-    {...props}
-  />
-));
+>(({ className, style: styleProp, ...props }, ref) => {
+  const visual = useVisualTokens();
+  return (
+    <SelectPrimitive.Label
+      ref={ref}
+      className={cn('text-muted-foreground px-2 py-2', className)}
+      style={[typographyStyle(visual, 'caption'), styleProp as any]}
+      {...props}
+    />
+  );
+});
 SelectLabel.displayName = 'SelectLabel';
 
 const SelectSeparator = React.forwardRef<

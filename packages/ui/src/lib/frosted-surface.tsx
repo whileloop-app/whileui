@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useUniwind } from 'uniwind';
+import { formatRgb, parse } from 'culori';
 import { type ThemeColors, useThemeColors } from './theme-colors';
 import { type VisualTokens, useVisualTokens } from './visual-tokens';
 declare const require: undefined | ((id: string) => unknown);
@@ -87,6 +88,27 @@ function resolveTintColor(colors: ThemeColors, tintToken: FrostedTintToken): str
   if (tintToken === 'popover') return colors.popover;
   if (tintToken === 'surfaceTranslucent') return colors.surfaceTranslucent;
   return colors.surfaceElevated;
+}
+
+function scaleColorAlpha(color: string, alphaScale: number): string {
+  if (alphaScale === 1) return color;
+
+  try {
+    const parsed = parse(color);
+    if (!parsed) return color;
+
+    const currentAlpha = typeof parsed.alpha === 'number' ? parsed.alpha : 1;
+    if (currentAlpha >= 1) return color;
+
+    const nextColor = {
+      ...parsed,
+      alpha: Math.min(1, Math.max(0, currentAlpha * alphaScale)),
+    };
+
+    return formatRgb(nextColor) ?? color;
+  } catch {
+    return color;
+  }
 }
 
 function resolveBlurIntensity(
@@ -292,6 +314,10 @@ export function useFrostedSurface({
 
   const tintToken = blurTintToken ?? defaultTintToken;
   const tintColor = resolveTintColor(colors, tintToken);
+  const resolvedTintColor =
+    Platform.OS === 'android'
+      ? scaleColorAlpha(tintColor, visualTokens.androidFrostedTintAlphaScale)
+      : tintColor;
   const intensity = resolveBlurIntensity(visualTokens, blurIntensity, defaultBlurPreset);
   const highlightColor = colors.surfaceHighlight;
   const highlightHeight = visualTokens.frostedHighlightHeight;
@@ -303,7 +329,7 @@ export function useFrostedSurface({
     overlay: (
       <FrostedOverlay
         intensity={intensity}
-        tintColor={tintColor}
+        tintColor={resolvedTintColor}
         highlightColor={highlightColor}
         highlightHeight={highlightHeight}
         saturationPct={saturationPct}
@@ -337,7 +363,10 @@ export function useFrostedBackdrop({
     typeof blurIntensity === 'number' && Number.isFinite(blurIntensity)
       ? Math.max(0, Math.round(blurIntensity))
       : visualTokens.frostedBackdropBlurIntensity;
-  const resolvedTintColor = tintColor ?? colors.overlay;
+  const resolvedTintColor =
+    Platform.OS === 'android'
+      ? scaleColorAlpha(tintColor ?? colors.overlay, visualTokens.androidFrostedTintAlphaScale)
+      : (tintColor ?? colors.overlay);
 
   return (
     <FrostedBackdropOverlay
